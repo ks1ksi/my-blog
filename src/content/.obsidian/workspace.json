@@ -1,0 +1,238 @@
+{
+  "main": {
+    "id": "ac7bcb519e4df11c",
+    "type": "split",
+    "children": [
+      {
+        "id": "25c022501d77cb65",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ef68f5d2a4a430aa",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "blog/그래프 최단경로 알고리즘 정리.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "그래프 최단경로 알고리즘 정리"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "2fe21582cf4cc6fc",
+    "type": "split",
+    "children": [
+      {
+        "id": "2f45c21da838e69c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c1c54ff3ab26bd05",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": true
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "640e5f9dd4e85ef6",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "eafd754e43f56e8c",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 286.5
+  },
+  "right": {
+    "id": "2037cdb32e49aeb6",
+    "type": "split",
+    "children": [
+      {
+        "id": "e66ae8dba2a2f86e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "01ee791f92b75b49",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "study/OSTEP 04 Process.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for OSTEP 04 Process"
+            }
+          },
+          {
+            "id": "b150bfcef87d37ee",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "study/OSTEP 04 Process.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from OSTEP 04 Process"
+            }
+          },
+          {
+            "id": "61b2336ea12f3168",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "a1c3bcf80f152f6f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "study/OSTEP 04 Process.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of OSTEP 04 Process"
+            }
+          },
+          {
+            "id": "e67c12c6f1cd1b6b",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "lucide-ghost",
+              "title": "git-view"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "obsidian-git:Open Git source control": false
+    }
+  },
+  "active": "ef68f5d2a4a430aa",
+  "lastOpenFiles": [
+    "blog/백준 2629번 양팔저울.md",
+    "blog/OSTEP 22 Swapping Policies.md",
+    "blog/OSTEP 18 Introduction to Paging.md",
+    "blog/OSTEP 07 CPU Scheduling.md",
+    "blog/OSTEP 16 Segmentation.md",
+    "blog/OSTEP 20 Advanced Page Tables.md",
+    "blog/OSTEP 08 Multi-level Feedback Queue, MLFQ.md",
+    "blog/OSTEP 06 Direct Execution.md",
+    "blog/Intel Korea SW engineer Intern 지원 후기.md",
+    "Untitled.md",
+    "blog/Bulk Insert.md",
+    "blog/OSTEP 38 Redundant Disk Arrays (RAID).md",
+    "templates/template.md",
+    "templates",
+    "blog/OSTEP 17 Free Space Management.md",
+    "blog/토스 3년 이하 Server Developer Challenge 지원 및 합격 후기.md",
+    "blog/백준 10986번 나머지 합.md",
+    "blog/백준  2261번 가장 가까운 두 점.md",
+    "blog/2024 LG CNS 채용연계형 인턴 지원 및 합격 후기.md",
+    "blog/2023 새해 목표.md",
+    "templates/Template.md",
+    "ps/백준 13711번 LCS 4.md",
+    "ps/백준 13489번 Vještica.md",
+    "ps/백준 10986번 나머지 합.md",
+    "ps/백준  2261번 가장 가까운 두 점.md",
+    "ps/그래프 최단경로 알고리즘 정리.md",
+    "posts/토스 3년 이하 Server Developer Challenge 지원 및 합격 후기.md",
+    "image/index-1760168959361.webp",
+    "image/Real MySQL 8.0 8장 인덱스-1712428256696.jpeg",
+    "image/Untitled-1760168811807.webp",
+    "image/2022 성균관대학교 프로그래밍 경진대회-1673535690327.jpeg",
+    "image/Pasted image 20251011164334.png",
+    "study",
+    "ps",
+    "posts",
+    "image/토스 3년 이하 Server Developer Challenge 합격 후기-1718227240418.jpeg",
+    "image/토스 3년 이하 Server Developer Challenge 합격 후기-1718226921407.jpeg",
+    "image/토스 3년 이하 Server Developer Challenge 합격 후기-1718226905449.jpeg",
+    "image/토스 3년 이하 Server Developer Challenge 합격 후기-1718226485349.jpeg",
+    "image/전역 후기-1673535564312.jpeg",
+    "image"
+  ]
+}
