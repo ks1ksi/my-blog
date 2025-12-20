@@ -3,6 +3,7 @@ import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 import pagefind from "astro-pagefind";
 import tailwindcss from "@tailwindcss/vite";
+import { remarkObsidianLink } from "./src/lib/utils";
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,5 +16,8 @@ export default defineConfig({
     shikiConfig: {
       theme: "css-variables",
     },
+    remarkPlugins: [
+      remarkObsidianLink
+    ],
   },
 });
