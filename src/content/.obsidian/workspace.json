@@ -191,8 +191,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "ef68f5d2a4a430aa",
+  "active": "c1c54ff3ab26bd05",
   "lastOpenFiles": [
+    "blog/그래프 최단경로 알고리즘 정리.md",
+    "projects/p1.md",
     "blog/백준 2629번 양팔저울.md",
     "blog/OSTEP 22 Swapping Policies.md",
     "blog/OSTEP 18 Introduction to Paging.md",
@@ -218,8 +220,6 @@
     "ps/백준 13489번 Vještica.md",
     "ps/백준 10986번 나머지 합.md",
     "ps/백준  2261번 가장 가까운 두 점.md",
-    "ps/그래프 최단경로 알고리즘 정리.md",
-    "posts/토스 3년 이하 Server Developer Challenge 지원 및 합격 후기.md",
     "image/index-1760168959361.webp",
     "image/Real MySQL 8.0 8장 인덱스-1712428256696.jpeg",
     "image/Untitled-1760168811807.webp",

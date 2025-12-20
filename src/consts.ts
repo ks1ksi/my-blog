@@ -5,7 +5,6 @@ export const SITE: Site = {
   DESCRIPTION: "Seugnil Kim's personal blog",
   EMAIL: "me@seungil.kim",
   NUM_POSTS_ON_HOMEPAGE: 5,
-  NUM_PROJECTS_ON_HOMEPAGE: 1,
 };
 
 export const HOME: Metadata = {
@@ -26,15 +25,11 @@ export const PROJECTS: Metadata = {
 
 export const SOCIALS: Socials = [
   {
-    NAME: "Email",
-    HREF: "mailto:me@seungil.kim",
-  },
-  {
     NAME: "GitHub",
     HREF: "https://github.com/ks1ksi",
   },
   {
-    NAME: "Website",
-    HREF: "https://seungil.kim",
+    NAME: "LinkedIn",
+    HREF: "https://www.linkedin.com/in/ks1ksi/",
   },
 ];
