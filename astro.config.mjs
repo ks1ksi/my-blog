@@ -11,9 +11,6 @@ import rehypeKatex from "rehype-katex";
 export default defineConfig({
   site: "https://ks1ksi.io",
   integrations: [sitemap(), mdx(), pagefind()],
-  redirects: {
-    '/posts/[...slug]': '/blog/[...slug]',
-  },
   vite: {
     plugins: [tailwindcss()],
   },
