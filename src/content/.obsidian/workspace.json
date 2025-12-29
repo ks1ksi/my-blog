@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2024 ~ 2025 회고.md",
+                "file": "blog/2024 - 2025 회고.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": true,
@@ -28,7 +28,7 @@
                 }
               },
               "icon": "lucide-file",
-              "title": "2024 ~ 2025 회고"
+              "title": "2024 - 2025 회고"
             }
           }
         ]
@@ -193,7 +193,7 @@
   "active": "9937c808391fe9ce",
   "lastOpenFiles": [
     "blog/2026 새해 목표.md",
-    "blog/2024 ~ 2025 회고.md",
+    "blog/2024 - 2025 회고.md",
     "blog/토스 3년 이하 Server Developer Challenge 지원 및 합격 후기.md",
     "images/2024 ~ 2025 회고-1767028053237.png",
     "images/2024 ~ 2025 회고-1767027990692.png",
