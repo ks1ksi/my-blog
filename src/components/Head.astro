@@ -6,11 +6,12 @@ interface Props {
   title: string;
   description: string;
   image?: string;
+  type?: "website" | "article";
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = "/og.jpg" } = Astro.props;
+const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
 ---
 
 <!-- Global Metadata -->
@@ -28,7 +29,7 @@ const { title, description, image = "/og.jpg" } = Astro.props;
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={type} />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
@@ -82,15 +83,6 @@ const { title, description, image = "/og.jpg" } = Astro.props;
       updateThemeButtons();
     });
 
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (event) => {
-        if (localStorage.theme === "system") {
-          toggleTheme(event.matches);
-        }
-      });
-
-    document.addEventListener("scroll", onScroll);
   }
 
   function updateThemeButtons() {
@@ -126,7 +118,15 @@ const { title, description, image = "/og.jpg" } = Astro.props;
     if (window.scrollY > 0) {
       document.documentElement.classList.add("scrolled");
     } else {
-      document.documentElement.classList.remove("scrolled");
+      // replaceState로 인해 scrollY가 일시적으로 0이 될 수 있음 (Samsung Browser)
+      // 한 프레임 뒤에 재확인하여 거짓 0을 무시
+      requestAnimationFrame(() => {
+        if (window.scrollY > 0) {
+          document.documentElement.classList.add("scrolled");
+        } else {
+          document.documentElement.classList.remove("scrolled");
+        }
+      });
     }
   }
 
@@ -227,7 +227,19 @@ const { title, description, image = "/og.jpg" } = Astro.props;
     }
   };
 
+  document.addEventListener("scroll", onScroll);
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (event) => {
+      if (localStorage.theme === "system") {
+        toggleTheme(event.matches);
+      }
+    });
+
   document.addEventListener("DOMContentLoaded", () => init());
-  document.addEventListener("astro:after-swap", () => init());
+  document.addEventListener("astro:after-swap", () => {
+    init();
+    requestAnimationFrame(() => onScroll());
+  });
   preloadTheme();
 </script>
