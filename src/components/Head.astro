@@ -118,15 +118,7 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
     if (window.scrollY > 0) {
       document.documentElement.classList.add("scrolled");
     } else {
-      // replaceState로 인해 scrollY가 일시적으로 0이 될 수 있음 (Samsung Browser)
-      // 한 프레임 뒤에 재확인하여 거짓 0을 무시
-      requestAnimationFrame(() => {
-        if (window.scrollY > 0) {
-          document.documentElement.classList.add("scrolled");
-        } else {
-          document.documentElement.classList.remove("scrolled");
-        }
-      });
+      document.documentElement.classList.remove("scrolled");
     }
   }
 
@@ -227,7 +219,22 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
     }
   };
 
-  document.addEventListener("scroll", onScroll);
+  // scroll 이벤트 대신 IntersectionObserver로 스크롤 상태 감지
+  // Samsung Browser에서 Astro의 replaceState가 scrollY를 교란하는 문제 우회
+  const sentinel = document.getElementById("scroll-sentinel");
+  if (sentinel) {
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          document.documentElement.classList.remove("scrolled");
+        } else {
+          document.documentElement.classList.add("scrolled");
+        }
+      },
+      { threshold: 1.0 }
+    ).observe(sentinel);
+  }
+
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (event) => {
@@ -237,9 +244,6 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
     });
 
   document.addEventListener("DOMContentLoaded", () => init());
-  document.addEventListener("astro:after-swap", () => {
-    init();
-    requestAnimationFrame(() => onScroll());
-  });
+  document.addEventListener("astro:after-swap", () => init());
   preloadTheme();
 </script>

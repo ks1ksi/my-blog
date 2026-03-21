@@ -20,6 +20,7 @@ const { title, description, type } = Astro.props;
     <Head title={`${title} | ${SITE.TITLE}`} description={description} type={type} />
   </head>
   <body>
+    <div id="scroll-sentinel" style="position:absolute;top:0;height:1px;width:1px;"></div>
     <Header />
     <main>
       <slot />
