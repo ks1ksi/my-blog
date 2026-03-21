@@ -25,6 +25,6 @@ const typeClasses = {
 ---
 
 <div class:list={["not-prose", baseClasses, typeClasses[type]]}>
-  <span class="pointer-events-none pr-3 text-xl select-none">{emoji}</span>
+  <span class="pointer-events-none pr-3 text-xl select-none" aria-hidden="true">{emoji}</span>
   <slot />
 </div>

@@ -5,9 +5,7 @@ type Props = {
   entry: CollectionEntry<"blog">;
 };
 
-const { entry } = Astro.props as {
-  entry: CollectionEntry<"blog">;
-};
+const { entry } = Astro.props;
 ---
 
 <a
@@ -18,15 +16,18 @@ const { entry } = Astro.props as {
     <div class="font-semibold">
       {entry.data.title}
     </div>
-    <div class="text-sm">
-      {entry.data.description}
-    </div>
+    {entry.data.description && (
+      <div class="text-sm">
+        {entry.data.description}
+      </div>
+    )}
     <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">
       {entry.data.date.toLocaleDateString("ko-KR", {
         year: "numeric",
         month: "short",
         day: "numeric",
       })}
+    </div>
   </div>
   <svg
     xmlns="http://www.w3.org/2000/svg"

@@ -6,7 +6,7 @@ import Search from "astro-pagefind/components/Search";
   <div
     transition:persist
     id="backdrop"
-    class="bg-[rgba(0, 0, 0, 0.5] invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6 backdrop-blur-xs"
+    class="bg-[rgba(0,0,0,0.5)] invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6 backdrop-blur-xs"
   >
     <div
       id="pagefind-container"
@@ -22,9 +22,7 @@ import Search from "astro-pagefind/components/Search";
         }}
       />
       <div class="mr-2 pb-1 pt-4 text-right text-xs dark:prose-invert">
-        Press <span class="prose text-xs dark:prose-invert"
-          ><kbd class="">Esc</kbd></span
-        > or click anywhere to close
+        <span class="prose text-xs dark:prose-invert"><kbd>Esc</kbd></span>를 누르거나 바깥을 클릭하여 닫기
       </div>
     </div>
   </div>
@@ -36,17 +34,18 @@ import Search from "astro-pagefind/components/Search";
 
   function openPagefind() {
     const searchDiv = document.getElementById("search");
-    const search = searchDiv.querySelector("input");
+    const input = searchDiv?.querySelector("input");
     setTimeout(() => {
-      search.focus();
+      input?.focus();
     }, 0);
     backdrop?.classList.remove("invisible");
     backdrop?.classList.add("visible");
   }
 
   function closePagefind() {
-    const search = document.getElementById("search");
-    search.value = "";
+    const searchDiv = document.getElementById("search");
+    const input = searchDiv?.querySelector("input");
+    if (input) input.value = "";
     backdrop?.classList.remove("visible");
     backdrop?.classList.add("invisible");
   }
@@ -86,11 +85,6 @@ import Search from "astro-pagefind/components/Search";
     }
   });
 
-  // prevent form submission
-  const form = document.getElementById("form");
-  form?.addEventListener("submit", (event) => {
-    event.preventDefault();
-  });
 </script>
 
 <style is:global>
