@@ -87,13 +87,6 @@
   }
 }
 
-html #back-to-top {
-  @apply pointer-events-none opacity-0;
-}
-
-html.scrolled #back-to-top {
-  @apply pointer-events-auto opacity-100;
-}
 
 /* shiki config */
 pre {
