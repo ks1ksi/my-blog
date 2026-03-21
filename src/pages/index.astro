@@ -20,24 +20,17 @@ const blog = (await getCollection("blog"))
       </h1>
       <div class="space-y-16">
         <section>
-          <article class="space-y-4">
-            <span>
-              <p>
-                I'm a software engineer, interested in Kotlin and Spring Boot.
-              </p>
-              <p>
-                Enjoy reading my blog posts and feel free to reach out to me on social media.
-              </p>
-            </span>
+          <article>
+            <p>Software Engineer, Kotlin / Spring Boot</p>
           </article>
         </section>
 
-        <section class="animate space-y-6">
+        <section class="space-y-6">
           <div class="flex flex-wrap items-center justify-between gap-y-2">
             <h2 class="font-semibold text-black dark:text-white">
-              Latest posts
+              최근 글
             </h2>
-            <Link href="/blog"> See all posts </Link>
+            <Link href="/blog"> 전체 보기 </Link>
           </div>
           <ul class="not-prose flex flex-col gap-4">
             {
@@ -49,16 +42,10 @@ const blog = (await getCollection("blog"))
             }
           </ul>
         </section>
-        <section class="animate space-y-4">
+        <section class="space-y-4">
           <h2 class="font-semibold text-black dark:text-white">
-            Let's Connect
+            Contact
           </h2>
-          <article>
-            <p>
-              If you want to get in touch with me about something or just to say
-              hi, reach out on social media or send me an email.
-            </p>
-          </article>
           <ul class="not-prose flex flex-wrap gap-2">
             {
               SOCIALS.map((SOCIAL) => (
