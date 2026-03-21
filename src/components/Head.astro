@@ -83,6 +83,7 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
       updateThemeButtons();
     });
 
+    document.addEventListener("scroll", onScroll);
   }
 
   function updateThemeButtons() {
@@ -219,7 +220,6 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
     }
   };
 
-  document.addEventListener("scroll", onScroll);
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (event) => {
