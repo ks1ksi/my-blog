@@ -2,25 +2,19 @@ import type { Metadata, Site, Socials } from "@types";
 
 export const SITE: Site = {
   TITLE: "Seungil Kim",
-  DESCRIPTION: "Seugnil Kim's personal blog",
+  DESCRIPTION: "Seungil Kim's personal blog",
   EMAIL: "me@ks1ksi.io",
   NUM_POSTS_ON_HOMEPAGE: 5,
 };
 
 export const HOME: Metadata = {
   TITLE: "Home",
-  DESCRIPTION: "Seungil Kim's personal blog.",
+  DESCRIPTION: "Seungil Kim의 개인 블로그.",
 };
 
 export const BLOG: Metadata = {
   TITLE: "Blog",
-  DESCRIPTION: "A collection of articles on topics I am passionate about.",
-};
-
-export const PROJECTS: Metadata = {
-  TITLE: "Projects",
-  DESCRIPTION:
-    "A collection of my projects with links to repositories and live demos.",
+  DESCRIPTION: "다양한 주제에 대한 글 모음.",
 };
 
 export const SOCIALS: Socials = [
