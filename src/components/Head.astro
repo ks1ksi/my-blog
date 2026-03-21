@@ -219,22 +219,7 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
     }
   };
 
-  // scroll 이벤트 대신 IntersectionObserver로 스크롤 상태 감지
-  // Samsung Browser에서 Astro의 replaceState가 scrollY를 교란하는 문제 우회
-  const sentinel = document.getElementById("scroll-sentinel");
-  if (sentinel) {
-    new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          document.documentElement.classList.remove("scrolled");
-        } else {
-          document.documentElement.classList.add("scrolled");
-        }
-      },
-      { threshold: 1.0 }
-    ).observe(sentinel);
-  }
-
+  document.addEventListener("scroll", onScroll);
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (event) => {
