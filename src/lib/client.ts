@@ -200,10 +200,23 @@ async function copyCode(copyButton: HTMLButtonElement) {
   }, 2000);
 }
 
+function preloadSearch() {
+  void loadPagefindUi().then(({ ensurePagefindUi }) => ensurePagefindUi());
+}
+
+function scheduleSearchPreload() {
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(preloadSearch);
+  } else {
+    window.setTimeout(preloadSearch, 200);
+  }
+}
+
 function initializePage() {
   applyTheme(shouldUseDarkTheme(), false);
   updateThemeButtons();
   enhanceCodeBlocks();
+  scheduleSearchPreload();
 }
 
 function handleDocumentClick(event: MouseEvent) {
