@@ -53,3 +53,7 @@ Search uses Pagefind.
 - the search index is generated during `npm run build`
 - the repository no longer tracks `public/pagefind`
 - search is guaranteed in built output such as `npm run build && npm run preview`
+
+## Credits
+
+Based on [Astro Micro](https://astro.build/themes/details/astro-micro/).
