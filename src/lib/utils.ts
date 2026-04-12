@@ -1,49 +1,54 @@
 import { clsx, type ClassValue } from "clsx";
+import type { Image, Link, Parent, PhrasingContent, Text } from "mdast";
+import type { Node } from "unist";
+import { visit } from "unist-util-visit";
 import { twMerge } from "tailwind-merge";
+
+const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function formatDate(date: Date) {
-  return Intl.DateTimeFormat("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(date);
+  return dateFormatter.format(date);
 }
 
 export function readingTime(content: string) {
-  const textOnly = content.replace(/<[^>]+>/g, "");
-  const wordCount = textOnly.split(/\s+/).length;
-  const readingTimeMinutes = (wordCount / 200 + 1).toFixed();
-  return `${readingTimeMinutes} min read`;
+  const textOnly = content
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[\[.*?\]\]/g, " ")
+    .replace(/\[\[(.*?)(?:\|.*?)?\]\]/g, "$1")
+    .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const wordCount = textOnly ? textOnly.split(" ").length : 0;
+
+  return `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
 }
 
-import { visit } from "unist-util-visit";
-import type { Text, Image, Link, Parent, PhrasingContent } from "mdast";
-import type { Node } from "unist";
-
 export function remarkObsidianLink() {
-  // Transformer 함수 반환
   return (tree: Node) => {
-    // visit 함수에 제네릭이나 타입 단언을 사용하여 node와 parent 타입을 명시
-    visit(tree, "text", (node: Text, index: number | undefined, parent: Parent | undefined) => {
-      // 부모가 없거나 인덱스가 없으면 스킵 (Type Guard)
+    visit(
+      tree,
+      "text",
+      (node: Text, index: number | undefined, parent: Parent | undefined) => {
       if (!parent || index === undefined) return;
 
-      // 정규식: [[파일명]] 또는 ![[이미지]]
       const regex = /(!?)\[\[(.*?)(?:\|(.*?))?\]\]/g;
-
-      // 매칭되는 게 없으면 빠른 리턴
       if (!node.value.match(regex)) return;
 
       const newNodes: PhrasingContent[] = [];
       let lastIndex = 0;
 
-      // replace를 사용하여 매칭 지점을 순회
       node.value.replace(regex, (match, isImage, filename, alias, offset) => {
-        // 1. 앞부분 텍스트 처리
         if (offset > lastIndex) {
           newNodes.push({
             type: "text",
@@ -51,16 +56,13 @@ export function remarkObsidianLink() {
           });
         }
 
-        // 2. 변환 로직
         if (isImage === "!") {
-          // 이미지 (![[image.png]]) -> (../images/image.png)
           newNodes.push({
             type: "image",
-            url: `../images/${filename}`, // 님 폴더 구조(../images)
+            url: `../images/${filename}`,
             alt: filename,
           } as Image);
         } else {
-          // 텍스트 링크 ([[Note]]) -> (/blog/note)
           const slug = filename.trim().replace(/\s+/g, "-").toLowerCase();
           newNodes.push({
             type: "link",
@@ -72,10 +74,9 @@ export function remarkObsidianLink() {
         }
 
         lastIndex = offset + match.length;
-        return match; // replace 함수 요구사항 충족
+        return match;
       });
 
-      // 3. 뒷부분 텍스트 처리
       if (lastIndex < node.value.length) {
         newNodes.push({
           type: "text",
@@ -83,10 +84,7 @@ export function remarkObsidianLink() {
         });
       }
 
-      // 4. 노드 교체 (splice 타입 문제 해결을 위해 any 혹은 정확한 타입핑 필요)
       parent.children.splice(index, 1, ...newNodes);
-
-      // visit 함수는 변경된 노드의 개수만큼 인덱스를 건너뛰어야 함
       return index + newNodes.length;
     });
   };

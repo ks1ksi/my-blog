@@ -1,32 +1,27 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import BackToPrevious from "@components/BackToPrevious.astro";
+import { type BlogPost, getTagsWithPosts } from "@lib/content";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const tags = await getTagsWithPosts();
 
-  // Get unique tags
-  const tags = [...new Set(posts.flatMap((post) => post.data.tags || []))];
-
-  // Create paths for each tag
-  return tags.map((tag) => ({
+  return tags.map(({ tag, posts }) => ({
     params: { id: tag },
     props: {
-      posts: posts.filter((post) => post.data.tags?.includes(tag)),
+      posts,
     },
   }));
 }
 
-const { id } = Astro.params;
-const { posts } = Astro.props;
+type Props = {
+  posts: BlogPost[];
+};
 
-// Sort posts by date, most recent first
-const sortedPosts = posts.sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
+const { id } = Astro.params;
+const { posts } = Astro.props as Props;
 ---
 
 <Layout title={`태그: ${id}`} description={`${id} 태그 글 목록`}>
@@ -37,7 +32,11 @@ const sortedPosts = posts.sort(
         "{id}" 태그 글 목록
       </h1>
       <ul class="flex flex-col gap-4">
-        {sortedPosts.map((post) => <ArrowCard entry={post} />)}
+        {posts.map((post) => (
+          <li>
+            <ArrowCard entry={post} />
+          </li>
+        ))}
       </ul>
     </div>
   </Container>

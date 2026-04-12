@@ -42,183 +42,19 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
 
-<!-- PageFind -->
-<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-<script is:inline src="/pagefind/pagefind-ui.js"></script>
-
 <ClientRouter />
 
 <script is:inline>
-  function init() {
-    preloadTheme();
-    updateThemeButtons();
-    addCopyCodeButtons();
-    setGiscusTheme();
+  const storedTheme = localStorage.getItem("theme");
+  const prefersDarkTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const shouldUseDarkTheme =
+    storedTheme === "dark" || (storedTheme !== "light" && prefersDarkTheme);
 
-    const backToTop = document.getElementById("back-to-top");
-    backToTop?.addEventListener("click", (event) => scrollToTop(event));
+  document.documentElement.classList.toggle("dark", shouldUseDarkTheme);
+</script>
 
-    const backToPrev = document.getElementById("back-to-prev");
-    backToPrev?.addEventListener("click", () => window.history.back());
+<script>
+  import { registerGlobalUi } from "@lib/client";
 
-    const lightThemeButton = document.getElementById("light-theme-button");
-    lightThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "light");
-      toggleTheme(false);
-      updateThemeButtons();
-    });
-
-    const darkThemeButton = document.getElementById("dark-theme-button");
-    darkThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "dark");
-      toggleTheme(true);
-      updateThemeButtons();
-    });
-
-    const systemThemeButton = document.getElementById("system-theme-button");
-    systemThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "system");
-      toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
-      updateThemeButtons();
-    });
-
-  }
-
-  function updateThemeButtons() {
-    const theme = localStorage.getItem("theme");
-    const lightThemeButton = document.getElementById("light-theme-button");
-    const darkThemeButton = document.getElementById("dark-theme-button");
-    const systemThemeButton = document.getElementById("system-theme-button");
-
-    function removeActiveButtonTheme(button) {
-      button?.classList.remove("bg-black/5");
-      button?.classList.remove("dark:bg-white/5");
-    }
-
-    function addActiveButtonTheme(button) {
-      button?.classList.add("bg-black/5");
-      button?.classList.add("dark:bg-white/5");
-    }
-
-    removeActiveButtonTheme(lightThemeButton);
-    removeActiveButtonTheme(darkThemeButton);
-    removeActiveButtonTheme(systemThemeButton);
-
-    if (theme === "light") {
-      addActiveButtonTheme(lightThemeButton);
-    } else if (theme === "dark") {
-      addActiveButtonTheme(darkThemeButton);
-    } else {
-      addActiveButtonTheme(systemThemeButton);
-    }
-  }
-
-  function scrollToTop(event) {
-    event.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
-
-  function toggleTheme(dark) {
-    const css = document.createElement("style");
-
-    css.appendChild(
-      document.createTextNode(
-        `* {
-             -webkit-transition: none !important;
-             -moz-transition: none !important;
-             -o-transition: none !important;
-             -ms-transition: none !important;
-             transition: none !important;
-          }
-        `,
-      ),
-    );
-
-    document.head.appendChild(css);
-
-    if (dark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-
-    window.getComputedStyle(css).opacity;
-    document.head.removeChild(css);
-
-    setGiscusTheme();
-  }
-
-  function preloadTheme() {
-    const userTheme = localStorage.theme;
-
-    if (userTheme === "light" || userTheme === "dark") {
-      toggleTheme(userTheme === "dark");
-    } else {
-      toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
-    }
-  }
-
-  function addCopyCodeButtons() {
-    let copyButtonLabel = "📋";
-    let codeBlocks = Array.from(document.querySelectorAll("pre"));
-
-    async function copyCode(codeBlock, copyButton) {
-      const codeText = codeBlock.innerText;
-      const buttonText = copyButton.innerText;
-      const textToCopy = codeText.replace(buttonText, "");
-
-      await navigator.clipboard.writeText(textToCopy);
-      copyButton.innerText = "✅";
-
-      setTimeout(() => {
-        copyButton.innerText = copyButtonLabel;
-      }, 2000);
-    }
-
-    for (let codeBlock of codeBlocks) {
-      const wrapper = document.createElement("div");
-      wrapper.style.position = "relative";
-
-      const copyButton = document.createElement("button");
-      copyButton.innerText = copyButtonLabel;
-      copyButton.classList = "copy-code";
-
-      codeBlock.setAttribute("tabindex", "0");
-      codeBlock.appendChild(copyButton);
-
-      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
-      wrapper.appendChild(codeBlock);
-
-      copyButton?.addEventListener("click", async () => {
-        await copyCode(codeBlock, copyButton);
-      });
-    }
-  }
-
-  const setGiscusTheme = () => {
-    const giscus = document.querySelector(".giscus-frame");
-
-    const isDark = document.documentElement.classList.contains("dark");
-
-    if (giscus) {
-      const url = new URL(giscus.src);
-      url.searchParams.set("theme", isDark ? "dark" : "light");
-      giscus.src = url.toString();
-    }
-  };
-
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (event) => {
-      if (localStorage.theme === "system") {
-        toggleTheme(event.matches);
-      }
-    });
-
-  document.addEventListener("DOMContentLoaded", () => init());
-  document.addEventListener("astro:after-swap", () => init());
-  preloadTheme();
+  registerGlobalUi();
 </script>

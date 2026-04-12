@@ -1,11 +1,55 @@
-# Introducing [Astro Micro 🔬](https://astro-micro.vercel.app/)
+# ks1ksi.io
 
-Astro Micro is an accessible theme for Astro. It's a fork of [Mark Horn's](https://github.com/markhorn-dev) popular theme [Astro Nano](https://astro-nano-demo.vercel.app/). Like Nano, Micro comes with zero frameworks installed.
+Personal blog built with Astro, Tailwind CSS v4, MDX, KaTeX, Giscus, and Pagefind.
 
-Micro adds features like [Pagefind](https://pagefind.app) for search, [Giscus](https://giscus.app) for comments, and more. For a full list of changes, see this [blog post](https://astro-micro.vercel.app/blog/00-micro-changelog).
+## Commands
 
-Micro still comes with everything great about Nano — full type safety, a sitemap, an RSS feed, and Markdown + MDX support. Styled with TailwindCSS and preconfigured with system, light, and dark themes.
+- `npm install`
+- `npm run dev`
+- `npm run build`
+- `npm run preview`
 
+## Structure
+
+- `src/pages`: Astro routes for home, blog, tags, RSS, and error pages
+- `src/content/blog`: Markdown and MDX posts
+- `src/content/images`: images referenced from posts
+- `src/layouts` and `src/components`: shared page shell and UI building blocks
+- `src/lib`: shared content selectors, markdown helpers, and browser-side UI logic
+
+## Writing Posts
+
+Posts live in `src/content/blog` and use this frontmatter shape:
+
+```md
 ---
+title: Example Title
+date: 2026-01-01
+tags:
+  - life
+draft: false
+---
+```
 
-![astro-micro](https://github.com/user-attachments/assets/fc9b55b9-53e5-4933-9d23-936e1c61e6c2)
+- `title` and `date` are required
+- `description`, `tags`, and `draft` are optional
+- `[[wiki links]]` and `![[image embeds]]` are supported through a custom remark plugin
+- embedded images should live in `src/content/images`
+
+The starter template is available at `src/content/templates/template.md`.
+
+## Obsidian
+
+If you want to edit posts in Obsidian, open `src/content` as the vault.
+
+- shared vault settings are tracked in `src/content/.obsidian`
+- personal workspace state in `src/content/.obsidian/workspace.json` is ignored
+- plugin files stay tracked so a fresh clone can be opened and edited right away
+
+## Search
+
+Search uses Pagefind.
+
+- the search index is generated during `npm run build`
+- the repository no longer tracks `public/pagefind`
+- search is guaranteed in built output such as `npm run build && npm run preview`

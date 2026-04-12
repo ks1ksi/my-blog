@@ -1,5 +1,5 @@
 ---
-import { type CollectionEntry, getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
@@ -8,11 +8,10 @@ import BackToPrevious from "@components/BackToPrevious.astro";
 import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import Giscus from "@components/Giscus.astro";
+import { type BlogPost, getPublishedPosts } from "@lib/content";
 
 export async function getStaticPaths() {
-  const posts = (await getCollection("blog"))
-    .filter((post) => !post.data.draft)
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  const posts = await getPublishedPosts();
   return posts.map((post, index) => ({
     params: { id: post.id },
     props: {
@@ -24,9 +23,9 @@ export async function getStaticPaths() {
 }
 
 type Props = {
-  post: CollectionEntry<"blog">;
-  prevPost?: CollectionEntry<"blog">;
-  nextPost?: CollectionEntry<"blog">;
+  post: BlogPost;
+  prevPost?: BlogPost;
+  nextPost?: BlogPost;
 };
 
 const { post, prevPost, nextPost } = Astro.props;

@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { formatDate } from "@lib/utils";
 
 type Props = {
   entry: CollectionEntry<"blog">;
@@ -22,11 +23,7 @@ const { entry } = Astro.props;
       </div>
     )}
     <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">
-      {entry.data.date.toLocaleDateString("ko-KR", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })}
+      {formatDate(entry.data.date)}
     </div>
   </div>
   <svg
