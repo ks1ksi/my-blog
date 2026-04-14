@@ -96,7 +96,7 @@
 
 .dark {
   --color-accent: #fb923c;
-  --color-accent-subtle: rgba(251, 146, 60, 0.10);
+  --color-accent-subtle: rgba(251, 146, 60, 0.18);
 }
 
 /* shiki config */
