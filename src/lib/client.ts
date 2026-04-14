@@ -315,6 +315,9 @@ export function registerGlobalUi() {
 
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("keydown", handleDocumentKeydown);
+  document.addEventListener("astro:after-swap", () =>
+    applyTheme(shouldUseDarkTheme()),
+  );
   document.addEventListener("astro:page-load", initializePage);
   window
     .matchMedia("(prefers-color-scheme: dark)")
