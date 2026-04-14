@@ -6,14 +6,15 @@
   >
     <div
       id="pagefind-container"
-      class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-sm border border-black/15 bg-neutral-100 p-2 px-4 py-3 shadow-lg dark:border-white/20 dark:bg-neutral-900"
+      class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-sm border border-black/15 bg-neutral-100 px-5 py-4 shadow-xl dark:border-white/20 dark:bg-neutral-900"
       role="dialog"
       aria-modal="true"
       aria-label="Search"
     >
       <div id="search" class="pagefind-ui"></div>
-      <div class="mr-2 pb-1 pt-4 text-right text-xs dark:prose-invert">
-        <span class="prose text-xs dark:prose-invert"><kbd>Esc</kbd></span>를 누르거나 바깥을 클릭하여 닫기
+      <div class="mt-3 text-right text-xs text-black/40 dark:text-white/30">
+        <kbd class="rounded border border-black/15 px-1.5 py-0.5 text-[10px] font-medium dark:border-white/20">Esc</kbd>
+        를 누르거나 바깥을 클릭하여 닫기
       </div>
     </div>
   </div>
@@ -37,10 +38,6 @@
     --pagefind-ui-text: rgba(255, 255, 255, 0.75);
     --pagefind-ui-background: #171717;
     --pagefind-ui-border: rgba(255, 255, 255, 0.2);
-  }
-
-  #search input {
-    font-weight: normal;
   }
 
   #search p {

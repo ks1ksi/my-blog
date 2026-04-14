@@ -57,7 +57,7 @@
   header {
     @apply fixed left-0 right-0 top-0 z-50 py-6;
     @apply bg-neutral-100/75 dark:bg-neutral-900/75;
-    @apply saturate-200 backdrop-blur-xs;
+    @apply saturate-150 backdrop-blur-md;
   }
 
   main {
@@ -78,12 +78,12 @@
 @layer utilities {
   article a {
     @apply font-sans text-current underline underline-offset-[3px];
-    @apply decoration-black/30 dark:decoration-white/30;
+    @apply decoration-black/40 dark:decoration-white/40;
     @apply transition-colors duration-300 ease-in-out;
   }
   article a:hover {
     @apply text-black dark:text-white;
-    @apply decoration-black/50 dark:decoration-white/50;
+    @apply decoration-black/60 dark:decoration-white/60;
   }
 }
 
@@ -136,4 +136,108 @@ pre {
 
 .copy-code:active {
   @apply scale-90 transition-transform;
+}
+
+/* pagefind search UI overrides */
+#search .pagefind-ui__search-input {
+  background-color: #f5f5f5 !important;
+  color: rgba(0, 0, 0, 0.75) !important;
+  font-weight: normal !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+#search .pagefind-ui__search-input:focus {
+  border-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+#search .pagefind-ui__search-input::placeholder {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+#search .pagefind-ui__search-clear {
+  background-color: #f5f5f5 !important;
+  color: rgba(0, 0, 0, 0.5) !important;
+  font-weight: normal !important;
+  border: none !important;
+  transition: color 0.2s ease !important;
+}
+
+#search .pagefind-ui__search-clear:hover {
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+#search .pagefind-ui__result-link {
+  color: rgba(0, 0, 0, 0.85) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+}
+
+#search .pagefind-ui__result-link:hover {
+  color: #000 !important;
+  text-decoration: underline !important;
+}
+
+#search .pagefind-ui__result-excerpt {
+  color: rgba(0, 0, 0, 0.6) !important;
+  font-weight: normal !important;
+}
+
+#search .pagefind-ui__message {
+  color: rgba(0, 0, 0, 0.5) !important;
+  font-weight: normal !important;
+  padding: 0 !important;
+  padding-bottom: 0.5rem !important;
+}
+
+#search mark {
+  background-color: rgba(250, 204, 21, 0.4) !important;
+  color: inherit !important;
+  border-radius: 2px !important;
+  padding: 0 2px !important;
+}
+
+/* dark mode */
+.dark #search .pagefind-ui__search-input {
+  background-color: #171717 !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark #search .pagefind-ui__search-input:focus {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark #search .pagefind-ui__search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark #search .pagefind-ui__search-clear {
+  background-color: #171717 !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark #search .pagefind-ui__search-clear:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.dark #search .pagefind-ui__result-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.dark #search .pagefind-ui__result-link:hover {
+  color: #fff !important;
+}
+
+.dark #search .pagefind-ui__result-excerpt {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.dark #search .pagefind-ui__message {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark #search mark {
+  background-color: rgba(250, 204, 21, 0.25) !important;
 }
