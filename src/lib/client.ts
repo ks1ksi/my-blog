@@ -190,7 +190,7 @@ async function copyCode(copyButton: HTMLButtonElement) {
   const clone = codeBlock.cloneNode(true) as HTMLElement;
   clone.querySelector(".copy-code")?.remove();
 
-  await navigator.clipboard.writeText(clone.innerText.trimEnd());
+  await navigator.clipboard.writeText((clone.textContent ?? "").trimEnd());
   copyButton.textContent = "Copied";
 
   window.setTimeout(() => {
@@ -318,6 +318,7 @@ export function registerGlobalUi() {
   document.addEventListener("astro:after-swap", () =>
     applyTheme(shouldUseDarkTheme()),
   );
+  document.addEventListener("astro:before-swap", closeSearch);
   document.addEventListener("astro:page-load", initializePage);
   window
     .matchMedia("(prefers-color-scheme: dark)")

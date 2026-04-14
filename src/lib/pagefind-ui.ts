@@ -14,8 +14,6 @@ function ensurePagefindStyles() {
     return Promise.resolve();
   }
 
-  pagefindStylesPromise = null;
-
   pagefindStylesPromise ??= new Promise((resolve, reject) => {
     const stylesheet = document.createElement("link");
     stylesheet.id = PAGEFIND_STYLESHEET_ID;
