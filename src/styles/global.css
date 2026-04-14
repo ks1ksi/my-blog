@@ -82,11 +82,22 @@
     @apply transition-colors duration-300 ease-in-out;
   }
   article a:hover {
-    @apply text-black dark:text-white;
-    @apply decoration-black/60 dark:decoration-white/60;
+    color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
   }
 }
 
+
+/* color system */
+:root {
+  --color-accent: #e8590c;
+  --color-accent-subtle: rgba(232, 89, 12, 0.07);
+}
+
+.dark {
+  --color-accent: #fb923c;
+  --color-accent-subtle: rgba(251, 146, 60, 0.10);
+}
 
 /* shiki config */
 pre {
@@ -131,7 +142,7 @@ pre {
 }
 
 .copy-code:hover {
-  @apply bg-[#E9E9E9] transition-colors dark:bg-[#232323];
+  @apply bg-[var(--color-accent-subtle)] transition-colors;
 }
 
 .copy-code:active {
@@ -175,7 +186,7 @@ pre {
 }
 
 #search .pagefind-ui__result-link:hover {
-  color: #000 !important;
+  color: var(--color-accent) !important;
   text-decoration: underline !important;
 }
 
@@ -192,10 +203,13 @@ pre {
 }
 
 #search mark {
-  background-color: rgba(250, 204, 21, 0.4) !important;
-  color: inherit !important;
-  border-radius: 2px !important;
-  padding: 0 2px !important;
+  background: none !important;
+  color: var(--color-accent) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px !important;
+  font-weight: 600 !important;
 }
 
 /* dark mode */
@@ -227,7 +241,7 @@ pre {
 }
 
 .dark #search .pagefind-ui__result-link:hover {
-  color: #fff !important;
+  color: var(--color-accent) !important;
 }
 
 .dark #search .pagefind-ui__result-excerpt {
@@ -239,5 +253,6 @@ pre {
 }
 
 .dark #search mark {
-  background-color: rgba(250, 204, 21, 0.25) !important;
+  background: none !important;
+  color: var(--color-accent) !important;
 }

@@ -12,7 +12,7 @@ declare global {
 }
 
 const THEME_STORAGE_KEY = "theme";
-const ACTIVE_THEME_CLASSES = ["bg-black/5", "dark:bg-white/5"];
+const ACTIVE_THEME_CLASSES = ["bg-[var(--color-accent-subtle)]"];
 const EDITABLE_SELECTOR = [
   "input",
   "textarea",
