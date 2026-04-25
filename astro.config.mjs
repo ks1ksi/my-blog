@@ -6,6 +6,14 @@ import tailwindcss from "@tailwindcss/vite";
 import { remarkObsidianLink } from "./src/lib/utils";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import { fileURLToPath } from "node:url";
+
+const contentDir = fileURLToPath(
+  new URL("./src/content/blog", import.meta.url),
+);
+const imageDir = fileURLToPath(
+  new URL("./src/content/images", import.meta.url),
+);
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,12 +26,7 @@ export default defineConfig({
     shikiConfig: {
       theme: "css-variables",
     },
-    remarkPlugins: [
-      remarkMath,
-      remarkObsidianLink,
-    ],
-    rehypePlugins: [
-      rehypeKatex,
-    ],
+    remarkPlugins: [remarkMath, [remarkObsidianLink, { contentDir, imageDir }]],
+    rehypePlugins: [rehypeKatex],
   },
 });

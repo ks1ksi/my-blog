@@ -9,14 +9,16 @@ let pagefindUi: PagefindUI | null = null;
 let pagefindStylesPromise: Promise<void> | null = null;
 
 function ensurePagefindStyles() {
+  if (pagefindStylesPromise) {
+    return pagefindStylesPromise;
+  }
+
   const existingStylesheet = document.getElementById(PAGEFIND_STYLESHEET_ID);
   if (existingStylesheet) {
     return Promise.resolve();
   }
 
-  pagefindStylesPromise = null;
-
-  pagefindStylesPromise ??= new Promise((resolve, reject) => {
+  pagefindStylesPromise = new Promise((resolve, reject) => {
     const stylesheet = document.createElement("link");
     stylesheet.id = PAGEFIND_STYLESHEET_ID;
     stylesheet.rel = "stylesheet";
