@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "migrate:velog": "node scripts/migrate-velog.mjs",
+    "normalize:tags": "node scripts/normalize-tags.mjs",
+    "check:tags": "node scripts/normalize-tags.mjs --check",
     "test": "vitest run",
     "build": "astro check && astro build",
     "preview": "astro preview",
