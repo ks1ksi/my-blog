@@ -2,8 +2,8 @@
 title: OSTEP 04 Process
 date: 2023-07-03
 tags:
-  - cs
-  - os
+  - "cs"
+  - "os"
 ---
 
 ## 1. 프로세스의 개념

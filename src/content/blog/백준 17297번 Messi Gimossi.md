@@ -2,8 +2,8 @@
 title: 백준 17297번 Messi Gimossi
 date: 2023-07-02
 tags:
-  - boj
-  - ps
+  - "boj"
+  - "ps"
 ---
 
 [문제 링크](https://www.acmicpc.net/problem/17297)

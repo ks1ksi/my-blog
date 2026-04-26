@@ -2,9 +2,9 @@
 title: Bulk Insert
 date: 2023-07-02
 tags:
-  - cs
-  - db
-  - java
+  - "cs"
+  - "db"
+  - "java"
 ---
 
 ![[JPA Bulk Insert-1674903588761.jpeg]]

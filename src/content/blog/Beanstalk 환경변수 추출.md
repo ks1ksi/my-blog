@@ -2,7 +2,7 @@
 title: Beanstalk 환경변수 추출
 date: 2023-09-12
 tags:
-  - aws
+  - "aws"
 ---
 
 prisma db 설정 문제로 EC2에 접속하여 직접 npm run start를 하려고 했는데 환경 변수가 주입되어 있지 않았다.

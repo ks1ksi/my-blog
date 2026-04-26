@@ -2,8 +2,8 @@
 title: OSTEP 교재
 date: 2023-07-02
 tags:
-  - os
-  - cs
+  - "os"
+  - "cs"
 ---
 
 [영어책](https://pages.cs.wisc.edu/~remzi/OSTEP/)

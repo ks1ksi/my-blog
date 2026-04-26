@@ -2,9 +2,9 @@
 title: 백준 25949번 Jar Game
 date: 2023-07-02
 tags:
-  - boj
-  - ps
-  - dp
+  - "boj"
+  - "ps"
+  - "dp"
 ---
 
 [문제 링크](https://www.acmicpc.net/problem/25949)
@@ -66,7 +66,7 @@ int main() {
     ios_base::sync_with_stdio(0);
     cin.tie(0);
 
-    int a, b, c;    
+    int a, b, c;
     cin >> a >> b >> c;
 
     fill(&cache[0][0][0][0], &cache[100][100][100][30], make_pair(-1, -1));
@@ -75,7 +75,7 @@ int main() {
 
     // cout << "F: " << f << '\n';
     // cout << "S: " << s << '\n';
-    
+
     if (f > s) cout << "F";
     else if (f < s) cout << "S";
     else cout << "D";

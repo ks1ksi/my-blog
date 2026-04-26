@@ -2,8 +2,8 @@
 title: 2023 SKKU AI 교육 해커톤 후기
 date: 2023-09-24
 tags:
-  - dev
-  - skku
+  - "dev"
+  - "skku"
 ---
 
 

@@ -2,8 +2,8 @@
 title: SELECT
 date: 2023-07-02
 tags:
-  - cs
-  - db
+  - "cs"
+  - "db"
 ---
 
 ```sql

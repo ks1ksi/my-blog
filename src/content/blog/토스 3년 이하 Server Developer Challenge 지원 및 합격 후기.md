@@ -2,8 +2,8 @@
 title: 토스 3년 이하 Server Developer Challenge 지원 및 합격 후기
 date: 2024-06-13
 tags:
-  - toss
-  - job
+  - "toss"
+  - "job"
 ---
 
 ![[토스 3년 이하 Server Developer Challenge 합격 후기-1718226485349.jpeg]]
@@ -37,7 +37,7 @@ tags:
 - Spring MVC, Spring Webflux, Spring Batch, JPA, Spring Cloud Gateway, Spring Cloud Config, Netty
 - MySQL, Redis, ElasticSearch, Kafka, Oracle
 
-어디선가 신입으로 써서 붙었다는 후기를 본 것 같아 용기를 얻고 지원했다. 
+어디선가 신입으로 써서 붙었다는 후기를 본 것 같아 용기를 얻고 지원했다.
 
 ## 서류
 
@@ -71,6 +71,6 @@ tags:
 
 ![[토스 3년 이하 Server Developer Challenge 합격 후기-1718227240418.jpeg]]
 
-문화적합성 면접 다음날 결과가 나오지 않아서 떨어진 줄 알았는데 일주일 정도 후에 결과가 나왔다. 운좋게도 4학년 1학기 재학 중 직장을 가지게 되었다. 아직 실감은 나지 않는다. 
+문화적합성 면접 다음날 결과가 나오지 않아서 떨어진 줄 알았는데 일주일 정도 후에 결과가 나왔다. 운좋게도 4학년 1학기 재학 중 직장을 가지게 되었다. 아직 실감은 나지 않는다.
 
 학점을 최대한 많이 들어 둔 덕분에 2학기는 학교에 가지 않고 일을 할 수 있다. 아직 부족한게 많지만 성장 가능성을 보고 뽑아 주신 것 같다. 기대에 부응할 수 있도록 최선을 다 할 예정이다.

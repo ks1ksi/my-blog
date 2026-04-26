@@ -2,8 +2,8 @@
 title: OSTEP 29 Locked Data Structures
 date: 2023-09-11
 tags:
-  - cs
-  - os
+  - "cs"
+  - "os"
 ---
 
 흔하게 사용되는 자료 구조에서 락을 사용하는 방법을 살펴보자.
@@ -51,7 +51,7 @@ void init(counter_t *c) {
 	c−>value = 0;
 	Pthread_mutex_init(&c−>lock, NULL);
 }
- 
+
 void increment(counter_t *c) {
 	Pthread_mutex_lock(&c−>lock);
 	c−>value++;
@@ -74,17 +74,17 @@ int get(counter_t *c) {
 
 이 카운터는 가장 간단하고 기본적인 병행 자료 구조의 보편적인 디자인 패턴을 따른 것이다. 자료 구조를 조작하는 루틴을 호출할 때 **락을 추가**하였고, 그 호출문이 리턴될 때 **락이 해제**되도록 하였다.
 
-이 방식은 **Monitor**를 사용하여 만든 자료 구조와 유사하다. 모니터 기법은 객체에 대한 메소드를 호출하고 리턴할 때 자동적으로 락을 획득하고 해제한다. 
+이 방식은 **Monitor**를 사용하여 만든 자료 구조와 유사하다. 모니터 기법은 객체에 대한 메소드를 호출하고 리턴할 때 자동적으로 락을 획득하고 해제한다.
 
-이제 제대로 동작하는 병행 자료 구조를 가지게 되었지만, 성능이 문제다. 이번 장에서는 성능 최적화를 다룰 것이다. 
+이제 제대로 동작하는 병행 자료 구조를 가지게 되었지만, 성능이 문제다. 이번 장에서는 성능 최적화를 다룰 것이다.
 
-각 쓰레드가 특정 횟수만큼 공유 카운터를 증가시키는 벤치마크를 실행하였다. 
+각 쓰레드가 특정 횟수만큼 공유 카운터를 증가시키는 벤치마크를 실행하였다.
 
 ![[OSTEP 29 Locked Data Structures-1694400264405.jpeg]]
 
-1개에서 4개의 쓰레드를 사용하여 카운터를 백만 번 증가시켰을 때 총 걸린 시간을 나타낸 것이다. **precise**라고 표시된 선에서 동기화된 카운터의 확장성이 떨어지는 것을 볼 수 있다. 
+1개에서 4개의 쓰레드를 사용하여 카운터를 백만 번 증가시켰을 때 총 걸린 시간을 나타낸 것이다. **precise**라고 표시된 선에서 동기화된 카운터의 확장성이 떨어지는 것을 볼 수 있다.
 
-이상적으로는 하나의 쓰레드가 하나의 CPU에서 작업을 끝내는 것처럼 멀티프로세서에서 실행되는 쓰레드들도 빠르게 작업을 처리하고 싶을 것이다(완벽한 확장성: perfect scaling). 
+이상적으로는 하나의 쓰레드가 하나의 CPU에서 작업을 끝내는 것처럼 멀티프로세서에서 실행되는 쓰레드들도 빠르게 작업을 처리하고 싶을 것이다(완벽한 확장성: perfect scaling).
 
 ### 확장성 있는 카운팅
 
@@ -94,7 +94,7 @@ int get(counter_t *c) {
 
 엉성한 카운터는 하나의 논리적 카운터로 표현되는데, CPU 코어마다 존재하는 하나의 물리적인 지역 카운터와 하나의 전역 카운터로 구성되어 있다. 어떤 기기가 네 개의 CPU를 가지고 있다면 그 시스템은 네 개의 지역 카운터와 하나의 전역 카운터를 가지고 있는 것이다. 이 카운터들 외에도, 지역 카운터를 위한 락들과 전역 카운터를 위한 락이 존재한다.
 
-기본 개념은 다음과 같다. 
+기본 개념은 다음과 같다.
 
 쓰레드는 지역 카운터를 증가시킨다. 이 지역 카운터는 지역 락에 의해 보호된다. 각 CPU는 저마다 지역 카운터를 갖기 때문에 CPU들에 분산되어 있는 쓰레드들은 지역 카운터를 경쟁 없이 갱신할 수 있다. 그러므로 카운터 갱신은 확장성이 있다.
 
@@ -104,7 +104,7 @@ int get(counter_t *c) {
 
 ![[OSTEP 29 Locked Data Structures-1694400794159.jpeg]]
 
-이 예제에서는 한계치를 5로 설정했고, 4개의 CPU에 각각의 지역 카운터 $L_1$ ... $L_4$ 를 갱신하는 쓰레드들이 있다. 전역 카운터의 값 $G$도 나타내었다. 지역 카운터가 한계치 $S$에 도달하면 그 값은 전역 카운터에 반영되고 지역 카운터의 값은 초기화된다. 
+이 예제에서는 한계치를 5로 설정했고, 4개의 CPU에 각각의 지역 카운터 $L_1$ ... $L_4$ 를 갱신하는 쓰레드들이 있다. 전역 카운터의 값 $G$도 나타내었다. 지역 카운터가 한계치 $S$에 도달하면 그 값은 전역 카운터에 반영되고 지역 카운터의 값은 초기화된다.
 
 ![[OSTEP 29 Locked Data Structures-1694400927480.jpeg]]
 
@@ -115,16 +115,16 @@ typedef struct __counter_t {
 	int global;
 	pthread_mutex_t glock;
 	int local[NUMCPUS];
-	pthread_mutex_t llock[NUMCPUS]; 
+	pthread_mutex_t llock[NUMCPUS];
 	int threshold;
 } counter_t;
 
 void init(counter_t *c, int threshold) {
 	c−>threshold = threshold;
-	
+
 	c−>global = 0;
 	pthread_mutex_init(&c−>glock, NULL);
-	
+
 	int i;
 	for (i = 0; i < NUMCPUS; i++) {
 		c−>local[i] = 0;
@@ -134,7 +134,7 @@ void init(counter_t *c, int threshold) {
 
 void update(counter_t *c, int threadID, int amt) {
 	pthread_mutex_lock(&c−>llock[threadID]);
-	c−>local[threadID] += amt; 
+	c−>local[threadID] += amt;
 	if (c−>local[threadID] >= c−>threshold) {
 		pthread_mutex_lock(&c−>glock);
 		c−>global += c−>local[threadID];
@@ -202,7 +202,7 @@ int List_Lookup(list_t *L, int key) {
 }
 ```
 
-삽인 연산을 시작하기 전에 락을 획득하고 리턴 직전에 해제한다. 매우 드문 경우지만 `malloc()`이 실패할 경우에 미묘한 문제가 생길 수 있다. 그런 경우 실패를 처리하기 전에 락을 해제해야 한다. 
+삽인 연산을 시작하기 전에 락을 획득하고 리턴 직전에 해제한다. 매우 드문 경우지만 `malloc()`이 실패할 경우에 미묘한 문제가 생길 수 있다. 그런 경우 실패를 처리하기 전에 락을 해제해야 한다.
 
 삽입 연산이 병행하여 진행되는 상황에서 실패를 하더라도 락 해제를 호출하지 않으면서 삽입과 검색이 올바르게 동작하도록 수정할 수 있을까? 삽입 코드에서 임계 영역을 처리하는 부분만 락으로 감싸도록 코드 순서를 변경하고, 검색 코드의 종료는 검색과 삽입 모두 동일한 코드 패스를 사용토록 할 수 있다.
 
@@ -227,7 +227,7 @@ void List_Init(list_t *L) {
 void List_Insert(list_t *L, int key) {
 	// 동기화를 할 필요 없음
 	node_t *new = malloc(sizeof(node_t));
-	
+
 	if (new == NULL) {
 		perror(“malloc ”);
 		return;
@@ -289,7 +289,7 @@ void Queue_Enqueue(queue_t *q, int value) {
 	assert(tmp != NULL);
 	tmp−>value = value;
 	tmp−>next = NULL;
-	
+
 	pthread_mutex_lock(&q−>tailLock);
 	q−>tail−>next = tmp;
 	q−>tail = tmp;
@@ -322,7 +322,7 @@ int Queue_Dequeue(queue_t *q, int *value) {
 typedef struct __hash_t {
 	list_t lists[BUCKETS];
 } hash_t;
- 
+
 void Hash_Init(hash_t *H) {
 	int i;
 	for (i = ; i < BUCKETS; i++) {
@@ -343,6 +343,6 @@ int Hash_Lookup(hash_t *H, int key) {
 
 ![[OSTEP 29 Locked Data Structures-1694421703747.jpeg]]
 ## 5. 요약
-락 획득과 해제 시 코드의 흐름에 매우 주의를 기울여야 한다. 병행성 개선이 반드시 성능 개선으로 이어지는 것은 아니다. 성능 개선은 성능에 문제가 생길 경우에만 해결책을 강구해야 한다. 
+락 획득과 해제 시 코드의 흐름에 매우 주의를 기울여야 한다. 병행성 개선이 반드시 성능 개선으로 이어지는 것은 아니다. 성능 개선은 성능에 문제가 생길 경우에만 해결책을 강구해야 한다.
 
 락을 전혀 사용하지 않는 동기화 기법들도 추후에 다룰 것이다.

@@ -2,8 +2,8 @@
 title: OSTEP 05 Process API
 date: 2023-07-02
 tags:
-  - cs
-  - os
+  - "cs"
+  - "os"
 ---
 
 ## 1. `fork()` 시스템 콜

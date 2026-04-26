@@ -3,11 +3,11 @@ title: Google Software Engineering Intern, Summer 2024 지원 후기
 date: 2024-05-31
 draft: true
 tags:
-  - job
-  - google
+  - "job"
+  - "google"
 ---
 
-구글코리아에서 인턴을 뽑고 있어 지원해보았다. 
+구글코리아에서 인턴을 뽑고 있어 지원해보았다.
 
 
 ## Minimum qualifications:

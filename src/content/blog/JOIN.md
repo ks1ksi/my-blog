@@ -2,8 +2,8 @@
 title: JOIN
 date: 2023-07-02
 tags:
-  - cs
-  - db
+  - "cs"
+  - "db"
 ---
 
 ## Cross Join
@@ -47,7 +47,7 @@ where t1.col3 = t2.col3
 ```
 
 - `from` 절에 필요로 하는 테이블을 모두 적는다. (`alias` 사용 가능)
-- 적절한 조건을 `where` 절에 부여한다. 
+- 적절한 조건을 `where` 절에 부여한다.
 
 ## Outer Join
 ```sql

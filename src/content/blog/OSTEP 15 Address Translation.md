@@ -2,8 +2,8 @@
 title: OSTEP 15 Address Translation
 date: 2023-07-17
 tags:
-  - cs
-  - os
+  - "cs"
+  - "os"
 ---
 
 CPU 가상화 부분에서 **제한적 직접 실행 (LDE)** 기법에 대해 배웠다. [[OSTEP 06 Direct Execution]]
@@ -39,8 +39,8 @@ void func() {
 ```
 
 ```asm
-128: movl 0x0(\%ebx), \%eax;	# 0+ebx를 eax에 저장 
-132: addl \$0x03, \%eax;		# eax레지스터에 3을 더한다   
+128: movl 0x0(\%ebx), \%eax;	# 0+ebx를 eax에 저장
+132: addl \$0x03, \%eax;		# eax레지스터에 3을 더한다
 135: movl \%eax, 0x0(\%ebx);	# eax를 메모리에 다시 저장
 ```
 
@@ -68,8 +68,8 @@ void func() {
 
 ### Base And Bound (dynamic relocation)
 
-각 CPU마다 2개의 하드웨어 레지스터가 필요하다. 
-하나는 **베이스 레지스터**로, **프로세스의 주소 공간이 시작하는 물리 메모리 주소**를 저장한다. 
+각 CPU마다 2개의 하드웨어 레지스터가 필요하다.
+하나는 **베이스 레지스터**로, **프로세스의 주소 공간이 시작하는 물리 메모리 주소**를 저장한다.
 다른 하나는 **바운드 레지스터**로, **프로세스의 주소 공간 크기**를 저장한다.
 
 ```c
