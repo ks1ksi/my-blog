@@ -32,33 +32,37 @@ const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 ---
 
-<Layout title={post.data.title} description={post.data.description ?? post.data.title} type="article">
-  <Container>
+<Layout
+  title={post.data.title}
+  description={post.data.description ?? post.data.title}
+  type="article"
+>
+  <Container size="article">
     <div>
       <BackToPrevious href="/blog">Back to posts</BackToPrevious>
     </div>
-    <div class="my-12 space-y-1">
-      <div class="flex items-center gap-1.5">
-        <div class="font-base text-sm">
+    <div class="my-12 space-y-4 lg:my-16">
+      <div
+        class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-black/50 dark:text-white/50"
+      >
+        <div>
           <FormattedDate date={post.data.date} />
         </div>
-        &bull;
-        {post.body && (
-          <div class="font-base text-sm">
-            {readingTime(post.body)}
-          </div>
-        )}
+        <span aria-hidden="true">&bull;</span>
+        {post.body && <div>{readingTime(post.body)}</div>}
       </div>
-      <h1 class="text-3xl font-semibold text-black dark:text-white">
+      <h1
+        class="max-w-3xl text-3xl leading-tight font-semibold text-black lg:text-4xl dark:text-white"
+      >
         {post.data.title}
       </h1>
       {
         post.data.tags && post.data.tags.length > 0 ? (
-          <div class="flex gap-2 pt-1">
+          <div class="flex flex-wrap gap-2 pt-1">
             {post.data.tags.map((tag) => (
               <a
                 href={`/tags/${tag}`}
-                class="rounded-sm border border-black/15 px-2 py-1 text-sm transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)] dark:hover:bg-[var(--color-accent-subtle)] hover:text-black focus-visible:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)] focus-visible:text-black dark:border-white/20 dark:hover:text-white dark:focus-visible:text-white"
+                class="rounded-sm border border-[var(--color-border)] px-2 py-1 text-sm text-black/60 transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)] hover:text-black focus-visible:bg-[var(--color-accent-subtle)] focus-visible:text-black dark:text-white/60 dark:hover:text-white dark:focus-visible:text-white"
               >
                 {tag}
               </a>

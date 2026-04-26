@@ -71,7 +71,7 @@ const BLOG_CONTENT_DIR = fileURLToPath(
 const CONTENT_IMAGE_DIR = fileURLToPath(
   new URL("../content/images", import.meta.url),
 );
-const OBSIDIAN_LINK_PATTERN = /(!?)\[\[([^\]]+)\]\]/g;
+const OBSIDIAN_LINK_PATTERN = /(!?)\[\[(.+?)\]\]/g;
 const BLOCK_ID_PATTERN = /(?:^|\s)\^([A-Za-z0-9_-]+)\s*$/;
 
 function normalizeLookupKey(value: string) {
@@ -161,7 +161,7 @@ function splitFirst(value: string, delimiter: string) {
 }
 
 export function parseObsidianLinkToken(raw: string): ObsidianLinkToken | null {
-  const match = raw.match(/^(!?)\[\[([^\]]+)\]\]$/);
+  const match = raw.match(/^(!?)\[\[(.+?)\]\]$/);
   if (!match) {
     return null;
   }

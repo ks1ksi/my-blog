@@ -6,10 +6,17 @@ import { BLOG } from "@consts";
 import { getPostsGroupedByYear } from "@lib/content";
 
 const postsByYear = await getPostsGroupedByYear();
+
+function splitPostsForColumns<T>(posts: T[]) {
+  return [
+    posts.filter((_, index) => index % 2 === 0),
+    posts.filter((_, index) => index % 2 === 1),
+  ];
+}
 ---
 
 <Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
-  <Container>
+  <Container size="page">
     <aside data-pagefind-ignore>
       <div class="space-y-10">
         <div class="space-y-4">
@@ -28,13 +35,24 @@ const postsByYear = await getPostsGroupedByYear();
                   </span>
                 </summary>
                 <div class="pt-4">
-                  <ul class="not-prose flex flex-col gap-4">
+                  <ul class="not-prose grid lg:hidden">
                     {posts.map((post) => (
                       <li>
                         <ArrowCard entry={post} />
                       </li>
                     ))}
                   </ul>
+                  <div class="not-prose hidden gap-x-8 lg:grid lg:grid-cols-2">
+                    {splitPostsForColumns(posts).map((column) => (
+                      <ul>
+                        {column.map((post) => (
+                          <li>
+                            <ArrowCard entry={post} />
+                          </li>
+                        ))}
+                      </ul>
+                    ))}
+                  </div>
                 </div>
               </details>
             ))

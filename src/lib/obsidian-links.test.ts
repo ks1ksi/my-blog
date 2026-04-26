@@ -20,7 +20,11 @@ const fixturePosts: ObsidianPostTarget[] = [
   { stem: "Draft Post", draft: true },
 ];
 
-const fixtureImages = ["image.png", "nested/screenshot.jpeg"];
+const fixtureImages = [
+  "image.png",
+  "nested/screenshot.jpeg",
+  "[Vue] v-model 과 v-bind + v-on-1-3d64d5046e.png",
+];
 
 function transformText(value: string, currentPostStem = "Simple Post") {
   const tree: Root = {
@@ -189,6 +193,13 @@ describe("remarkObsidianLink", () => {
       url: "../images/nested/screenshot.jpeg",
       alt: "screenshot.jpeg",
     });
+    expect(
+      resolveRaw("![[[Vue] v-model 과 v-bind + v-on-1-3d64d5046e.png]]"),
+    ).toMatchObject({
+      type: "image",
+      url: "../images/[Vue] v-model 과 v-bind + v-on-1-3d64d5046e.png",
+      alt: "[Vue] v-model 과 v-bind + v-on-1-3d64d5046e.png",
+    });
   });
 
   it("leaves draft or missing posts and missing images as text", () => {
@@ -239,7 +250,8 @@ describe("actual content Obsidian links", () => {
     });
 
     const brokenLinks: string[] = [];
-    const obsidianLinkPattern = /!?\[\[[^\]]+\]\]/g;
+    const brokenImages: string[] = [];
+    const obsidianLinkPattern = /!?\[\[(.+?)\]\]/g;
 
     for (const file of contentFiles) {
       const content = readFileSync(file, "utf8");
@@ -257,6 +269,13 @@ describe("actual content Obsidian links", () => {
           token,
           relative(contentDir, file).replace(/\.(md|mdx)$/i, ""),
         );
+        if (token.embedded) {
+          if (node.type !== "image") {
+            brokenImages.push(`${relative(contentDir, file)}: ${raw}`);
+          }
+          continue;
+        }
+
         if (node.type !== "link" || !node.url.startsWith("/blog/")) {
           continue;
         }
@@ -271,5 +290,6 @@ describe("actual content Obsidian links", () => {
     }
 
     expect(brokenLinks).toEqual([]);
+    expect(brokenImages).toEqual([]);
   });
 });
