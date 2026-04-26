@@ -7,29 +7,56 @@ type Props = {
 };
 
 const { entry } = Astro.props;
+const tags = entry.data.tags ?? [];
 ---
 
-<a
-  href={`/${entry.collection}/${entry.id}`}
-  class="not-prose group relative flex flex-nowrap rounded-sm border border-black/15 px-4 py-3 pr-10 transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)] dark:hover:bg-[var(--color-accent-subtle)] hover:text-black focus-visible:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)] focus-visible:text-black dark:border-white/20 dark:bg-white/[0.02] dark:hover:text-white dark:focus-visible:text-white"
+<article
+  class="not-prose group relative rounded-sm border border-black/15 px-4 py-3 pr-10 transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)] dark:border-white/20 dark:bg-white/[0.02] dark:hover:bg-[var(--color-accent-subtle)]"
 >
-  <div class="flex flex-1 flex-col truncate">
-    <div class="font-semibold">
+  <a
+    href={`/${entry.collection}/${entry.id}`}
+    class="absolute inset-0 z-10 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]"
+    aria-label={entry.data.title}></a>
+  <div class="pointer-events-none relative z-20 flex min-w-0 flex-col">
+    <div
+      class="font-semibold text-black transition-colors duration-300 ease-in-out group-focus-within:text-[var(--color-accent)] group-hover:text-[var(--color-accent)] dark:text-white"
+    >
       {entry.data.title}
     </div>
-    {entry.data.description && (
-      <div class="text-sm">
-        {entry.data.description}
-      </div>
-    )}
-    <div class="mt-1 text-xs text-black/50 dark:text-white/50">
-      {formatDate(entry.data.date)}
+    <div
+      class="relative z-10 mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-black/45 dark:text-white/45"
+    >
+      <time datetime={entry.data.date.toISOString()}>
+        {formatDate(entry.data.date)}
+      </time>
+      {
+        tags.length > 0 && (
+          <>
+            <span aria-hidden="true">·</span>
+            {tags.map((tag) => (
+              <a
+                href={`/tags/${tag}`}
+                class="pointer-events-auto text-black/45 no-underline transition-colors hover:text-[var(--color-accent)] focus-visible:text-[var(--color-accent)] focus-visible:outline-none dark:text-white/45"
+              >
+                #{tag}
+              </a>
+            ))}
+          </>
+        )
+      }
     </div>
+    {
+      entry.data.description && (
+        <div class="mt-2 line-clamp-2 text-sm text-black/65 dark:text-white/65">
+          {entry.data.description}
+        </div>
+      )
+    }
   </div>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
-    class="absolute right-2 top-1/2 size-5 -translate-y-1/2 fill-none stroke-current stroke-2"
+    class="absolute top-1/2 right-2 size-5 -translate-y-1/2 fill-none stroke-current stroke-2"
   >
     <line
       x1="5"
@@ -43,4 +70,4 @@ const { entry } = Astro.props;
       class="-translate-x-1 transition-transform duration-300 ease-in-out group-hover:translate-x-0 group-focus-visible:translate-x-0"
     ></polyline>
   </svg>
-</a>
+</article>

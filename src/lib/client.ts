@@ -65,7 +65,8 @@ function withTransitionsDisabled(callback: () => void) {
 }
 
 function syncGiscusTheme() {
-  const giscusFrame = document.querySelector<HTMLIFrameElement>(".giscus-frame");
+  const giscusFrame =
+    document.querySelector<HTMLIFrameElement>(".giscus-frame");
   if (!giscusFrame) return;
 
   const theme = document.documentElement.classList.contains("dark")
@@ -159,7 +160,9 @@ function closeSearch() {
 }
 
 function isEditableTarget(target: EventTarget | null) {
-  return target instanceof Element && Boolean(target.closest(EDITABLE_SELECTOR));
+  return (
+    target instanceof Element && Boolean(target.closest(EDITABLE_SELECTOR))
+  );
 }
 
 function enhanceCodeBlocks() {
@@ -239,7 +242,8 @@ function handleDocumentClick(event: MouseEvent) {
     return;
   }
 
-  const backToTopButton = event.target.closest<HTMLButtonElement>("#back-to-top");
+  const backToTopButton =
+    event.target.closest<HTMLButtonElement>("#back-to-top");
   if (backToTopButton) {
     event.preventDefault();
     window.scrollTo({
@@ -256,7 +260,8 @@ function handleDocumentClick(event: MouseEvent) {
     return;
   }
 
-  const searchButton = event.target.closest<HTMLButtonElement>("#magnifying-glass");
+  const searchButton =
+    event.target.closest<HTMLButtonElement>("#magnifying-glass");
   if (searchButton) {
     event.preventDefault();
     void openSearch();
@@ -265,6 +270,22 @@ function handleDocumentClick(event: MouseEvent) {
 
   if (event.target.closest(".pagefind-ui__result-link")) {
     closeSearch();
+    return;
+  }
+
+  const searchResult = event.target.closest<HTMLElement>(
+    ".pagefind-ui__result",
+  );
+  if (searchResult && !event.target.closest("a, button, input")) {
+    const link = searchResult.querySelector<HTMLAnchorElement>(
+      ".pagefind-ui__result-link",
+    );
+
+    if (link?.href) {
+      event.preventDefault();
+      closeSearch();
+      window.location.href = link.href;
+    }
     return;
   }
 

@@ -59,7 +59,14 @@ export async function getTagsWithPosts() {
   }
 
   return [...tags.entries()]
-    .sort(([leftTag], [rightTag]) => leftTag.localeCompare(rightTag, "ko-KR"))
+    .sort(([leftTag, leftPosts], [rightTag, rightPosts]) => {
+      const countDiff = rightPosts.length - leftPosts.length;
+      if (countDiff !== 0) {
+        return countDiff;
+      }
+
+      return leftTag.localeCompare(rightTag, "ko-KR");
+    })
     .map(([tag, taggedPosts]) => ({
       tag,
       count: taggedPosts.length,

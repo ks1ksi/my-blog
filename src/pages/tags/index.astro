@@ -8,18 +8,24 @@ const tags = await getTagsWithPosts();
 
 <Layout title="Tags" description="태그 목록">
   <Container>
-    <div class="space-y-10">
-      <h1 class="font-semibold">모든 태그</h1>
+    <div class="space-y-8">
+      <div class="space-y-3">
+        <h1 class="font-semibold text-black dark:text-white">모든 태그</h1>
+        <p class="text-sm text-black/50 dark:text-white/50">
+          {tags.length}개 태그
+        </p>
+      </div>
+
       <div class="flex flex-wrap gap-2">
         {
           tags.map(({ tag, count }) => (
             <a
               href={`/tags/${tag}`}
-              class="rounded-sm border border-black/15 px-2 py-1 text-sm transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)] dark:hover:bg-[var(--color-accent-subtle)] hover:text-black focus-visible:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)] focus-visible:text-black dark:border-white/20 dark:hover:text-white dark:focus-visible:text-white"
+              class="inline-flex items-center gap-1.5 rounded-sm border border-black/15 px-2 py-1 text-sm transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)] hover:text-black focus-visible:bg-[var(--color-accent-subtle)] focus-visible:text-black dark:border-white/20 dark:hover:bg-[var(--color-accent-subtle)] dark:hover:text-white dark:focus-visible:bg-[var(--color-accent-subtle)] dark:focus-visible:text-white"
             >
-              {tag}{" "}
-              <span class="text-sm text-black/50 dark:text-white/50">
-                ({count})
+              <span>{tag}</span>
+              <span class="font-mono text-xs text-black/45 dark:text-white/45">
+                {count}
               </span>
             </a>
           ))

@@ -10,12 +10,15 @@ import BackToTop from "@components/BackToTop.astro";
       <BackToTop />
     </div>
     <div class="flex items-center justify-between">
-      <div>&copy; {new Date().getFullYear()} • {SITE.TITLE} 👾</div>
+      <div class="inline-flex items-center gap-1.5">
+        <span>&copy; {new Date().getFullYear()} • {SITE.TITLE}</span>
+        <span class="text-[var(--color-accent)]" aria-hidden="true">~/</span>
+      </div>
       <div class="flex flex-wrap items-center gap-1.5">
         <button
           id="light-theme-button"
           aria-label="Light theme"
-          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] dark:hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20"
+          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20 dark:hover:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +46,7 @@ import BackToTop from "@components/BackToTop.astro";
         <button
           id="dark-theme-button"
           aria-label="Dark theme"
-          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] dark:hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20"
+          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20 dark:hover:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +66,7 @@ import BackToTop from "@components/BackToTop.astro";
         <button
           id="system-theme-button"
           aria-label="System theme"
-          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] dark:hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20"
+          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20 dark:hover:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +81,8 @@ import BackToTop from "@components/BackToTop.astro";
             class="transition-colors duration-300 ease-in-out group-hover:animate-pulse group-hover:stroke-black group-focus-visible:animate-pulse group-focus-visible:stroke-black dark:group-hover:stroke-white dark:group-focus-visible:stroke-white"
           >
             <circle cx="12" cy="12" r="9"></circle>
-            <path d="M12 3a9 9 0 0 1 0 18" fill="currentColor" stroke="none"></path>
+            <path d="M12 3a9 9 0 0 1 0 18" fill="currentColor" stroke="none"
+            ></path>
           </svg>
         </button>
       </div>
