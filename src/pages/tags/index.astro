@@ -6,13 +6,13 @@ import { getTagsWithPosts } from "@lib/content";
 const tags = await getTagsWithPosts();
 ---
 
-<Layout title="Tags" description="태그 목록">
+<Layout title="Tags" description="Browse posts by tag">
   <Container>
     <div class="space-y-8">
       <div class="space-y-3">
-        <h1 class="font-semibold text-black dark:text-white">모든 태그</h1>
+        <h1 class="font-semibold text-black dark:text-white">All tags</h1>
         <p class="text-sm text-black/50 dark:text-white/50">
-          {tags.length}개 태그
+          {tags.length} tags
         </p>
       </div>
 

@@ -9,12 +9,12 @@ export const SITE: Site = {
 
 export const HOME: Metadata = {
   TITLE: "Home",
-  DESCRIPTION: "Seungil Kim의 개인 블로그.",
+  DESCRIPTION: "Seungil Kim's personal blog.",
 };
 
 export const BLOG: Metadata = {
   TITLE: "Blog",
-  DESCRIPTION: "다양한 주제에 대한 글 모음.",
+  DESCRIPTION: "Posts on software engineering, problem solving, and life.",
 };
 
 export const SOCIALS: Socials = [
