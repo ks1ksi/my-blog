@@ -5,6 +5,12 @@ type GlobalUiState = {
   pagefindModulePromise?: Promise<typeof import("@lib/pagefind-ui")>;
 };
 
+type ReturnScrollRoute = {
+  key: string | ((pathname: string) => string);
+  sourcePattern: RegExp;
+  destinationPattern: RegExp;
+};
+
 declare global {
   interface Window {
     __ks1ksiBlogUi?: GlobalUiState;
@@ -13,6 +19,25 @@ declare global {
 
 const THEME_STORAGE_KEY = "theme";
 const ACTIVE_THEME_CLASSES = ["bg-[var(--color-accent-subtle)]"];
+const TOC_OPEN_STORAGE_KEY = "article:toc-open";
+const PREVIOUS_PATH_STORAGE_KEY = "navigation:previous-path";
+const RETURN_SCROLL_ROUTES: ReturnScrollRoute[] = [
+  {
+    key: "blog",
+    sourcePattern: /^\/blog$/,
+    destinationPattern: /^\/blog\/.+/,
+  },
+  {
+    key: "tags",
+    sourcePattern: /^\/tags$/,
+    destinationPattern: /^\/tags\/[^/]+$/,
+  },
+  {
+    key: (pathname) => `tag:${pathname}`,
+    sourcePattern: /^\/tags\/[^/]+$/,
+    destinationPattern: /^\/blog\/.+/,
+  },
+];
 const EDITABLE_SELECTOR = [
   "input",
   "textarea",
@@ -21,6 +46,8 @@ const EDITABLE_SELECTOR = [
   "[contenteditable='true']",
   "[contenteditable='plaintext-only']",
 ].join(", ");
+
+let returnScrollSaveScheduled = false;
 
 function getState() {
   window.__ks1ksiBlogUi ??= {
@@ -38,6 +65,11 @@ function getStoredTheme(): ThemePreference {
   }
 
   return "system";
+}
+
+function normalizePathname(pathname = window.location.pathname) {
+  const normalizedPathname = pathname.replace(/\/$/, "");
+  return normalizedPathname || "/";
 }
 
 function prefersDarkTheme() {
@@ -165,6 +197,166 @@ function isEditableTarget(target: EventTarget | null) {
   );
 }
 
+function getReturnScrollRoute(pathname = window.location.pathname) {
+  const normalizedPathname = normalizePathname(pathname);
+
+  for (const route of RETURN_SCROLL_ROUTES) {
+    if (route.sourcePattern.test(normalizedPathname)) {
+      return route;
+    }
+  }
+}
+
+function getReturnScrollRouteKey(
+  route: ReturnScrollRoute,
+  pathname = window.location.pathname,
+) {
+  const normalizedPathname = normalizePathname(pathname);
+  return typeof route.key === "function"
+    ? route.key(normalizedPathname)
+    : route.key;
+}
+
+function getReturnScrollStorageKey(routeKey: string) {
+  return `return-scroll:${routeKey}:position`;
+}
+
+function saveCurrentReturnScrollPosition() {
+  const route = getReturnScrollRoute();
+  if (!route) return;
+
+  const routeKey = getReturnScrollRouteKey(route);
+  sessionStorage.setItem(
+    getReturnScrollStorageKey(routeKey),
+    String(window.scrollY),
+  );
+}
+
+function rememberNavigationSource() {
+  sessionStorage.setItem(PREVIOUS_PATH_STORAGE_KEY, normalizePathname());
+  saveCurrentReturnScrollPosition();
+}
+
+function shouldRestoreReturnScroll(route: ReturnScrollRoute) {
+  const previousPathname = sessionStorage.getItem(PREVIOUS_PATH_STORAGE_KEY);
+  return Boolean(
+    previousPathname && route.destinationPattern.test(previousPathname),
+  );
+}
+
+function restoreReturnScrollPosition() {
+  const route = getReturnScrollRoute();
+  if (!route) return false;
+
+  if (!shouldRestoreReturnScroll(route)) {
+    return false;
+  }
+
+  const routeKey = getReturnScrollRouteKey(route);
+  const scrollPosition = Number(
+    sessionStorage.getItem(getReturnScrollStorageKey(routeKey)),
+  );
+  if (!Number.isFinite(scrollPosition) || scrollPosition <= 0) {
+    return false;
+  }
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPosition);
+      window.setTimeout(() => window.scrollTo(0, scrollPosition), 50);
+    });
+  });
+  return true;
+}
+
+function scrollToHashTarget() {
+  if (!window.location.hash) {
+    return;
+  }
+
+  const target = document.getElementById(
+    decodeURIComponent(window.location.hash.slice(1)),
+  );
+  if (!target) {
+    return;
+  }
+
+  const scrollToTarget = () => {
+    target.scrollIntoView();
+    window.setTimeout(() => {
+      saveCurrentReturnScrollPosition();
+    }, 50);
+  };
+
+  window.requestAnimationFrame(scrollToTarget);
+  window.setTimeout(scrollToTarget, 50);
+}
+
+function scheduleReturnScrollPositionSave() {
+  if (!getReturnScrollRoute()) {
+    return;
+  }
+
+  if (returnScrollSaveScheduled) {
+    return;
+  }
+
+  returnScrollSaveScheduled = true;
+  window.requestAnimationFrame(() => {
+    returnScrollSaveScheduled = false;
+    saveCurrentReturnScrollPosition();
+  });
+}
+
+function rememberReturnScrollFromClick(event: MouseEvent) {
+  if (
+    event.defaultPrevented ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey
+  ) {
+    return;
+  }
+
+  const link =
+    event.target instanceof Element ? event.target.closest("a") : null;
+  if (!link?.href || link.target || link.hasAttribute("download")) {
+    return;
+  }
+
+  const url = new URL(link.href);
+  if (url.origin !== window.location.origin) {
+    return;
+  }
+
+  rememberNavigationSource();
+}
+
+function restoreTableOfContentsState() {
+  const toc = document.querySelector<HTMLDetailsElement>(
+    "details[data-table-of-contents]",
+  );
+  if (!toc) return;
+
+  const storedOpen = sessionStorage.getItem(TOC_OPEN_STORAGE_KEY);
+  if (storedOpen === "true" || storedOpen === "false") {
+    toc.open = storedOpen === "true";
+  }
+}
+
+function storeTableOfContentsState(event: Event) {
+  const toc = event.target;
+  if (!(toc instanceof HTMLDetailsElement)) {
+    return;
+  }
+
+  if (!toc.matches("[data-table-of-contents]")) {
+    return;
+  }
+
+  sessionStorage.setItem(TOC_OPEN_STORAGE_KEY, String(toc.open));
+}
+
 function enhanceCodeBlocks() {
   for (const codeBlock of document.querySelectorAll<HTMLElement>(
     "article pre:not([data-copy-ready])",
@@ -218,12 +410,19 @@ function scheduleSearchPreload() {
 function initializePage() {
   applyTheme(shouldUseDarkTheme(), false);
   updateThemeButtons();
+  restoreTableOfContentsState();
+  const restoredReturnScroll = restoreReturnScrollPosition();
+  if (!restoredReturnScroll) {
+    scrollToHashTarget();
+  }
   enhanceCodeBlocks();
   scheduleSearchPreload();
 }
 
 function handleDocumentClick(event: MouseEvent) {
   if (!(event.target instanceof Element)) return;
+
+  rememberReturnScrollFromClick(event);
 
   const themeButton = event.target.closest<HTMLButtonElement>(
     "#light-theme-button, #dark-theme-button, #system-theme-button",
@@ -333,15 +532,27 @@ export function registerGlobalUi() {
   }
 
   state.registered = true;
+  history.scrollRestoration = "manual";
 
   document.addEventListener("click", handleDocumentClick);
+  document.addEventListener("toggle", storeTableOfContentsState, true);
   document.addEventListener("keydown", handleDocumentKeydown);
   document.addEventListener("astro:after-swap", () =>
     applyTheme(shouldUseDarkTheme()),
   );
+  document.addEventListener("astro:before-preparation", () => {
+    rememberNavigationSource();
+  });
   document.addEventListener("astro:before-swap", closeSearch);
   document.addEventListener("astro:page-load", initializePage);
+  window.addEventListener("pagehide", rememberNavigationSource);
+  window.addEventListener("pageshow", restoreReturnScrollPosition);
+  window.addEventListener("scroll", scheduleReturnScrollPositionSave, {
+    passive: true,
+  });
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", handleSystemThemeChange);
+
+  initializePage();
 }

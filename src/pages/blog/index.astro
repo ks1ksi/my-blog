@@ -22,7 +22,13 @@ function splitPostsForColumns<T>(posts: T[]) {
         <div class="space-y-4">
           {
             postsByYear.map(({ year, posts }, yearIndex) => (
-              <details class="group/year space-y-4" open={yearIndex < 2}>
+              <details
+                id={`year-${year}`}
+                class="group/year space-y-4"
+                data-year-details
+                data-year={year}
+                open={yearIndex < 2}
+              >
                 <summary class="flex cursor-pointer list-none items-center justify-between border-b border-black/10 pb-2 text-black transition-colors marker:hidden hover:text-[var(--color-accent)] dark:border-white/10 dark:text-white [&::-webkit-details-marker]:hidden">
                   <span class="flex items-center gap-2 font-semibold">
                     <span class="inline-block transition-transform group-open/year:rotate-90">
@@ -62,3 +68,119 @@ function splitPostsForColumns<T>(posts: T[]) {
     </aside>
   </Container>
 </Layout>
+
+<script is:inline data-astro-rerun>
+  (() => {
+    const yearStorageKey = "blog:open-years";
+    const previousPathStorageKey = "navigation:previous-path";
+    const scrollStorageKey = "return-scroll:blog:position";
+    const yearDetails = Array.from(
+      document.querySelectorAll("[data-year-details]"),
+    );
+
+    if (yearDetails.length === 0) {
+      return;
+    }
+
+    const readStoredYears = () => {
+      try {
+        const value = sessionStorage.getItem(yearStorageKey);
+        if (!value) {
+          return null;
+        }
+
+        const years = JSON.parse(value);
+        return Array.isArray(years) ? new Set(years.map(String)) : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const writeStoredYears = () => {
+      const openYears = yearDetails
+        .filter((details) => details.open)
+        .map((details) => details.dataset.year)
+        .filter(Boolean);
+
+      sessionStorage.setItem(yearStorageKey, JSON.stringify(openYears));
+    };
+
+    const normalizePathname = (pathname = window.location.pathname) => {
+      const normalizedPathname = pathname.replace(/\/$/, "");
+      return normalizedPathname || "/";
+    };
+
+    const saveScrollPosition = () => {
+      sessionStorage.setItem(scrollStorageKey, String(window.scrollY));
+    };
+
+    const rememberCurrentPath = () => {
+      sessionStorage.setItem(previousPathStorageKey, normalizePathname());
+      saveScrollPosition();
+    };
+
+    const restoreScrollPosition = () => {
+      const previousPathname = sessionStorage.getItem(previousPathStorageKey);
+      if (!previousPathname?.startsWith("/blog/")) {
+        return;
+      }
+
+      const scrollPosition = Number(sessionStorage.getItem(scrollStorageKey));
+      if (!Number.isFinite(scrollPosition) || scrollPosition <= 0) {
+        return;
+      }
+
+      const restore = () => {
+        window.scrollTo(0, scrollPosition);
+      };
+
+      restore();
+      window.setTimeout(restore, 50);
+    };
+
+    const storedYears = readStoredYears();
+    if (storedYears) {
+      yearDetails.forEach((details) => {
+        details.open = storedYears.has(details.dataset.year);
+      });
+    }
+
+    yearDetails.forEach((details) => {
+      if (details.dataset.yearStateBound === "true") {
+        return;
+      }
+
+      details.dataset.yearStateBound = "true";
+      details.addEventListener("toggle", writeStoredYears);
+    });
+
+    history.scrollRestoration = "manual";
+
+    if (document.documentElement.dataset.blogScrollBound !== "true") {
+      document.documentElement.dataset.blogScrollBound = "true";
+
+      window.addEventListener("scroll", saveScrollPosition, { passive: true });
+      window.addEventListener("pagehide", rememberCurrentPath);
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const link = target.closest("a");
+        if (!link?.href) {
+          return;
+        }
+
+        const url = new URL(link.href);
+        if (url.origin !== window.location.origin) {
+          return;
+        }
+
+        rememberCurrentPath();
+      });
+    }
+
+    restoreScrollPosition();
+  })();
+</script>

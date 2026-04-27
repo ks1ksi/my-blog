@@ -83,3 +83,35 @@ const { Content, headings } = await render(post);
     </article>
   </Container>
 </Layout>
+
+<script is:inline data-astro-rerun>
+  (() => {
+    const previousPathStorageKey = "navigation:previous-path";
+    const normalizePathname = (pathname = window.location.pathname) => {
+      const normalizedPathname = pathname.replace(/\/$/, "");
+      return normalizedPathname || "/";
+    };
+
+    const rememberCurrentPath = () => {
+      sessionStorage.setItem(previousPathStorageKey, normalizePathname());
+    };
+
+    window.addEventListener("pagehide", rememberCurrentPath);
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const link = target.closest("a");
+      if (!link?.href) {
+        return;
+      }
+
+      const url = new URL(link.href);
+      if (url.origin === window.location.origin && url.pathname === "/blog") {
+        rememberCurrentPath();
+      }
+    });
+  })();
+</script>
