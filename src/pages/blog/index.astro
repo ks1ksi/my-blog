@@ -161,6 +161,8 @@ function splitPostsForColumns<T>(posts: T[]) {
 
       window.addEventListener("scroll", saveScrollPosition, { passive: true });
       window.addEventListener("pagehide", rememberCurrentPath);
+      window.addEventListener("pageshow", restoreScrollPosition);
+      document.addEventListener("astro:page-load", restoreScrollPosition);
       document.addEventListener("click", (event) => {
         const target = event.target;
         if (!(target instanceof Element)) {

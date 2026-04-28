@@ -97,6 +97,8 @@ const { Content, headings } = await render(post);
     };
 
     window.addEventListener("pagehide", rememberCurrentPath);
+    window.addEventListener("popstate", rememberCurrentPath);
+    document.addEventListener("astro:before-preparation", rememberCurrentPath);
     document.addEventListener("click", (event) => {
       const target = event.target;
       if (!(target instanceof Element)) {
