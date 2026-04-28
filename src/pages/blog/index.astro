@@ -77,6 +77,7 @@ function splitPostsForColumns<T>(posts: T[]) {
     const yearDetails = Array.from(
       document.querySelectorAll("[data-year-details]"),
     );
+    let isRestoringScroll = false;
 
     if (yearDetails.length === 0) {
       return;
@@ -112,7 +113,7 @@ function splitPostsForColumns<T>(posts: T[]) {
     const isBlogIndex = () => normalizePathname() === "/blog";
 
     const saveScrollPosition = () => {
-      if (!isBlogIndex()) {
+      if (!isBlogIndex() || isRestoringScroll) {
         return;
       }
 
@@ -147,8 +148,13 @@ function splitPostsForColumns<T>(posts: T[]) {
         window.scrollTo(0, scrollPosition);
       };
 
+      isRestoringScroll = true;
       restore();
       window.setTimeout(restore, 50);
+      window.setTimeout(restore, 250);
+      window.setTimeout(() => {
+        isRestoringScroll = false;
+      }, 350);
     };
 
     const storedYears = readStoredYears();
