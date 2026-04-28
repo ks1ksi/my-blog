@@ -109,17 +109,30 @@ function splitPostsForColumns<T>(posts: T[]) {
       const normalizedPathname = pathname.replace(/\/$/, "");
       return normalizedPathname || "/";
     };
+    const isBlogIndex = () => normalizePathname() === "/blog";
 
     const saveScrollPosition = () => {
+      if (!isBlogIndex()) {
+        return;
+      }
+
       sessionStorage.setItem(scrollStorageKey, String(window.scrollY));
     };
 
     const rememberCurrentPath = () => {
+      if (!isBlogIndex()) {
+        return;
+      }
+
       sessionStorage.setItem(previousPathStorageKey, normalizePathname());
       saveScrollPosition();
     };
 
     const restoreScrollPosition = () => {
+      if (!isBlogIndex()) {
+        return;
+      }
+
       const previousPathname = sessionStorage.getItem(previousPathStorageKey);
       if (!previousPathname?.startsWith("/blog/")) {
         return;

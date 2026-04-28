@@ -30,6 +30,7 @@ type Props = {
 
 const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
+const articlePath = Astro.url.pathname;
 ---
 
 <Layout
@@ -84,16 +85,17 @@ const { Content, headings } = await render(post);
   </Container>
 </Layout>
 
-<script is:inline data-astro-rerun>
+<script is:inline define:vars={{ articlePath }} data-astro-rerun>
   (() => {
     const previousPathStorageKey = "navigation:previous-path";
     const normalizePathname = (pathname = window.location.pathname) => {
       const normalizedPathname = pathname.replace(/\/$/, "");
       return normalizedPathname || "/";
     };
+    const currentArticlePath = normalizePathname(articlePath);
 
     const rememberCurrentPath = () => {
-      sessionStorage.setItem(previousPathStorageKey, normalizePathname());
+      sessionStorage.setItem(previousPathStorageKey, currentArticlePath);
     };
 
     window.addEventListener("pagehide", rememberCurrentPath);
