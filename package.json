@@ -8,6 +8,7 @@
     "migrate:velog": "node scripts/migrate-velog.mjs",
     "normalize:tags": "node scripts/normalize-tags.mjs",
     "check:tags": "node scripts/normalize-tags.mjs --check",
+    "postinstall": "patch-package",
     "test": "vitest run",
     "build": "astro check && astro build",
     "preview": "astro preview",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.18",
     "pagefind": "^1.4.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.14",

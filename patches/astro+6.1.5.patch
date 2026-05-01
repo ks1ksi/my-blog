@@ -1,0 +1,20 @@
+diff --git a/node_modules/astro/dist/transitions/router.js b/node_modules/astro/dist/transitions/router.js
+index fd3641c..15d07f7 100644
+--- a/node_modules/astro/dist/transitions/router.js
++++ b/node_modules/astro/dist/transitions/router.js
+@@ -5,6 +5,7 @@ const inBrowser = import.meta.env.SSR === false;
+ const supportsViewTransitions = inBrowser && !!document.startViewTransition;
+ const transitionEnabledOnThisPage = () => inBrowser && !!document.querySelector('[name="astro-view-transitions-enabled"]');
+ const samePage = (thisLocation, otherLocation) => thisLocation.pathname === otherLocation.pathname && thisLocation.search === otherLocation.search;
++const isSamsungInternet = () => inBrowser && /\bSamsungBrowser\//i.test(navigator.userAgent);
+ let mostRecentNavigation;
+ let mostRecentTransition;
+ let originalLocation;
+@@ -403,6 +404,7 @@ function onPopState(ev) {
+   );
+ }
+ const onScrollEnd = () => {
++  if (isSamsungInternet()) return;
+   if (history.state && (scrollX !== history.state.scrollX || scrollY !== history.state.scrollY)) {
+     updateScrollPosition({ scrollX, scrollY });
+   }
