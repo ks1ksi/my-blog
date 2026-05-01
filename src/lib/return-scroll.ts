@@ -4,7 +4,15 @@ type ReturnScrollRoute = {
   destinationPattern: RegExp;
 };
 
-const PREVIOUS_PATH_STORAGE_KEY = "navigation:previous-path";
+type ReturnScrollIntent = {
+  routeKey: string;
+  sourcePathname: string;
+  destinationPathname: string;
+  scrollY: number;
+};
+
+const RETURN_SCROLL_INTENT_STORAGE_KEY = "return-scroll:intent";
+const LEGACY_PREVIOUS_PATH_STORAGE_KEY = "navigation:previous-path";
 const RETURN_SCROLL_ROUTES: ReturnScrollRoute[] = [
   {
     key: "blog",
@@ -52,46 +60,36 @@ function getStorageKey(routeKey: string) {
   return `return-scroll:${routeKey}:position`;
 }
 
-function getPendingKey(routeKey: string) {
-  return `return-scroll:${routeKey}:pending`;
-}
-
-function getPendingPositionKey(routeKey: string) {
-  return `return-scroll:${routeKey}:pending-position`;
-}
-
-function hasPendingRestore(route: ReturnScrollRoute) {
-  return sessionStorage.getItem(getPendingKey(getRouteKey(route))) === "true";
-}
-
-function readStoredPosition(route: ReturnScrollRoute) {
-  const routeKey = getRouteKey(route);
-  const pendingPosition = Number(
-    sessionStorage.getItem(getPendingPositionKey(routeKey)),
+function readReturnScrollIntent() {
+  const serializedIntent = sessionStorage.getItem(
+    RETURN_SCROLL_INTENT_STORAGE_KEY,
   );
-  const scrollPosition = Number(
-    Number.isFinite(pendingPosition) && pendingPosition > 0
-      ? pendingPosition
-      : sessionStorage.getItem(getStorageKey(routeKey)),
-  );
+  if (!serializedIntent) {
+    return null;
+  }
 
-  return Number.isFinite(scrollPosition) && scrollPosition > 0
-    ? scrollPosition
-    : null;
+  try {
+    const intent = JSON.parse(serializedIntent) as Partial<ReturnScrollIntent>;
+    if (
+      typeof intent.routeKey !== "string" ||
+      typeof intent.sourcePathname !== "string" ||
+      typeof intent.destinationPathname !== "string" ||
+      typeof intent.scrollY !== "number" ||
+      !Number.isFinite(intent.scrollY) ||
+      intent.scrollY <= 0
+    ) {
+      return null;
+    }
+
+    return intent as ReturnScrollIntent;
+  } catch {
+    return null;
+  }
 }
 
-function shouldRestore(route: ReturnScrollRoute) {
-  const previousPathname = sessionStorage.getItem(PREVIOUS_PATH_STORAGE_KEY);
-  return Boolean(
-    hasPendingRestore(route) ||
-      (previousPathname && route.destinationPattern.test(previousPathname)),
-  );
-}
-
-function clearPendingRestore(route: ReturnScrollRoute) {
-  const routeKey = getRouteKey(route);
-  sessionStorage.removeItem(getPendingKey(routeKey));
-  sessionStorage.removeItem(getPendingPositionKey(routeKey));
+function clearReturnScrollIntent() {
+  sessionStorage.removeItem(RETURN_SCROLL_INTENT_STORAGE_KEY);
+  sessionStorage.removeItem(LEGACY_PREVIOUS_PATH_STORAGE_KEY);
 }
 
 function writeCurrentScrollPosition(
@@ -102,15 +100,25 @@ function writeCurrentScrollPosition(
   sessionStorage.setItem(getStorageKey(routeKey), String(window.scrollY));
 }
 
-function writePendingScrollPosition(
+function writeReturnScrollIntent(
   route: ReturnScrollRoute,
-  pathname = window.location.pathname,
+  sourcePathname = window.location.pathname,
+  destinationPathname: string,
 ) {
-  const routeKey = getRouteKey(route, pathname);
-  const scrollY = String(window.scrollY);
-  sessionStorage.setItem(getPendingKey(routeKey), "true");
-  sessionStorage.setItem(getPendingPositionKey(routeKey), scrollY);
-  sessionStorage.setItem(getStorageKey(routeKey), scrollY);
+  const routeKey = getRouteKey(route, sourcePathname);
+  const scrollY = window.scrollY;
+  const intent: ReturnScrollIntent = {
+    routeKey,
+    sourcePathname: normalizePathname(sourcePathname),
+    destinationPathname: normalizePathname(destinationPathname),
+    scrollY,
+  };
+
+  sessionStorage.setItem(getStorageKey(routeKey), String(scrollY));
+  sessionStorage.setItem(
+    RETURN_SCROLL_INTENT_STORAGE_KEY,
+    JSON.stringify(intent),
+  );
 }
 
 export function saveCurrentReturnScrollPosition(
@@ -118,13 +126,6 @@ export function saveCurrentReturnScrollPosition(
 ) {
   const route = getRoute(pathname);
   if (!route) return;
-
-  if (
-    normalizePathname(pathname) === normalizePathname() &&
-    hasPendingRestore(route)
-  ) {
-    return;
-  }
 
   writeCurrentScrollPosition(route, pathname);
 }
@@ -145,19 +146,31 @@ export function rememberNavigationSource(event?: Event) {
   const fromPathname = getNavigationFromPathname(event);
   const normalizedFromPathname = normalizePathname(fromPathname);
   const toPathname = getNavigationToPathname(event);
+  const normalizedToPathname = toPathname
+    ? normalizePathname(toPathname)
+    : null;
+  const intent = readReturnScrollIntent();
   const route = getRoute(fromPathname);
 
-  sessionStorage.setItem(PREVIOUS_PATH_STORAGE_KEY, normalizedFromPathname);
+  if (
+    intent &&
+    normalizedToPathname &&
+    (normalizedFromPathname === intent.sourcePathname ||
+      (normalizedFromPathname === intent.destinationPathname &&
+        normalizedToPathname !== intent.sourcePathname))
+  ) {
+    clearReturnScrollIntent();
+  }
 
   if (!route) {
     return;
   }
 
   if (
-    toPathname &&
-    route.destinationPattern.test(normalizePathname(toPathname))
+    normalizedToPathname &&
+    route.destinationPattern.test(normalizedToPathname)
   ) {
-    writePendingScrollPosition(route, fromPathname);
+    writeReturnScrollIntent(route, fromPathname, normalizedToPathname);
     return;
   }
 
@@ -198,8 +211,7 @@ export function rememberReturnScrollIntentFromClick(event: MouseEvent) {
     return;
   }
 
-  writePendingScrollPosition(route);
-  sessionStorage.setItem(PREVIOUS_PATH_STORAGE_KEY, normalizePathname());
+  writeReturnScrollIntent(route, window.location.pathname, url.pathname);
 }
 
 export function scheduleReturnScrollPositionSave() {
@@ -216,18 +228,23 @@ export function scheduleReturnScrollPositionSave() {
 
 export function restoreReturnScrollPosition() {
   const route = getRoute();
-  if (!route || !shouldRestore(route)) {
+  const intent = readReturnScrollIntent();
+  if (!route || !intent) {
     return false;
   }
 
-  const scrollPosition = readStoredPosition(route);
-  if (scrollPosition === null) {
+  const currentPathname = normalizePathname();
+  if (
+    intent.routeKey !== getRouteKey(route) ||
+    intent.sourcePathname !== currentPathname ||
+    !route.destinationPattern.test(intent.destinationPathname)
+  ) {
     return false;
   }
 
-  clearPendingRestore(route);
+  clearReturnScrollIntent();
 
-  const restore = () => window.scrollTo(0, scrollPosition);
+  const restore = () => window.scrollTo(0, intent.scrollY);
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
       restore();
