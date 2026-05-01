@@ -1,14 +1,17 @@
+import { initBlogIndexState } from "@lib/blog-index-state";
+import {
+  rememberNavigationSource,
+  rememberReturnScrollIntentFromClick,
+  restoreReturnScrollPosition,
+  saveCurrentReturnScrollPosition,
+  scheduleReturnScrollPositionSave,
+} from "@lib/return-scroll";
+
 type ThemePreference = "light" | "dark" | "system";
 
 type GlobalUiState = {
   registered: boolean;
   pagefindModulePromise?: Promise<typeof import("@lib/pagefind-ui")>;
-};
-
-type ReturnScrollRoute = {
-  key: string | ((pathname: string) => string);
-  sourcePattern: RegExp;
-  destinationPattern: RegExp;
 };
 
 declare global {
@@ -20,19 +23,6 @@ declare global {
 const THEME_STORAGE_KEY = "theme";
 const ACTIVE_THEME_CLASSES = ["bg-[var(--color-accent-subtle)]"];
 const TOC_OPEN_STORAGE_KEY = "article:toc-open";
-const PREVIOUS_PATH_STORAGE_KEY = "navigation:previous-path";
-const RETURN_SCROLL_ROUTES: ReturnScrollRoute[] = [
-  {
-    key: "tags",
-    sourcePattern: /^\/tags$/,
-    destinationPattern: /^\/tags\/[^/]+$/,
-  },
-  {
-    key: (pathname) => `tag:${pathname}`,
-    sourcePattern: /^\/tags\/[^/]+$/,
-    destinationPattern: /^\/blog\/.+/,
-  },
-];
 const EDITABLE_SELECTOR = [
   "input",
   "textarea",
@@ -41,8 +31,6 @@ const EDITABLE_SELECTOR = [
   "[contenteditable='true']",
   "[contenteditable='plaintext-only']",
 ].join(", ");
-
-let returnScrollSaveScheduled = false;
 
 function getState() {
   window.__ks1ksiBlogUi ??= {
@@ -60,11 +48,6 @@ function getStoredTheme(): ThemePreference {
   }
 
   return "system";
-}
-
-function normalizePathname(pathname = window.location.pathname) {
-  const normalizedPathname = pathname.replace(/\/$/, "");
-  return normalizedPathname || "/";
 }
 
 function prefersDarkTheme() {
@@ -192,78 +175,6 @@ function isEditableTarget(target: EventTarget | null) {
   );
 }
 
-function getReturnScrollRoute(pathname = window.location.pathname) {
-  const normalizedPathname = normalizePathname(pathname);
-
-  for (const route of RETURN_SCROLL_ROUTES) {
-    if (route.sourcePattern.test(normalizedPathname)) {
-      return route;
-    }
-  }
-}
-
-function getReturnScrollRouteKey(
-  route: ReturnScrollRoute,
-  pathname = window.location.pathname,
-) {
-  const normalizedPathname = normalizePathname(pathname);
-  return typeof route.key === "function"
-    ? route.key(normalizedPathname)
-    : route.key;
-}
-
-function getReturnScrollStorageKey(routeKey: string) {
-  return `return-scroll:${routeKey}:position`;
-}
-
-function saveCurrentReturnScrollPosition() {
-  const route = getReturnScrollRoute();
-  if (!route) return;
-
-  const routeKey = getReturnScrollRouteKey(route);
-  sessionStorage.setItem(
-    getReturnScrollStorageKey(routeKey),
-    String(window.scrollY),
-  );
-}
-
-function rememberNavigationSource() {
-  sessionStorage.setItem(PREVIOUS_PATH_STORAGE_KEY, normalizePathname());
-  saveCurrentReturnScrollPosition();
-}
-
-function shouldRestoreReturnScroll(route: ReturnScrollRoute) {
-  const previousPathname = sessionStorage.getItem(PREVIOUS_PATH_STORAGE_KEY);
-  return Boolean(
-    previousPathname && route.destinationPattern.test(previousPathname),
-  );
-}
-
-function restoreReturnScrollPosition() {
-  const route = getReturnScrollRoute();
-  if (!route) return false;
-
-  if (!shouldRestoreReturnScroll(route)) {
-    return false;
-  }
-
-  const routeKey = getReturnScrollRouteKey(route);
-  const scrollPosition = Number(
-    sessionStorage.getItem(getReturnScrollStorageKey(routeKey)),
-  );
-  if (!Number.isFinite(scrollPosition) || scrollPosition <= 0) {
-    return false;
-  }
-
-  window.requestAnimationFrame(() => {
-    window.requestAnimationFrame(() => {
-      window.scrollTo(0, scrollPosition);
-      window.setTimeout(() => window.scrollTo(0, scrollPosition), 50);
-    });
-  });
-  return true;
-}
-
 function scrollToHashTarget() {
   if (!window.location.hash) {
     return;
@@ -285,46 +196,6 @@ function scrollToHashTarget() {
 
   window.requestAnimationFrame(scrollToTarget);
   window.setTimeout(scrollToTarget, 50);
-}
-
-function scheduleReturnScrollPositionSave() {
-  if (!getReturnScrollRoute()) {
-    return;
-  }
-
-  if (returnScrollSaveScheduled) {
-    return;
-  }
-
-  returnScrollSaveScheduled = true;
-  window.requestAnimationFrame(() => {
-    returnScrollSaveScheduled = false;
-    saveCurrentReturnScrollPosition();
-  });
-}
-
-function rememberReturnScrollFromClick(event: MouseEvent) {
-  if (
-    event.defaultPrevented ||
-    event.metaKey ||
-    event.ctrlKey ||
-    event.shiftKey
-  ) {
-    return;
-  }
-
-  const link =
-    event.target instanceof Element ? event.target.closest("a") : null;
-  if (!link?.href || link.target || link.hasAttribute("download")) {
-    return;
-  }
-
-  const url = new URL(link.href);
-  if (url.origin !== window.location.origin) {
-    return;
-  }
-
-  rememberNavigationSource();
 }
 
 function restoreTableOfContentsState() {
@@ -406,6 +277,7 @@ function initializePage() {
   applyTheme(shouldUseDarkTheme(), false);
   updateThemeButtons();
   restoreTableOfContentsState();
+  initBlogIndexState();
   const restoredReturnScroll = restoreReturnScrollPosition();
   if (!restoredReturnScroll) {
     scrollToHashTarget();
@@ -416,8 +288,6 @@ function initializePage() {
 
 function handleDocumentClick(event: MouseEvent) {
   if (!(event.target instanceof Element)) return;
-
-  rememberReturnScrollFromClick(event);
 
   const themeButton = event.target.closest<HTMLButtonElement>(
     "#light-theme-button, #dark-theme-button, #system-theme-button",
@@ -529,15 +399,19 @@ export function registerGlobalUi() {
   state.registered = true;
   history.scrollRestoration = "manual";
 
+  document.addEventListener("click", rememberReturnScrollIntentFromClick, {
+    capture: true,
+  });
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("toggle", storeTableOfContentsState, true);
   document.addEventListener("keydown", handleDocumentKeydown);
   document.addEventListener("astro:after-swap", () =>
     applyTheme(shouldUseDarkTheme()),
   );
-  document.addEventListener("astro:before-preparation", () => {
-    rememberNavigationSource();
-  });
+  document.addEventListener(
+    "astro:before-preparation",
+    rememberNavigationSource,
+  );
   document.addEventListener("astro:before-swap", closeSearch);
   document.addEventListener("astro:page-load", initializePage);
   window.addEventListener("pagehide", rememberNavigationSource);
