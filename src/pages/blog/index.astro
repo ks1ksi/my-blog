@@ -72,9 +72,12 @@ function splitPostsForColumns<T>(posts: T[]) {
 <script is:inline data-astro-rerun>
   (() => {
     const yearStorageKey = "blog:open-years";
+    const previousPathStorageKey = "navigation:previous-path";
+    const scrollStorageKey = "return-scroll:blog:position";
     const yearDetails = Array.from(
       document.querySelectorAll("[data-year-details]"),
     );
+    let isRestoringScroll = false;
 
     if (yearDetails.length === 0) {
       return;
@@ -103,6 +106,57 @@ function splitPostsForColumns<T>(posts: T[]) {
       sessionStorage.setItem(yearStorageKey, JSON.stringify(openYears));
     };
 
+    const normalizePathname = (pathname = window.location.pathname) => {
+      const normalizedPathname = pathname.replace(/\/$/, "");
+      return normalizedPathname || "/";
+    };
+    const isBlogIndex = () => normalizePathname() === "/blog";
+
+    const saveScrollPosition = () => {
+      if (!isBlogIndex() || isRestoringScroll) {
+        return;
+      }
+
+      sessionStorage.setItem(scrollStorageKey, String(window.scrollY));
+    };
+
+    const rememberCurrentPath = () => {
+      if (!isBlogIndex()) {
+        return;
+      }
+
+      sessionStorage.setItem(previousPathStorageKey, normalizePathname());
+      saveScrollPosition();
+    };
+
+    const restoreScrollPosition = () => {
+      if (!isBlogIndex()) {
+        return;
+      }
+
+      const previousPathname = sessionStorage.getItem(previousPathStorageKey);
+      if (!previousPathname?.startsWith("/blog/")) {
+        return;
+      }
+
+      const scrollPosition = Number(sessionStorage.getItem(scrollStorageKey));
+      if (!Number.isFinite(scrollPosition) || scrollPosition <= 0) {
+        return;
+      }
+
+      const restore = () => {
+        window.scrollTo(0, scrollPosition);
+      };
+
+      isRestoringScroll = true;
+      restore();
+      window.setTimeout(restore, 50);
+      window.setTimeout(restore, 250);
+      window.setTimeout(() => {
+        isRestoringScroll = false;
+      }, 350);
+    };
+
     const storedYears = readStoredYears();
     if (storedYears) {
       yearDetails.forEach((details) => {
@@ -118,5 +172,36 @@ function splitPostsForColumns<T>(posts: T[]) {
       details.dataset.yearStateBound = "true";
       details.addEventListener("toggle", writeStoredYears);
     });
+
+    history.scrollRestoration = "manual";
+
+    if (document.documentElement.dataset.blogScrollBound !== "true") {
+      document.documentElement.dataset.blogScrollBound = "true";
+
+      window.addEventListener("scroll", saveScrollPosition, { passive: true });
+      window.addEventListener("pagehide", rememberCurrentPath);
+      window.addEventListener("pageshow", restoreScrollPosition);
+      document.addEventListener("astro:page-load", restoreScrollPosition);
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const link = target.closest("a");
+        if (!link?.href) {
+          return;
+        }
+
+        const url = new URL(link.href);
+        if (url.origin !== window.location.origin) {
+          return;
+        }
+
+        rememberCurrentPath();
+      });
+    }
+
+    restoreScrollPosition();
   })();
 </script>

@@ -23,11 +23,6 @@ const TOC_OPEN_STORAGE_KEY = "article:toc-open";
 const PREVIOUS_PATH_STORAGE_KEY = "navigation:previous-path";
 const RETURN_SCROLL_ROUTES: ReturnScrollRoute[] = [
   {
-    key: "blog",
-    sourcePattern: /^\/blog$/,
-    destinationPattern: /^\/blog\/.+/,
-  },
-  {
     key: "tags",
     sourcePattern: /^\/tags$/,
     destinationPattern: /^\/tags\/[^/]+$/,
