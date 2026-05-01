@@ -22,10 +22,6 @@ type Props = {
 
 const { id } = Astro.params;
 const { posts } = Astro.props as Props;
-const postColumns = [
-  posts.filter((_, index) => index % 2 === 0),
-  posts.filter((_, index) => index % 2 === 1),
-];
 ---
 
 <Layout title={`Tag: ${id}`} description={`Posts tagged ${id}`}>
@@ -35,7 +31,7 @@ const postColumns = [
       <h1 class="font-semibold text-black dark:text-white">
         Posts tagged "{id}"
       </h1>
-      <ul class="grid lg:hidden">
+      <ul class="grid gap-x-8 lg:grid-cols-2">
         {
           posts.map((post) => (
             <li>
@@ -44,19 +40,6 @@ const postColumns = [
           ))
         }
       </ul>
-      <div class="hidden gap-x-8 lg:grid lg:grid-cols-2">
-        {
-          postColumns.map((column) => (
-            <ul>
-              {column.map((post) => (
-                <li>
-                  <ArrowCard entry={post} />
-                </li>
-              ))}
-            </ul>
-          ))
-        }
-      </div>
     </div>
   </Container>
 </Layout>
