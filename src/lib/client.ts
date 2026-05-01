@@ -1,3 +1,4 @@
+import { navigate } from "astro:transitions/client";
 import { initBlogIndexState } from "@lib/blog-index-state";
 import {
   rememberNavigationSource,
@@ -31,6 +32,9 @@ const EDITABLE_SELECTOR = [
   "[contenteditable='true']",
   "[contenteditable='plaintext-only']",
 ].join(", ");
+
+let searchTrigger: HTMLElement | null = null;
+let shouldRestoreSearchFocus = true;
 
 function getState() {
   window.__ks1ksiBlogUi ??= {
@@ -124,8 +128,8 @@ function updateThemeButtons() {
   }
 }
 
-function getSearchBackdrop() {
-  return document.querySelector<HTMLElement>("#backdrop");
+function getSearchDialog() {
+  return document.querySelector<HTMLDialogElement>("#search-dialog");
 }
 
 function getSearchInput() {
@@ -147,26 +151,50 @@ async function loadPagefindUi() {
 }
 
 async function openSearch() {
-  const backdrop = getSearchBackdrop();
-  if (!backdrop) return;
+  const dialog = getSearchDialog();
+  if (!dialog) return;
 
-  backdrop.classList.remove("invisible");
-  backdrop.classList.add("visible");
+  if (document.activeElement instanceof HTMLElement) {
+    searchTrigger = document.activeElement;
+  }
+
+  shouldRestoreSearchFocus = true;
+
+  if (!dialog.open) {
+    dialog.showModal();
+  }
 
   const { ensurePagefindUi } = await loadPagefindUi();
   await ensurePagefindUi();
 
   window.requestAnimationFrame(() => {
-    getSearchInput()?.focus();
+    if (dialog.open) {
+      getSearchInput()?.focus();
+    }
   });
 }
 
-function closeSearch() {
+function finishSearchClose() {
   clearSearch();
 
-  const backdrop = getSearchBackdrop();
-  backdrop?.classList.remove("visible");
-  backdrop?.classList.add("invisible");
+  if (shouldRestoreSearchFocus && searchTrigger?.isConnected) {
+    searchTrigger.focus();
+  }
+
+  searchTrigger = null;
+  shouldRestoreSearchFocus = true;
+}
+
+function closeSearch({ restoreFocus = true } = {}) {
+  const dialog = getSearchDialog();
+  shouldRestoreSearchFocus = restoreFocus;
+
+  if (dialog?.open) {
+    dialog.close();
+    return;
+  }
+
+  finishSearchClose();
 }
 
 function isEditableTarget(target: EventTarget | null) {
@@ -265,14 +293,6 @@ function preloadSearch() {
   void loadPagefindUi().then(({ ensurePagefindUi }) => ensurePagefindUi());
 }
 
-function scheduleSearchPreload() {
-  if (typeof requestIdleCallback === "function") {
-    requestIdleCallback(preloadSearch);
-  } else {
-    window.setTimeout(preloadSearch, 200);
-  }
-}
-
 function initializePage() {
   applyTheme(shouldUseDarkTheme(), false);
   updateThemeButtons();
@@ -283,7 +303,6 @@ function initializePage() {
     scrollToHashTarget();
   }
   enhanceCodeBlocks();
-  scheduleSearchPreload();
 }
 
 function handleDocumentClick(event: MouseEvent) {
@@ -332,6 +351,12 @@ function handleDocumentClick(event: MouseEvent) {
     return;
   }
 
+  if (event.target.closest<HTMLButtonElement>("#search-close")) {
+    event.preventDefault();
+    closeSearch();
+    return;
+  }
+
   if (event.target.closest(".pagefind-ui__result-link")) {
     closeSearch();
     return;
@@ -348,13 +373,13 @@ function handleDocumentClick(event: MouseEvent) {
     if (link?.href) {
       event.preventDefault();
       closeSearch();
-      window.location.href = link.href;
+      void navigate(link.href);
     }
     return;
   }
 
-  const backdrop = event.target.closest<HTMLElement>("#backdrop");
-  if (backdrop && !event.target.closest("#pagefind-container")) {
+  const dialog = getSearchDialog();
+  if (dialog?.open && event.target === dialog) {
     closeSearch();
   }
 }
@@ -381,6 +406,15 @@ function handleDocumentKeydown(event: KeyboardEvent) {
   void openSearch();
 }
 
+function handleSearchPreloadIntent(event: Event) {
+  if (
+    event.target instanceof Element &&
+    event.target.closest("#magnifying-glass")
+  ) {
+    preloadSearch();
+  }
+}
+
 function handleSystemThemeChange(event: MediaQueryListEvent) {
   if (getStoredTheme() !== "system") {
     return;
@@ -405,6 +439,8 @@ export function registerGlobalUi() {
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("toggle", storeTableOfContentsState, true);
   document.addEventListener("keydown", handleDocumentKeydown);
+  document.addEventListener("pointerover", handleSearchPreloadIntent);
+  document.addEventListener("focusin", handleSearchPreloadIntent);
   document.addEventListener("astro:after-swap", () =>
     applyTheme(shouldUseDarkTheme()),
   );
@@ -412,8 +448,19 @@ export function registerGlobalUi() {
     "astro:before-preparation",
     rememberNavigationSource,
   );
-  document.addEventListener("astro:before-swap", closeSearch);
+  document.addEventListener("astro:before-swap", () =>
+    closeSearch({ restoreFocus: false }),
+  );
   document.addEventListener("astro:page-load", initializePage);
+  document.addEventListener(
+    "close",
+    (event) => {
+      if (event.target === getSearchDialog()) {
+        finishSearchClose();
+      }
+    },
+    true,
+  );
   window.addEventListener("pagehide", rememberNavigationSource);
   window.addEventListener("pageshow", restoreReturnScrollPosition);
   window.addEventListener("scroll", scheduleReturnScrollPositionSave, {
