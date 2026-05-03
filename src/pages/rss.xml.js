@@ -5,12 +5,17 @@ import { SITE } from "@consts";
 import { getPublishedPosts } from "@lib/content";
 
 const RSS_ITEM_LIMIT = 50;
+const XML_INVALID_CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 
 function absolutizeRootRelativeUrls(html, site) {
   return html.replace(/\s(href|src)="\/(?!\/)([^"]*)"/g, (_match, attr, path) => {
     const absoluteUrl = new URL(`/${path}`, site).href;
     return ` ${attr}="${absoluteUrl}"`;
   });
+}
+
+function sanitizeXmlText(value) {
+  return value?.replace(XML_INVALID_CONTROL_CHARS, "") ?? value;
 }
 
 export async function GET(context) {
@@ -25,12 +30,12 @@ export async function GET(context) {
       );
 
       return {
-        title: item.data.title,
-        description: item.data.description,
-        content,
+        title: sanitizeXmlText(item.data.title),
+        description: sanitizeXmlText(item.data.description),
+        content: sanitizeXmlText(content),
         pubDate: item.data.date,
         link: `/${item.collection}/${item.id}`,
-        categories: item.data.tags,
+        categories: item.data.tags?.map(sanitizeXmlText),
       };
     }),
   );

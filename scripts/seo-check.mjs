@@ -4,6 +4,7 @@ import path from "node:path";
 const distDir = process.argv[2] ?? "dist";
 const RSS_MAX_BYTES = 10 * 1024 * 1024;
 const NAVER_SITE_VERIFICATION = "bf086187e0346e29d6a4cc46934cf84a85d74c76";
+const XML_INVALID_CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 
 function walkFiles(dir, predicate) {
   if (!fs.existsSync(dir)) {
@@ -85,6 +86,7 @@ const summary = {
   rssContentItems: 0,
   rssTooLarge: 0,
   rootRelativeRssUrls: 0,
+  invalidRssXmlChars: 0,
 };
 const failures = [];
 
@@ -185,6 +187,7 @@ if (!fs.existsSync(rssPath)) {
   summary.rssItems = (rssXml.match(/<item>/g) ?? []).length;
   summary.rssContentItems = (rssXml.match(/<content:encoded>/g) ?? []).length;
   summary.rootRelativeRssUrls = (rssXml.match(/\s(?:href|src)=&quot;\/(?!\/)/g) ?? []).length;
+  summary.invalidRssXmlChars = (rssXml.match(XML_INVALID_CONTROL_CHARS) ?? []).length;
 
   if (Buffer.byteLength(rssXml) >= RSS_MAX_BYTES) {
     summary.rssTooLarge = 1;
@@ -197,6 +200,10 @@ if (!fs.existsSync(rssPath)) {
 
   if (summary.rootRelativeRssUrls > 0) {
     failures.push({ file: "rss.xml", problems: ["RSS content contains root-relative URLs"] });
+  }
+
+  if (summary.invalidRssXmlChars > 0) {
+    failures.push({ file: "rss.xml", problems: ["RSS content contains invalid XML characters"] });
   }
 }
 
@@ -218,7 +225,8 @@ const hardFailures =
   summary.missingRss +
   summary.rssTooLarge +
   (summary.rssItems === 0 || summary.rssContentItems !== summary.rssItems ? 1 : 0) +
-  summary.rootRelativeRssUrls;
+  summary.rootRelativeRssUrls +
+  summary.invalidRssXmlChars;
 
 if (hardFailures > 0) {
   process.exit(1);
