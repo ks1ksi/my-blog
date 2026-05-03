@@ -8,9 +8,10 @@
     "migrate:velog": "node scripts/migrate-velog.mjs",
     "normalize:tags": "node scripts/normalize-tags.mjs",
     "check:tags": "node scripts/normalize-tags.mjs --check",
+    "check:seo": "node scripts/seo-check.mjs",
     "postinstall": "patch-package",
     "test": "vitest run",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build && npm run check:seo",
     "preview": "astro preview",
     "astro": "astro"
   },
