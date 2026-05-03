@@ -1,5 +1,6 @@
 ---
 title: 백준 17297번 Messi Gimossi
+description: "백준 17297번 Messi Gimossi 풀이. 피보나치처럼 이어지는 문자열 길이를 이용해 M번째 문자가 어느 이전 문자열에 속하는지 줄여 간다."
 date: 2023-07-02
 tags:
   - "boj"

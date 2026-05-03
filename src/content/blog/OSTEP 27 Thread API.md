@@ -1,5 +1,6 @@
 ---
 title: OSTEP 27 Thread API
+description: "OSTEP Thread API 정리. pthread_create, pthread_join, lock, condition variable 등 스레드 프로그래밍 API 사용법을 요약한다."
 date: 2023-09-11
 tags:
   - "cs"

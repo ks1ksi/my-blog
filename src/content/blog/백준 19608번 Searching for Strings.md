@@ -1,5 +1,6 @@
 ---
 title: "백준 19608번 Searching for Strings"
+description: "백준 19608번 Searching for Strings 풀이. 슬라이딩 윈도우의 알파벳 빈도와 해시 중복 제거로 애너그램 substring 개수를 구한다."
 date: 2022-06-07
 tags:
   - "string"

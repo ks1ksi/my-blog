@@ -1,5 +1,6 @@
 ---
 title: 백준 13489번 Vještica
+description: "백준 13489번 Vještica 풀이. 단어 집합을 비트마스크로 나누고 공통 prefix를 공유하는 Trie 최소 노드 수를 DP로 계산한다."
 date: 2023-07-02
 tags:
   - "boj"

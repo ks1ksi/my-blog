@@ -1,5 +1,6 @@
 ---
 title: OSTEP 26 Concurrency and Threads
+description: "OSTEP Concurrency and Threads 정리. thread의 개념, 공유 주소 공간, race condition과 critical section이 필요한 이유를 설명한다."
 date: 2023-09-11
 tags:
   - "cs"

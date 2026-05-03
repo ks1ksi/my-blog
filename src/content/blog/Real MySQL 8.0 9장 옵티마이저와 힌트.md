@@ -1,5 +1,6 @@
 ---
 title: Real MySQL 8.0 9장 옵티마이저와 힌트
+description: "Real MySQL 8.0 옵티마이저와 힌트 장 정리. 쿼리 실행 절차, 비용 기반 최적화, 실행 계획, DISTINCT와 임시 테이블 처리를 요약한다."
 date: 2024-04-17
 tags:
   - "cs"

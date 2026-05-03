@@ -1,5 +1,6 @@
 ---
 title: "백준 5467번 Type Printer"
+description: "백준 5467번 Type Printer 풀이. Trie를 구성한 뒤 가장 긴 단어 경로를 마지막에 남기도록 출력과 백스페이스 순서를 정한다."
 date: 2022-04-25
 tags:
   - "trie"

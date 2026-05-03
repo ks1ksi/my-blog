@@ -1,5 +1,6 @@
 ---
 title: 2024 LG CNS 채용연계형 인턴 최종 전환 후기
+description: "2024 LG CNS 채용연계형 인턴 최종 전환 후기. 8주 인턴십 동안 Spring Boot, Bedrock, Vue/Nuxt로 과제를 수행하고 전환 면접까지 마친 경험을 정리했다."
 date: 2024-03-25
 tags:
   - "job"

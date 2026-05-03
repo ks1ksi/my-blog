@@ -1,5 +1,6 @@
 ---
 title: OSTEP 37 Hard Disk Drives
+description: "OSTEP Hard Disk Drives 정리. 디스크의 트랙, 섹터, 탐색 시간, 회전 지연, 전송 시간과 디스크 스케줄링의 기본을 요약한다."
 date: 2023-10-10
 tags:
   - "os"

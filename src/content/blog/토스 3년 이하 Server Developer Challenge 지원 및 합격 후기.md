@@ -1,5 +1,6 @@
 ---
 title: 토스 3년 이하 Server Developer Challenge 지원 및 합격 후기
+description: "토스 3년 이하 Server Developer Challenge 합격 후기. 토스페이먼츠 서버 개발자 전형의 서류, 코딩테스트, 직무 면접, 문화적합성 면접을 정리했다."
 date: 2024-06-13
 tags:
   - "toss"

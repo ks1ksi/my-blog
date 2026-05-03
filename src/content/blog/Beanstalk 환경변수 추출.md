@@ -1,5 +1,6 @@
 ---
 title: Beanstalk 환경변수 추출
+description: "Beanstalk 환경변수 추출 기록. AWS Elastic Beanstalk에서 설정된 환경변수를 확인하고 필요한 값을 추출하는 과정을 정리한다."
 date: 2023-09-12
 tags:
   - "aws"

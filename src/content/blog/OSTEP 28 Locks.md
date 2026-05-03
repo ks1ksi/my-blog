@@ -1,5 +1,6 @@
 ---
 title: OSTEP 28 Locks
+description: "OSTEP Locks 정리. 상호 배제를 위한 lock의 필요성과 spin lock, test-and-set, compare-and-swap, OS 지원 방식의 특징을 설명한다."
 date: 2023-09-11
 tags:
   - "cs"

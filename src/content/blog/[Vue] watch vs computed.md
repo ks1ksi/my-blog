@@ -1,5 +1,6 @@
 ---
 title: "[Vue] watch vs computed"
+description: "Vue watch와 computed 차이 정리. 값 변경에 따른 콜백 실행이 필요한 경우와 계산된 값을 선언적으로 보여줄 때의 사용처를 비교한다."
 date: 2021-09-01
 tags:
   - "js"

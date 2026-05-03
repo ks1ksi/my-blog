@@ -1,5 +1,6 @@
 ---
 title: OSTEP 38 Redundant Disk Arrays (RAID)
+description: "OSTEP RAID 정리. RAID 0, 1, 4, 5의 striping, mirroring, parity 구조와 용량, 신뢰성, 성능 trade-off를 설명한다."
 date: 2023-10-30
 tags:
   - "cs"

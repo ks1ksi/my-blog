@@ -1,5 +1,6 @@
 ---
 title: OSTEP 10 Multi-CPU Scheduling
+description: "OSTEP Multi-CPU Scheduling 정리. 캐시 일관성, 동기화, 캐시 친화성, 단일 큐와 멀티 큐 스케줄링의 장단점을 요약한다."
 date: 2023-07-04
 tags:
   - "cs"

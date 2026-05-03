@@ -1,5 +1,6 @@
 ---
 title: SELECT
+description: "SQL SELECT 실행 흐름 정리. WHERE, GROUP BY, HAVING, ORDER BY의 역할과 조건 적용 순서를 간단히 요약한다."
 date: 2023-07-02
 tags:
   - "cs"

@@ -1,5 +1,6 @@
 ---
 title: "백준 1005번 ACM Craft"
+description: "백준 1005번 ACM Craft 풀이. 건물 선행 관계를 위상 정렬로 처리하고 목표 건물까지 필요한 최소 완성 시간을 계산한다."
 date: 2022-02-03
 tags:
   - "graph"

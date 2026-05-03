@@ -1,5 +1,6 @@
 ---
 title: OSTEP 40 File System Implementation
+description: "OSTEP File System Implementation 정리. vsfs를 예로 block, inode, bitmap, superblock, 디렉터리, 파일 읽기와 쓰기 흐름을 설명한다."
 date: 2023-10-31
 tags:
   - "os"

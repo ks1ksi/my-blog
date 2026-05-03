@@ -1,5 +1,6 @@
 ---
 title: OSTEP 05 Process API
+description: "OSTEP Process API 정리. fork, wait, exec 시스템 콜과 쉘, 파이프, 시그널 등 프로세스 API의 동작을 요약한다."
 date: 2023-07-02
 tags:
   - "cs"

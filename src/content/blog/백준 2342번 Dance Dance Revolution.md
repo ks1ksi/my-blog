@@ -1,5 +1,6 @@
 ---
 title: "백준 2342번 Dance Dance Revolution"
+description: "백준 2342번 Dance Dance Revolution 풀이. 양발의 위치와 진행 인덱스를 상태로 두어 발판을 밟는 최소 힘을 메모이제이션한다."
 date: 2021-11-23
 tags:
   - "dp"

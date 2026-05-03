@@ -1,5 +1,6 @@
 ---
 title: "백준 9663번 N-Queen"
+description: "백준 9663번 N-Queen 풀이. 1차원 배열로 퀸의 위치를 표현하고 열과 대각선 충돌을 검사하는 백트래킹 방법을 설명한다."
 date: 2021-07-15
 tags:
   - "backtracking"

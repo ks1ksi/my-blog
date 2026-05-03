@@ -1,5 +1,6 @@
 ---
 title: 백준 25949번 Jar Game
+description: "백준 25949번 Jar Game 풀이. 세 항아리의 남은 조약돌과 현재 턴을 상태로 정의해 게임 DP로 승패를 판정한다."
 date: 2023-07-02
 tags:
   - "boj"

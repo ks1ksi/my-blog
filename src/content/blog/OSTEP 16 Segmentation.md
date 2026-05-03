@@ -1,5 +1,6 @@
 ---
 title: OSTEP 16 Segmentation
+description: "OSTEP Segmentation 정리. 주소 공간을 코드, 스택, 힙 세그먼트로 나누어 배치하는 방식과 단편화 문제를 설명한다."
 date: 2023-07-17
 tags:
   - "cs"

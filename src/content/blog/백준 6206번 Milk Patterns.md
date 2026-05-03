@@ -1,5 +1,6 @@
 ---
 title: "백준 6206번 Milk Patterns"
+description: "백준 6206번 Milk Patterns 풀이. 정수 수열에 롤링 해시를 적용하고 같은 패턴이 K번 이상 등장하는 최대 길이를 찾는다."
 date: 2022-06-04
 tags:
   - "string"

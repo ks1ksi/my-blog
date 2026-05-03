@@ -1,5 +1,6 @@
 ---
 title: AWS Korea Associate Solutions Architect Internship 채용연계형 인턴 지원 후기
+description: "AWS Korea Associate Solutions Architect Internship 지원 후기. SA 인턴 JD, Online Assessment, Leadership Principles 기반 면접과 탈락 후기를 정리했다."
 date: 2024-05-31
 draft: true
 tags:

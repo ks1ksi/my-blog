@@ -1,5 +1,6 @@
 ---
 title: OSTEP 17 Free Space Management
+description: "OSTEP Free Space Management 정리. free list, splitting, coalescing과 best-fit, worst-fit, first-fit 등 메모리 할당 정책을 요약한다."
 date: 2023-08-01
 tags:
   - "cs"

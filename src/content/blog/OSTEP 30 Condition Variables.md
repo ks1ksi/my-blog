@@ -1,5 +1,6 @@
 ---
 title: OSTEP 30 Condition Variables
+description: "OSTEP Condition Variables 정리. 조건이 만족될 때까지 스레드를 재우고 깨우는 wait, signal, producer-consumer 패턴을 설명한다."
 date: 2023-09-18
 tags:
   - "os"

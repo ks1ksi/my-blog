@@ -1,5 +1,6 @@
 ---
 title: OSTEP 14 Memory API
+description: "OSTEP Memory API 정리. stack과 heap, malloc과 free, 동적 메모리 할당의 메타데이터와 흔한 메모리 오류를 설명한다."
 date: 2023-07-17
 tags:
   - "cs"

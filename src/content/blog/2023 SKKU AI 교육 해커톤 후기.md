@@ -1,5 +1,6 @@
 ---
 title: 2023 SKKU AI 교육 해커톤 후기
+description: "2023 SKKU AI 교육 해커톤 후기. 팀 구성, 프로젝트 진행, 결과와 해커톤에서 느낀 점을 짧게 정리한 글."
 date: 2023-09-24
 tags:
   - "dev"

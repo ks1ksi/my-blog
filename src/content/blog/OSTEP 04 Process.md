@@ -1,5 +1,6 @@
 ---
 title: OSTEP 04 Process
+description: "OSTEP Process 정리. 프로세스의 개념, 주소 공간과 레지스터 상태, 프로세스 생성 과정, 상태 전이와 운영체제 자료구조를 요약한다."
 date: 2023-07-03
 tags:
   - "cs"

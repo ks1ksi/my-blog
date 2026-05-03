@@ -1,5 +1,6 @@
 ---
 title: OSTEP 18 Introduction to Paging
+description: "OSTEP Paging 정리. 주소 공간과 물리 메모리를 고정 크기 페이지로 나누는 방식, page table과 주소 변환 과정을 설명한다."
 date: 2023-08-01
 tags:
   - "cs"

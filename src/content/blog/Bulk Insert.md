@@ -1,5 +1,6 @@
 ---
 title: Bulk Insert
+description: "Bulk Insert 성능 개선 기록. JPA TABLE 키 생성 전략과 배치 삽입 병목을 JDBC 기반 insert로 줄인 과정을 정리한다."
 date: 2023-07-02
 tags:
   - "cs"

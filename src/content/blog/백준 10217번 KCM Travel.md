@@ -1,5 +1,6 @@
 ---
 title: "백준 10217번 KCM Travel"
+description: "백준 10217번 KCM Travel 풀이. 사용한 비용을 상태로 두고 각 비용에서 가능한 최소 시간을 관리하는 최단 경로 접근을 정리한다."
 date: 2022-01-22
 tags:
   - "cpp"

@@ -1,5 +1,6 @@
 ---
 title: "백준 1011번 Fly me to the Alpha Centauri"
+description: "백준 1011번 Fly me to the Alpha Centauri 풀이. 이동 거리 패턴이 제곱수를 기준으로 대칭을 이룬다는 점을 이용해 최소 이동 횟수를 구한다."
 date: 2021-09-26
 tags:
   - "ps"

@@ -1,5 +1,6 @@
 ---
 title: JOIN
+description: "SQL JOIN 정리. Cross, Natural, Inner, Outer, Self Join의 문법과 주의점을 예시 중심으로 정리한다."
 date: 2023-07-02
 tags:
   - "cs"

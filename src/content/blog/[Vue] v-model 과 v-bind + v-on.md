@@ -1,5 +1,6 @@
 ---
 title: "[Vue] v-model 과 v-bind + v-on"
+description: "Vue v-model, v-bind, v-on 정리. 속성 바인딩과 이벤트 바인딩으로 양방향 입력을 구성한 뒤 v-model이 이를 어떻게 줄여주는지 설명한다."
 date: 2021-09-02
 tags:
   - "js"

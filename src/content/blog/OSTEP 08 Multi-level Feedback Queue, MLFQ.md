@@ -1,5 +1,6 @@
 ---
 title: OSTEP 08 Multi-level Feedback Queue, MLFQ
+description: "OSTEP MLFQ 정리. 우선순위 큐, 라운드 로빈, 우선순위 하향과 상향 조정으로 응답 시간과 반환 시간을 개선하는 스케줄링을 요약한다."
 date: 2023-07-02
 tags:
   - "cs"
