@@ -18,7 +18,17 @@ const imageDir = fileURLToPath(
 // https://astro.build/config
 export default defineConfig({
   site: "https://ks1ksi.io",
-  integrations: [sitemap(), mdx(), pagefind()],
+  output: "static",
+  trailingSlash: "never",
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes("/drafts/") && !page.includes("/tags"),
+    }),
+    mdx(),
+    pagefind(),
+  ],
+  compressHTML: true,
+  cacheDir: "./node_modules/.astro",
   vite: {
     plugins: [tailwindcss()],
   },

@@ -4,14 +4,30 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import { BLOG } from "@consts";
 import { getPostsGroupedByYear } from "@lib/content";
+import { createBreadcrumbJsonLd, getCanonicalUrl } from "@lib/seo";
 
 const postsByYear = await getPostsGroupedByYear();
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: BLOG.TITLE,
+    description: BLOG.DESCRIPTION,
+    url: getCanonicalUrl(Astro.url.pathname),
+    inLanguage: "ko-KR",
+  },
+  createBreadcrumbJsonLd([
+    { name: "Home", url: getCanonicalUrl("/") },
+    { name: "Blog", url: getCanonicalUrl(Astro.url.pathname) },
+  ]),
+];
 ---
 
-<Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
+<Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION} jsonLd={jsonLd}>
   <Container size="page">
     <aside data-pagefind-ignore>
       <div class="space-y-10">
+        <h1 class="font-semibold text-black dark:text-white">Blog</h1>
         <div class="space-y-4">
           {
             postsByYear.map(({ year, posts }, yearIndex) => (

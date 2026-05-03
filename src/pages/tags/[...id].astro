@@ -4,6 +4,7 @@ import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
 import BackToPrevious from "@components/BackToPrevious.astro";
 import { type BlogPost, getTagsWithPosts } from "@lib/content";
+import { createBreadcrumbJsonLd, getCanonicalUrl } from "@lib/seo";
 
 export async function getStaticPaths() {
   const tags = await getTagsWithPosts();
@@ -22,9 +23,16 @@ type Props = {
 
 const { id } = Astro.params;
 const { posts } = Astro.props as Props;
+const title = `Tag: ${id}`;
+const description = `${id} 태그가 달린 Seungil Kim 블로그 글 ${posts.length}개.`;
+const jsonLd = createBreadcrumbJsonLd([
+  { name: "Home", url: getCanonicalUrl("/") },
+  { name: "Tags", url: getCanonicalUrl("/tags") },
+  { name: id ?? "Tag", url: getCanonicalUrl(Astro.url.pathname) },
+]);
 ---
 
-<Layout title={`Tag: ${id}`} description={`Posts tagged ${id}`}>
+<Layout title={title} description={description} noindex jsonLd={jsonLd}>
   <Container size="page">
     <div class="space-y-10" data-pagefind-ignore>
       <BackToPrevious href="/tags">All tags</BackToPrevious>

@@ -9,15 +9,42 @@ type Props = {
   title: string;
   description: string;
   type?: "website" | "article";
+  image?: string;
+  publishedTime?: string | Date;
+  modifiedTime?: string | Date;
+  tags?: string[];
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 };
 
-const { title, description, type } = Astro.props;
+const {
+  title,
+  description,
+  type,
+  image,
+  publishedTime,
+  modifiedTime,
+  tags,
+  noindex,
+  jsonLd,
+} = Astro.props;
+const pageTitle = title === SITE.TITLE ? SITE.TITLE : `${title} | ${SITE.TITLE}`;
 ---
 
 <!doctype html>
 <html lang="ko">
   <head>
-    <Head title={`${title} | ${SITE.TITLE}`} description={description} type={type} />
+    <Head
+      title={pageTitle}
+      description={description}
+      type={type}
+      image={image}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      tags={tags}
+      noindex={noindex}
+      jsonLd={jsonLd}
+    />
   </head>
   <body>
     <Header />

@@ -5,11 +5,13 @@ import { SITE, HOME, SOCIALS } from "@consts";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
 import { getRecentPosts } from "@lib/content";
+import { createWebsiteJsonLd } from "@lib/seo";
 
 const blog = await getRecentPosts(SITE.NUM_POSTS_ON_HOMEPAGE);
+const jsonLd = createWebsiteJsonLd();
 ---
 
-<Layout title={HOME.TITLE} description={HOME.DESCRIPTION}>
+<Layout title={HOME.TITLE} description={HOME.DESCRIPTION} jsonLd={jsonLd}>
   <Container size="page">
     <aside data-pagefind-ignore>
       <h1 class="text-2xl font-semibold text-black lg:text-4xl dark:text-white">

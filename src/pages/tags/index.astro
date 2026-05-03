@@ -2,11 +2,21 @@
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import { getTagsWithPosts } from "@lib/content";
+import { createBreadcrumbJsonLd, getCanonicalUrl } from "@lib/seo";
 
 const tags = await getTagsWithPosts();
+const jsonLd = createBreadcrumbJsonLd([
+  { name: "Home", url: getCanonicalUrl("/") },
+  { name: "Tags", url: getCanonicalUrl(Astro.url.pathname) },
+]);
 ---
 
-<Layout title="Tags" description="Browse posts by tag">
+<Layout
+  title="Tags"
+  description="Seungil Kim 블로그의 글을 태그별로 탐색할 수 있는 색인 페이지."
+  noindex
+  jsonLd={jsonLd}
+>
   <Container size="page">
     <div class="space-y-8">
       <div class="space-y-3">

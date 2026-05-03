@@ -1,27 +1,56 @@
 ---
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
+import { SITE } from "@consts";
 
 interface Props {
   title: string;
   description: string;
   image?: string;
   type?: "website" | "article";
+  publishedTime?: string | Date;
+  modifiedTime?: string | Date;
+  tags?: string[];
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
-const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
+const {
+  title,
+  description,
+  image = "/og.jpg",
+  type = "website",
+  publishedTime,
+  modifiedTime,
+  tags = [],
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+const canonicalPath =
+  Astro.url.pathname.length > 1 && Astro.url.pathname.endsWith("/")
+    ? Astro.url.pathname.slice(0, -1)
+    : Astro.url.pathname;
+const canonicalURL = new URL(canonicalPath, Astro.site);
+const absoluteImageURL = new URL(image, Astro.site);
+const imageAlt = title === SITE.TITLE ? SITE.TITLE : `${title} - ${SITE.TITLE}`;
+const jsonLdItems = (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).filter(Boolean);
+const serializeJsonLd = (item: Record<string, unknown>) =>
+  JSON.stringify(item).replace(/</g, "\\u003c");
+const toIsoString = (date: string | Date) =>
+  date instanceof Date ? date.toISOString() : date;
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/webp" href="/icon.webp" />
+<link rel="alternate" type="application/rss+xml" title={SITE.TITLE} href="/rss.xml" />
 <meta name="generator" content={Astro.generator} />
+<meta name="robots" content={noindex ? "noindex,follow" : "index,follow"} />
+<meta name="author" content={SITE.TITLE} />
 
 <!-- Canonical URL -->
-<link rel="canonical" href={canonicalURL} />
+<link rel="canonical" href={canonicalURL.href} />
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -30,17 +59,47 @@ const { title, description, image = "/og.jpg", type = "website" } = Astro.props;
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={type} />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL.href} />
+<meta property="og:site_name" content={SITE.TITLE} />
+<meta property="og:locale" content="ko_KR" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={absoluteImageURL.href} />
+<meta property="og:image:alt" content={imageAlt} />
+
+{
+  type === "article" && publishedTime && (
+    <meta property="article:published_time" content={toIsoString(publishedTime)} />
+  )
+}
+{
+  type === "article" && modifiedTime && (
+    <meta property="article:modified_time" content={toIsoString(modifiedTime)} />
+  )
+}
+{type === "article" && <meta property="article:author" content={SITE.TITLE} />}
+{
+  type === "article" &&
+    tags.map((tag) => <meta property="article:tag" content={tag} />)
+}
 
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalURL.href} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={absoluteImageURL.href} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+{
+  jsonLdItems.map((item) => (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={serializeJsonLd(item as Record<string, unknown>)}
+    />
+  ))
+}
 
 <ClientRouter />
 

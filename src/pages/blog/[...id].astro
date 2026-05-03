@@ -9,6 +9,12 @@ import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import Giscus from "@components/Giscus.astro";
 import { type BlogPost, getPublishedPosts } from "@lib/content";
+import {
+  createBlogPostingJsonLd,
+  createBreadcrumbJsonLd,
+  getCanonicalUrl,
+  getPostDescription,
+} from "@lib/seo";
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
@@ -30,12 +36,31 @@ type Props = {
 
 const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
+const description = getPostDescription(post);
+const canonicalURL = getCanonicalUrl(Astro.url.pathname);
+const imageURL = new URL("/og.jpg", Astro.site).href;
+const jsonLd = [
+  createBlogPostingJsonLd({
+    post,
+    url: canonicalURL,
+    image: imageURL,
+    description,
+  }),
+  createBreadcrumbJsonLd([
+    { name: "Home", url: getCanonicalUrl("/") },
+    { name: "Blog", url: getCanonicalUrl("/blog") },
+    { name: post.data.title, url: canonicalURL },
+  ]),
+];
 ---
 
 <Layout
   title={post.data.title}
-  description={post.data.description ?? post.data.title}
+  description={description}
   type="article"
+  publishedTime={post.data.date}
+  tags={post.data.tags}
+  jsonLd={jsonLd}
 >
   <Container size="article">
     <div>

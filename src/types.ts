@@ -1,6 +1,8 @@
 export type Site = {
   TITLE: string;
   DESCRIPTION: string;
+  URL: string;
+  AUTHOR: string;
   EMAIL: string;
   NUM_POSTS_ON_HOMEPAGE: number;
 };
