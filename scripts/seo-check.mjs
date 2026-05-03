@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const distDir = process.argv[2] ?? "dist";
+const RSS_MAX_BYTES = 10 * 1024 * 1024;
+const NAVER_SITE_VERIFICATION = "bf086187e0346e29d6a4cc46934cf84a85d74c76";
 
 function walkFiles(dir, predicate) {
   if (!fs.existsSync(dir)) {
@@ -77,6 +79,12 @@ const summary = {
   invalidJsonLd: 0,
   indexableTagPages: 0,
   tagUrlsInSitemap: 0,
+  missingNaverVerification: 0,
+  missingRss: 0,
+  rssItems: 0,
+  rssContentItems: 0,
+  rssTooLarge: 0,
+  rootRelativeRssUrls: 0,
 };
 const failures = [];
 
@@ -89,6 +97,7 @@ for (const file of files) {
   const ogTitle = getMetaContent(html, ["property", "og:title"]);
   const ogImage = getMetaContent(html, ["property", "og:image"]);
   const robots = getMetaContent(html, ["name", "robots"]) ?? "";
+  const naverVerification = getMetaContent(html, ["name", "naver-site-verification"]);
   const lang = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i)?.[1];
   const h1Count = (html.match(/<h1\b/gi) ?? []).length;
   const jsonLdScripts = getJsonLdScripts(html);
@@ -147,6 +156,11 @@ for (const file of files) {
     problems.push("tag page is indexable");
   }
 
+  if (rel === "index.html" && naverVerification !== NAVER_SITE_VERIFICATION) {
+    summary.missingNaverVerification += 1;
+    problems.push("missing naver site verification");
+  }
+
   if (problems.length > 0) {
     failures.push({ file: rel, problems });
   }
@@ -162,6 +176,30 @@ for (const sitemap of walkFiles(
   summary.tagUrlsInSitemap += tagUrls.length;
 }
 
+const rssPath = path.join(distDir, "rss.xml");
+if (!fs.existsSync(rssPath)) {
+  summary.missingRss = 1;
+  failures.push({ file: "rss.xml", problems: ["missing RSS feed"] });
+} else {
+  const rssXml = fs.readFileSync(rssPath, "utf8");
+  summary.rssItems = (rssXml.match(/<item>/g) ?? []).length;
+  summary.rssContentItems = (rssXml.match(/<content:encoded>/g) ?? []).length;
+  summary.rootRelativeRssUrls = (rssXml.match(/\s(?:href|src)=&quot;\/(?!\/)/g) ?? []).length;
+
+  if (Buffer.byteLength(rssXml) >= RSS_MAX_BYTES) {
+    summary.rssTooLarge = 1;
+    failures.push({ file: "rss.xml", problems: ["RSS feed is 10MB or larger"] });
+  }
+
+  if (summary.rssItems === 0 || summary.rssContentItems !== summary.rssItems) {
+    failures.push({ file: "rss.xml", problems: ["RSS items must include full content"] });
+  }
+
+  if (summary.rootRelativeRssUrls > 0) {
+    failures.push({ file: "rss.xml", problems: ["RSS content contains root-relative URLs"] });
+  }
+}
+
 console.log(JSON.stringify({ summary, failures: failures.slice(0, 25) }, null, 2));
 
 const hardFailures =
@@ -175,7 +213,12 @@ const hardFailures =
   summary.missingLang +
   summary.invalidJsonLd +
   summary.indexableTagPages +
-  summary.tagUrlsInSitemap;
+  summary.tagUrlsInSitemap +
+  summary.missingNaverVerification +
+  summary.missingRss +
+  summary.rssTooLarge +
+  (summary.rssItems === 0 || summary.rssContentItems !== summary.rssItems ? 1 : 0) +
+  summary.rootRelativeRssUrls;
 
 if (hardFailures > 0) {
   process.exit(1);
