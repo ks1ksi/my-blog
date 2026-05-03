@@ -79,6 +79,7 @@ const summary = {
   missingLang: 0,
   invalidJsonLd: 0,
   indexableTagPages: 0,
+  indexable404Pages: 0,
   tagUrlsInSitemap: 0,
   missingNaverVerification: 0,
   missingRss: 0,
@@ -158,6 +159,11 @@ for (const file of files) {
     problems.push("tag page is indexable");
   }
 
+  if (rel === "404.html" && !robots.includes("noindex")) {
+    summary.indexable404Pages += 1;
+    problems.push("404 page is indexable");
+  }
+
   if (rel === "index.html" && naverVerification !== NAVER_SITE_VERIFICATION) {
     summary.missingNaverVerification += 1;
     problems.push("missing naver site verification");
@@ -220,6 +226,7 @@ const hardFailures =
   summary.missingLang +
   summary.invalidJsonLd +
   summary.indexableTagPages +
+  summary.indexable404Pages +
   summary.tagUrlsInSitemap +
   summary.missingNaverVerification +
   summary.missingRss +
