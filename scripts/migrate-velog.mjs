@@ -456,7 +456,7 @@ async function migrate() {
   const velogSlugRouteMap = new Map(
     details.map((post) => [
       post.url_slug,
-      `/blog/${githubSlug(sanitizeFilePart(normalizeMigratedTitle(post.title)))}`,
+      `/blog/${githubSlug(sanitizeFilePart(normalizeMigratedTitle(post.title)))}/`,
     ]),
   );
   const report = {

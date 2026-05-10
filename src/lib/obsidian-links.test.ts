@@ -98,7 +98,7 @@ describe("remarkObsidianLink", () => {
       { type: "text", value: " and " },
       {
         type: "link",
-        url: "/blog/real-mysql-80-8장-인덱스",
+        url: "/blog/real-mysql-80-8장-인덱스/",
         children: [{ type: "text", value: "DB index" }],
       },
       { type: "text", value: " after" },
@@ -108,17 +108,17 @@ describe("remarkObsidianLink", () => {
   it("uses Astro-compatible slugs for punctuation, spacing, and Korean titles", () => {
     expect(resolveRaw("[[2024 - 2025 회고]]")).toMatchObject({
       type: "link",
-      url: "/blog/2024---2025-회고",
+      url: "/blog/2024---2025-회고/",
     });
     expect(
       resolveRaw("[[OSTEP 38 Redundant Disk Arrays (RAID)]]"),
     ).toMatchObject({
       type: "link",
-      url: "/blog/ostep-38-redundant-disk-arrays-raid",
+      url: "/blog/ostep-38-redundant-disk-arrays-raid/",
     });
     expect(resolveRaw("[[백준  2261번 가장 가까운 두 점]]")).toMatchObject({
       type: "link",
-      url: "/blog/백준--2261번-가장-가까운-두-점",
+      url: "/blog/백준--2261번-가장-가까운-두-점/",
     });
   });
 
@@ -127,13 +127,13 @@ describe("remarkObsidianLink", () => {
       resolveRaw("[[Real MySQL 8.0 8장 인덱스#B-Tree 인덱스]]"),
     ).toMatchObject({
       type: "link",
-      url: "/blog/real-mysql-80-8장-인덱스#b-tree-인덱스",
+      url: "/blog/real-mysql-80-8장-인덱스/#b-tree-인덱스",
     });
     expect(
       resolveRaw("[[OSTEP 07 CPU Scheduling#^865cd1|타임 슬라이스]]"),
     ).toMatchObject({
       type: "link",
-      url: "/blog/ostep-07-cpu-scheduling#^865cd1",
+      url: "/blog/ostep-07-cpu-scheduling/#^865cd1",
     });
     expect(resolveRaw("[[#Local Heading]]", "Simple Post")).toMatchObject({
       type: "link",
@@ -280,7 +280,10 @@ describe("actual content Obsidian links", () => {
           continue;
         }
 
-        const slug = node.url.replace(/^\/blog\//, "").split("#")[0];
+        const slug = node.url
+          .replace(/^\/blog\//, "")
+          .split("#")[0]
+          .replace(/\/$/, "");
         if (!publishedSlugs.has(slug)) {
           brokenLinks.push(
             `${relative(contentDir, file)}: ${raw} -> ${node.url}`,

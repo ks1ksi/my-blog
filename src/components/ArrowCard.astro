@@ -14,7 +14,7 @@ const tags = entry.data.tags ?? [];
   class="not-prose group relative rounded-sm border-b border-[var(--color-border)] px-3 py-5 pr-10 transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)]"
 >
   <a
-    href={`/${entry.collection}/${entry.id}`}
+    href={`/${entry.collection}/${entry.id}/`}
     class="absolute inset-0 z-10 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]"
     aria-label={entry.data.title}></a>
   <div class="pointer-events-none relative z-20 flex min-w-0 flex-col">
@@ -35,7 +35,7 @@ const tags = entry.data.tags ?? [];
             <span aria-hidden="true">·</span>
             {tags.map((tag) => (
               <a
-                href={`/tags/${tag}`}
+                href={`/tags/${tag}/`}
                 class="pointer-events-auto text-black/45 no-underline transition-colors hover:text-[var(--color-accent)] focus-visible:text-[var(--color-accent)] focus-visible:outline-none dark:text-white/45"
               >
                 #{tag}

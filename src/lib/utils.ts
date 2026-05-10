@@ -308,7 +308,7 @@ export function createObsidianLinkResolver(options: ObsidianLinkOptions = {}) {
       currentStem === postKey || currentStem === normalizeLookupKey(postStem);
     const url = isSamePost
       ? hash || `#`
-      : `/blog/${githubSlug(postStem)}${hash}`;
+      : `/blog/${githubSlug(postStem)}/${hash}`;
 
     return {
       type: "link",

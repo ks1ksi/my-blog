@@ -34,7 +34,7 @@ export async function GET(context) {
         description: sanitizeXmlText(item.data.description),
         content: sanitizeXmlText(content),
         pubDate: item.data.date,
-        link: `/${item.collection}/${item.id}`,
+        link: `/${item.collection}/${item.id}/`,
         categories: item.data.tags?.map(sanitizeXmlText),
       };
     }),
@@ -44,7 +44,7 @@ export async function GET(context) {
     title: SITE.TITLE,
     description: SITE.DESCRIPTION,
     site: context.site,
-    trailingSlash: false,
+    trailingSlash: true,
     items: rssItems,
   });
 }

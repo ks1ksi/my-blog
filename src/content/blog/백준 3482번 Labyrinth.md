@@ -16,7 +16,7 @@ tags:
 
 문제에 **"The labyrinth is designed in such a way that there is exactly one path between any two free blocks.** Consequently, if we find the proper hooks to connect, it is easy to find the right path connecting them." 라고 써있다.
 
-미궁은 전체가 이어져 있으며 두 노드를 있는 유일한 경로가 존재한다. 트리 문제다. 어제 풀었던 [트리의 지름](/blog/백준-1167번-트리의-지름) 문제를 응용해서 풀 수 있다. 0과 1로 표현된 미로라 bfs로 풀었다.
+미궁은 전체가 이어져 있으며 두 노드를 있는 유일한 경로가 존재한다. 트리 문제다. 어제 풀었던 [[백준 1167번 트리의 지름|트리의 지름]] 문제를 응용해서 풀 수 있다. 0과 1로 표현된 미로라 bfs로 풀었다.
 
 ## 코드
 ```python

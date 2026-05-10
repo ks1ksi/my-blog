@@ -5,6 +5,7 @@ const distDir = process.argv[2] ?? "dist";
 const RSS_MAX_BYTES = 10 * 1024 * 1024;
 const NAVER_SITE_VERIFICATION = "bf086187e0346e29d6a4cc46934cf84a85d74c76";
 const XML_INVALID_CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+const SITE_URL = "https://ks1ksi.io/";
 
 function walkFiles(dir, predicate) {
   if (!fs.existsSync(dir)) {
@@ -55,6 +56,18 @@ function getJsonLdScripts(html) {
   );
 }
 
+function isPageUrl(value) {
+  const url = new URL(value, SITE_URL);
+  const lastSegment = url.pathname.split("/").filter(Boolean).at(-1) ?? "";
+
+  return !lastSegment.includes(".");
+}
+
+function hasExpectedPageTrailingSlash(value) {
+  const url = new URL(value, SITE_URL);
+  return url.pathname === "/" || !isPageUrl(value) || url.pathname.endsWith("/");
+}
+
 const files = walkFiles(distDir, (file) => file.endsWith(".html"));
 
 if (!fs.existsSync(distDir)) {
@@ -72,7 +85,7 @@ const summary = {
   missingTitle: 0,
   missingDescription: 0,
   invalidCanonical: 0,
-  canonicalWithTrailingSlash: 0,
+  canonicalMissingTrailingSlash: 0,
   missingOgTitle: 0,
   missingOgImage: 0,
   invalidH1Count: 0,
@@ -81,12 +94,14 @@ const summary = {
   indexableTagPages: 0,
   indexable404Pages: 0,
   tagUrlsInSitemap: 0,
+  sitemapPageUrlsMissingTrailingSlash: 0,
   missingNaverVerification: 0,
   missingRss: 0,
   rssItems: 0,
   rssContentItems: 0,
   rssTooLarge: 0,
   rootRelativeRssUrls: 0,
+  rssPageLinksMissingTrailingSlash: 0,
   invalidRssXmlChars: 0,
 };
 const failures = [];
@@ -116,12 +131,12 @@ for (const file of files) {
     problems.push("missing meta description");
   }
 
-  if (!canonical || !canonical.startsWith("https://ks1ksi.io/")) {
+  if (!canonical || !canonical.startsWith(SITE_URL)) {
     summary.invalidCanonical += 1;
     problems.push("invalid canonical");
-  } else if (canonical.length > "https://ks1ksi.io/".length && canonical.endsWith("/")) {
-    summary.canonicalWithTrailingSlash += 1;
-    problems.push("canonical has trailing slash");
+  } else if (!hasExpectedPageTrailingSlash(canonical)) {
+    summary.canonicalMissingTrailingSlash += 1;
+    problems.push("canonical is missing trailing slash");
   }
 
   if (!ogTitle) {
@@ -180,8 +195,12 @@ for (const sitemap of walkFiles(
 )) {
   const xml = fs.readFileSync(sitemap, "utf8");
   const tagUrls = xml.match(/<loc>https:\/\/ks1ksi\.io\/tags(?:\/[^<]*)?<\/loc>/g) ?? [];
+  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 
   summary.tagUrlsInSitemap += tagUrls.length;
+  summary.sitemapPageUrlsMissingTrailingSlash += urls.filter(
+    (url) => url.startsWith(SITE_URL) && isPageUrl(url) && !hasExpectedPageTrailingSlash(url),
+  ).length;
 }
 
 const rssPath = path.join(distDir, "rss.xml");
@@ -193,6 +212,9 @@ if (!fs.existsSync(rssPath)) {
   summary.rssItems = (rssXml.match(/<item>/g) ?? []).length;
   summary.rssContentItems = (rssXml.match(/<content:encoded>/g) ?? []).length;
   summary.rootRelativeRssUrls = (rssXml.match(/\s(?:href|src)=&quot;\/(?!\/)/g) ?? []).length;
+  summary.rssPageLinksMissingTrailingSlash = [
+    ...rssXml.matchAll(/<link>(https:\/\/ks1ksi\.io\/[^<]*)<\/link>/g),
+  ].filter((match) => isPageUrl(match[1]) && !hasExpectedPageTrailingSlash(match[1])).length;
   summary.invalidRssXmlChars = (rssXml.match(XML_INVALID_CONTROL_CHARS) ?? []).length;
 
   if (Buffer.byteLength(rssXml) >= RSS_MAX_BYTES) {
@@ -208,6 +230,10 @@ if (!fs.existsSync(rssPath)) {
     failures.push({ file: "rss.xml", problems: ["RSS content contains root-relative URLs"] });
   }
 
+  if (summary.rssPageLinksMissingTrailingSlash > 0) {
+    failures.push({ file: "rss.xml", problems: ["RSS page links are missing trailing slash"] });
+  }
+
   if (summary.invalidRssXmlChars > 0) {
     failures.push({ file: "rss.xml", problems: ["RSS content contains invalid XML characters"] });
   }
@@ -219,7 +245,7 @@ const hardFailures =
   summary.missingTitle +
   summary.missingDescription +
   summary.invalidCanonical +
-  summary.canonicalWithTrailingSlash +
+  summary.canonicalMissingTrailingSlash +
   summary.missingOgTitle +
   summary.missingOgImage +
   summary.invalidH1Count +
@@ -228,11 +254,13 @@ const hardFailures =
   summary.indexableTagPages +
   summary.indexable404Pages +
   summary.tagUrlsInSitemap +
+  summary.sitemapPageUrlsMissingTrailingSlash +
   summary.missingNaverVerification +
   summary.missingRss +
   summary.rssTooLarge +
   (summary.rssItems === 0 || summary.rssContentItems !== summary.rssItems ? 1 : 0) +
   summary.rootRelativeRssUrls +
+  summary.rssPageLinksMissingTrailingSlash +
   summary.invalidRssXmlChars;
 
 if (hardFailures > 0) {

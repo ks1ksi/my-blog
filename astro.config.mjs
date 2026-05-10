@@ -19,7 +19,7 @@ const imageDir = fileURLToPath(
 export default defineConfig({
   site: "https://ks1ksi.io",
   output: "static",
-  trailingSlash: "never",
+  trailingSlash: "always",
   integrations: [
     sitemap({
       filter: (page) => !page.includes("/drafts/") && !page.includes("/tags"),

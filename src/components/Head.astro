@@ -26,11 +26,7 @@ const {
   noindex = false,
   jsonLd,
 } = Astro.props;
-const canonicalPath =
-  Astro.url.pathname.length > 1 && Astro.url.pathname.endsWith("/")
-    ? Astro.url.pathname.slice(0, -1)
-    : Astro.url.pathname;
-const canonicalURL = new URL(canonicalPath, Astro.site);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const absoluteImageURL = new URL(image, Astro.site);
 const imageAlt = title === SITE.TITLE ? SITE.TITLE : `${title} - ${SITE.TITLE}`;
 const jsonLdItems = (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).filter(Boolean);

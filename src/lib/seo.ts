@@ -151,7 +151,7 @@ export function getPostDescription(post: BlogPost) {
 
 export function getCanonicalUrl(pathname: string) {
   const normalizedPath =
-    pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+    pathname === "/" || pathname.endsWith("/") ? pathname : `${pathname}/`;
 
   return new URL(normalizedPath, SITE.URL).href;
 }
