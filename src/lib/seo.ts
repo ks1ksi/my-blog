@@ -149,6 +149,10 @@ export function getPostDescription(post: BlogPost) {
   return post.data.description ?? createDescription(post.body ?? "", post.data.title);
 }
 
+export function getPostModifiedDate(post: BlogPost) {
+  return post.data.updatedDate ?? post.data.date;
+}
+
 export function getCanonicalUrl(pathname: string) {
   const normalizedPath =
     pathname === "/" || pathname.endsWith("/") ? pathname : `${pathname}/`;
@@ -211,7 +215,7 @@ export function createBlogPostingJsonLd({
       "@id": url,
     },
     datePublished: post.data.date.toISOString(),
-    dateModified: post.data.date.toISOString(),
+    dateModified: getPostModifiedDate(post).toISOString(),
     author: {
       "@type": "Person",
       name: SITE.AUTHOR,
