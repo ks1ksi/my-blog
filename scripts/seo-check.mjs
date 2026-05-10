@@ -56,6 +56,25 @@ function getJsonLdScripts(html) {
   );
 }
 
+function getJsonLdItems(html) {
+  return getJsonLdScripts(html).flatMap((script) => {
+    const parsed = JSON.parse(script);
+
+    return Array.isArray(parsed) ? parsed : [parsed];
+  });
+}
+
+function isBlogPostHtml(rel) {
+  return rel.startsWith(`blog${path.sep}`) && rel !== path.join("blog", "index.html");
+}
+
+function getDistPathFromSiteUrl(value) {
+  const url = new URL(value, SITE_URL);
+  const pathname = decodeURIComponent(url.pathname.replace(/^\/+/, ""));
+
+  return path.join(distDir, pathname);
+}
+
 function isPageUrl(value) {
   const url = new URL(value, SITE_URL);
   const lastSegment = url.pathname.split("/").filter(Boolean).at(-1) ?? "";
@@ -91,10 +110,14 @@ const summary = {
   invalidH1Count: 0,
   missingLang: 0,
   invalidJsonLd: 0,
+  missingArticleModifiedTime: 0,
+  invalidBlogPostingDates: 0,
+  missingGeneratedOgImageFile: 0,
   indexableTagPages: 0,
   indexable404Pages: 0,
   tagUrlsInSitemap: 0,
   sitemapPageUrlsMissingTrailingSlash: 0,
+  blogSitemapUrlsMissingLastmod: 0,
   missingNaverVerification: 0,
   missingRss: 0,
   rssItems: 0,
@@ -116,9 +139,12 @@ for (const file of files) {
   const ogImage = getMetaContent(html, ["property", "og:image"]);
   const robots = getMetaContent(html, ["name", "robots"]) ?? "";
   const naverVerification = getMetaContent(html, ["name", "naver-site-verification"]);
+  const articlePublishedTime = getMetaContent(html, ["property", "article:published_time"]);
+  const articleModifiedTime = getMetaContent(html, ["property", "article:modified_time"]);
   const lang = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i)?.[1];
   const h1Count = (html.match(/<h1\b/gi) ?? []).length;
   const jsonLdScripts = getJsonLdScripts(html);
+  let jsonLdItems = [];
   const problems = [];
 
   if (!title) {
@@ -169,6 +195,43 @@ for (const file of files) {
     }
   }
 
+  try {
+    jsonLdItems = getJsonLdItems(html);
+  } catch {
+    jsonLdItems = [];
+  }
+
+  if (isBlogPostHtml(rel)) {
+    const blogPosting = jsonLdItems.find((item) => item?.["@type"] === "BlogPosting");
+
+    if (!articleModifiedTime) {
+      summary.missingArticleModifiedTime += 1;
+      problems.push("missing article:modified_time");
+    }
+
+    if (
+      !blogPosting?.datePublished ||
+      !blogPosting?.dateModified ||
+      blogPosting.datePublished !== articlePublishedTime ||
+      blogPosting.dateModified !== articleModifiedTime
+    ) {
+      summary.invalidBlogPostingDates += 1;
+      problems.push("BlogPosting dates do not match article meta");
+    }
+
+    if (ogImage?.startsWith(`${SITE_URL}og/blog/`)) {
+      const ogImagePath = getDistPathFromSiteUrl(ogImage);
+
+      if (!fs.existsSync(ogImagePath)) {
+        summary.missingGeneratedOgImageFile += 1;
+        problems.push("generated og:image file is missing");
+      }
+    } else {
+      summary.missingGeneratedOgImageFile += 1;
+      problems.push("blog post must use generated og:image");
+    }
+  }
+
   if (rel.startsWith(`tags${path.sep}`) && !robots.includes("noindex")) {
     summary.indexableTagPages += 1;
     problems.push("tag page is indexable");
@@ -196,11 +259,21 @@ for (const sitemap of walkFiles(
   const xml = fs.readFileSync(sitemap, "utf8");
   const tagUrls = xml.match(/<loc>https:\/\/ks1ksi\.io\/tags(?:\/[^<]*)?<\/loc>/g) ?? [];
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((match) => match[1]);
 
   summary.tagUrlsInSitemap += tagUrls.length;
   summary.sitemapPageUrlsMissingTrailingSlash += urls.filter(
     (url) => url.startsWith(SITE_URL) && isPageUrl(url) && !hasExpectedPageTrailingSlash(url),
   ).length;
+  summary.blogSitemapUrlsMissingLastmod += entries.filter((entry) => {
+    const loc = entry.match(/<loc>([^<]+)<\/loc>/)?.[1] ?? "";
+
+    return (
+      loc.startsWith(`${SITE_URL}blog/`) &&
+      loc !== `${SITE_URL}blog/` &&
+      !/<lastmod>[^<]+<\/lastmod>/.test(entry)
+    );
+  }).length;
 }
 
 const rssPath = path.join(distDir, "rss.xml");
@@ -251,10 +324,14 @@ const hardFailures =
   summary.invalidH1Count +
   summary.missingLang +
   summary.invalidJsonLd +
+  summary.missingArticleModifiedTime +
+  summary.invalidBlogPostingDates +
+  summary.missingGeneratedOgImageFile +
   summary.indexableTagPages +
   summary.indexable404Pages +
   summary.tagUrlsInSitemap +
   summary.sitemapPageUrlsMissingTrailingSlash +
+  summary.blogSitemapUrlsMissingLastmod +
   summary.missingNaverVerification +
   summary.missingRss +
   summary.rssTooLarge +
