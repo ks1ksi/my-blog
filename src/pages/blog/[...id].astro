@@ -15,6 +15,7 @@ import {
   getCanonicalUrl,
   getPostModifiedDate,
   getPostDescription,
+  getPostOgImagePath,
 } from "@lib/seo";
 
 export async function getStaticPaths() {
@@ -39,8 +40,9 @@ const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 const description = getPostDescription(post);
 const canonicalURL = getCanonicalUrl(Astro.url.pathname);
-const imageURL = new URL("/og.jpg", Astro.site).href;
 const modifiedDate = getPostModifiedDate(post);
+const imagePath = getPostOgImagePath(post);
+const imageURL = new URL(imagePath, Astro.site).href;
 const jsonLd = [
   createBlogPostingJsonLd({
     post,
@@ -59,6 +61,7 @@ const jsonLd = [
 <Layout
   title={post.data.title}
   description={description}
+  image={imagePath}
   type="article"
   publishedTime={post.data.date}
   modifiedTime={modifiedDate}

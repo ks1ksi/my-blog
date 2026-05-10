@@ -153,6 +153,10 @@ export function getPostModifiedDate(post: BlogPost) {
   return post.data.updatedDate ?? post.data.date;
 }
 
+export function getPostOgImagePath(post: BlogPost) {
+  return `/og/blog/${post.id}.png`;
+}
+
 export function getCanonicalUrl(pathname: string) {
   const normalizedPath =
     pathname === "/" || pathname.endsWith("/") ? pathname : `${pathname}/`;

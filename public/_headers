@@ -15,6 +15,9 @@
 /og.jpg
   Cache-Control: public, max-age=3600
 
+/og/blog/*
+  Cache-Control: public, max-age=3600
+
 /robots.txt
   Cache-Control: public, max-age=3600
 
