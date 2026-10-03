@@ -33,7 +33,7 @@
   input {
     font: inherit;
   }
-  :where(a, button, select, input, summary):focus-visible {
+  :where(a, button, select, input, summary, dialog):focus-visible {
     outline: 3px solid var(--color-focus);
     outline-offset: 4px;
     border-radius: 3px;

@@ -85,6 +85,17 @@ test("keyboard skip link and modal focus remain usable", async ({ page }) => {
       expect(focus.insideDialog || focus.browserChrome).toBe(true);
       if (focus.browserChrome) {
         await page.keyboard.press(key);
+        // WebKit first focuses the dialog itself when re-entering from its
+        // browser UI. One more key must reach the appropriate child control.
+        if (
+          await page
+            .locator("#search-dialog")
+            .evaluate(
+              (node) => node === document.activeElement && document.hasFocus(),
+            )
+        ) {
+          await page.keyboard.press(key);
+        }
         await expect(
           key === "Tab" ? page.locator("#search-close") : input,
         ).toBeFocused();

@@ -99,8 +99,17 @@ export async function openSearch(trigger?: HTMLElement) {
 }
 
 export function finishSearchClose({ restoreFocus = true } = {}) {
+  // The native close event is queued after closeSearch already cleaned up.
+  if (!searchTrigger && !stopTrackingViewport) {
+    // Navigation may begin between close and its deferred focus recovery.
+    if (!restoreFocus) ++openAttempt;
+    return;
+  }
+  const dialog = getSearchDialog();
+  const trigger = searchTrigger;
+  searchTrigger = null;
   // Invalidates pending imports, stylesheet loads and scheduled focus callbacks.
-  ++openAttempt;
+  const attempt = ++openAttempt;
   stopTrackingViewport?.();
   stopTrackingViewport = undefined;
   const input = getSearchInput();
@@ -108,14 +117,45 @@ export function finishSearchClose({ restoreFocus = true } = {}) {
     input.value = "";
     input.dispatchEvent(new Event("input", { bubbles: true }));
   }
-  if (restoreFocus && searchTrigger?.isConnected) searchTrigger.focus();
-  searchTrigger = null;
+  if (restoreFocus && trigger?.isConnected) {
+    trigger.focus();
+    // Native dialog teardown can settle focus after the synchronous close.
+    // Recover only a lost focus, never a newer open, navigation, or user choice.
+    window.requestAnimationFrame(() => {
+      if (
+        attempt !== openAttempt ||
+        !dialog?.isConnected ||
+        dialog.open ||
+        dialog !== getSearchDialog() ||
+        !trigger.isConnected ||
+        !document.hasFocus()
+      )
+        return;
+      const focused = document.activeElement;
+      if (
+        focused === document.body ||
+        focused === document.documentElement ||
+        (focused && dialog.contains(focused))
+      ) {
+        trigger.focus();
+      }
+    });
+  }
 }
 
 export function closeSearch({ restoreFocus = true } = {}) {
   const dialog = getSearchDialog();
   if (dialog?.open) dialog.close();
   finishSearchClose({ restoreFocus });
+}
+
+export function handleSearchEscape(event: KeyboardEvent) {
+  if (event.key !== "Escape" || !getSearchDialog()?.open) return false;
+  // We close and restore focus ourselves. Do not also let the native Escape
+  // default action close the dialog or apply its own focus restoration.
+  event.preventDefault();
+  closeSearch();
+  return true;
 }
 
 export function handleSearchClose(event: Event) {

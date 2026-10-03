@@ -115,8 +115,53 @@ describe("search open, close and retry", () => {
     waiting.resolve({});
     await opening;
     expect(dialog().open).toBe(false);
-    expect(frames).toHaveLength(0);
+    // Only the close focus recovery can be queued, never a stale input focus.
+    expect(frames).toHaveLength(1);
+    frames.forEach((frame) => frame(0));
     expect(document.activeElement).toBe(trigger());
+  });
+
+  it("consumes Escape while search is loading before native default handling", async () => {
+    const waiting = deferred();
+    ensurePagefindUi.mockReturnValueOnce(waiting.promise);
+    const search = await import("./search");
+    const opening = search.openSearch(trigger());
+    await vi.waitFor(() => expect(ensurePagefindUi).toHaveBeenCalledOnce());
+    const escape = new KeyboardEvent("keydown", {
+      key: "Escape",
+      cancelable: true,
+    });
+    expect(search.handleSearchEscape(escape)).toBe(true);
+    expect(escape.defaultPrevented).toBe(true);
+    expect(dialog().open).toBe(false);
+    expect(document.activeElement).toBe(trigger());
+    waiting.resolve({});
+    await opening;
+    expect(document.activeElement).toBe(trigger());
+  });
+
+  it("preserves native Escape behavior when search is closed", async () => {
+    const search = await import("./search");
+    const escape = new KeyboardEvent("keydown", {
+      key: "Escape",
+      cancelable: true,
+    });
+    expect(search.handleSearchEscape(escape)).toBe(false);
+    expect(escape.defaultPrevented).toBe(false);
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("does not consume non-Escape keys in an open search dialog", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    const tab = new KeyboardEvent("keydown", {
+      key: "Tab",
+      cancelable: true,
+    });
+    expect(search.handleSearchEscape(tab)).toBe(false);
+    expect(tab.defaultPrevented).toBe(false);
+    expect(dialog().open).toBe(true);
+    search.closeSearch();
   });
 
   it("does not steal focus when a queued focus frame runs after close", async () => {
@@ -136,6 +181,71 @@ describe("search open, close and retry", () => {
     dialog().close();
     search.handleSearchClose(eventOn("close", dialog()));
     expect(document.activeElement).toBe(trigger());
+  });
+
+  it("recovers focus after native teardown and ignores its queued close event", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    search.closeSearch();
+    trigger().blur();
+    expect(document.activeElement).toBe(document.body);
+    search.handleSearchClose(eventOn("close", dialog()));
+    frames.forEach((frame) => frame(0));
+    expect(document.activeElement).toBe(trigger());
+  });
+
+  it("does not let an old close frame steal focus after reopening", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    search.closeSearch();
+    const closedFrames = frames.splice(0);
+    await search.openSearch(trigger());
+    frames.forEach((frame) => frame(0));
+    expect(document.activeElement).toBe(input());
+    closedFrames.forEach((frame) => frame(0));
+    expect(document.activeElement).toBe(input());
+    search.closeSearch();
+  });
+
+  it("does not override a different control focused after close", async () => {
+    const other = document.createElement("button");
+    document.body.prepend(other);
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    search.closeSearch();
+    other.focus();
+    frames.forEach((frame) => frame(0));
+    expect(document.activeElement).toBe(other);
+  });
+
+  it("does not schedule focus restoration for result navigation", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    frames.splice(0).forEach((frame) => frame(0));
+    search.closeSearch({ restoreFocus: false });
+    search.handleSearchClose(eventOn("close", dialog()));
+    expect(frames).toHaveLength(0);
+    expect(document.activeElement).not.toBe(trigger());
+  });
+
+  it("cancels a queued close restoration when navigation starts afterward", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    search.closeSearch();
+    trigger().blur();
+    search.closeSearch({ restoreFocus: false });
+    frames.forEach((frame) => frame(0));
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("does not take focus back from browser controls after close", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    search.closeSearch();
+    trigger().blur();
+    vi.spyOn(document, "hasFocus").mockReturnValue(false);
+    frames.forEach((frame) => frame(0));
+    expect(document.activeElement).toBe(document.body);
   });
 
   it("ignores stale results after page replacement and close events after reopen", async () => {

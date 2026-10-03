@@ -9,6 +9,7 @@ import {
   closeSearch,
   getSearchDialog,
   handleSearchClose,
+  handleSearchEscape,
   handleSearchPreloadIntent,
   openSearch,
 } from "./client/search";
@@ -103,10 +104,7 @@ function handleDocumentClick(event: MouseEvent) {
 }
 
 function handleDocumentKeydown(event: KeyboardEvent) {
-  if (event.key === "Escape") {
-    closeSearch();
-    return;
-  }
+  if (handleSearchEscape(event)) return;
   if (
     event.target instanceof Element &&
     event.target.closest(EDITABLE_SELECTOR)
