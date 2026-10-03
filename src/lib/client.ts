@@ -65,14 +65,10 @@ function syncGiscusTheme() {
   const theme = document.documentElement.classList.contains("dark")
     ? "dark"
     : "light";
-  const url = new URL(giscusFrame.src);
-
-  if (url.searchParams.get("theme") === theme) {
-    return;
-  }
-
-  url.searchParams.set("theme", theme);
-  giscusFrame.src = url.toString();
+  giscusFrame.contentWindow?.postMessage(
+    { giscus: { setConfig: { theme } } },
+    "https://giscus.app",
+  );
 }
 
 function applyTheme(dark: boolean) {

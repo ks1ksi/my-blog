@@ -1,21 +1,77 @@
-<div class="giscus"></div>
+<giscus-comments>
+  <details class="comments">
+    <summary>댓글 보기 · 쓰기</summary>
+    <p class="comments-status" role="status"></p>
+    <div class="giscus"></div>
+    <p class="comments-fallback">
+      <a href="https://github.com/ks1ksi/my-blog/discussions">
+        GitHub에서 댓글 보기
+      </a>
+    </p>
+  </details>
+  <template>
+    <script
+      is:inline
+      src="https://giscus.app/client.js"
+      data-repo="ks1ksi/my-blog"
+      data-repo-id="R_kgDOQsTQOA"
+      data-category="Announcements"
+      data-category-id="DIC_kwDOQsTQOM4C0DJB"
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="bottom"
+      data-lang="ko"
+      data-loading="eager"
+      crossorigin="anonymous"
+      async
+    ></script>
+  </template>
+</giscus-comments>
 
-<script
-  is:inline
-  data-astro-rerun
-  src="https://giscus.app/client.js"
-  data-repo="ks1ksi/my-blog"
-  data-repo-id="R_kgDOQsTQOA"
-  data-category="Announcements"
-  data-category-id="DIC_kwDOQsTQOM4C0DJB"
-  data-mapping="pathname"
-  data-strict="0"
-  data-reactions-enabled="1"
-  data-emit-metadata="0"
-  data-input-position="bottom"
-  data-theme="preferred_color_scheme"
-  data-lang="ko"
-  data-loading="lazy"
-  crossorigin="anonymous"
-  async
-></script>
+<script>
+  class GiscusComments extends HTMLElement {
+    private loaded = false;
+
+    connectedCallback() {
+      this.querySelector("details")?.addEventListener("toggle", this.load);
+    }
+
+    disconnectedCallback() {
+      this.querySelector("details")?.removeEventListener("toggle", this.load);
+    }
+
+    private load = () => {
+      if (this.loaded || !this.querySelector("details")?.open) return;
+      const source =
+        this.querySelector("template")?.content.querySelector("script");
+      const status = this.querySelector<HTMLElement>("[role='status']");
+      if (!source || !status) return;
+
+      this.loaded = true;
+      status.textContent = "댓글을 불러오는 중…";
+      const script = document.createElement("script");
+      for (const { name, value } of source.attributes) {
+        script.setAttribute(name, value);
+      }
+      script.dataset.theme = document.documentElement.classList.contains("dark")
+        ? "dark"
+        : "light";
+      script.addEventListener("load", () => {
+        status.textContent = "";
+      });
+      script.addEventListener("error", () => {
+        status.textContent =
+          "댓글을 불러오지 못했습니다. 다시 펼치거나 GitHub에서 확인해 주세요.";
+        this.loaded = false;
+        script.remove();
+      });
+      this.append(script);
+    };
+  }
+
+  if (!customElements.get("giscus-comments")) {
+    customElements.define("giscus-comments", GiscusComments);
+  }
+</script>

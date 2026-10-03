@@ -1,6 +1,6 @@
 import { defineConfig } from "astro/config";
 import { unified, parseFrontmatter } from "@astrojs/markdown-remark";
-import { rehypeMathMetadata } from "./src/lib/markdown";
+import { rehypeArticleImages, rehypeMathMetadata } from "./src/lib/markdown";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 import pagefind from "astro-pagefind";
@@ -83,6 +83,12 @@ export default defineConfig({
   site: "https://ks1ksi.io",
   output: "static",
   trailingSlash: "always",
+  // Start rendering without an extra stylesheet round trip on mobile networks.
+  build: { inlineStylesheets: "always" },
+  image: {
+    layout: "constrained",
+    breakpoints: [384, 640, 768, 1024, 1536],
+  },
   integrations: [
     sitemap({
       filter: (page) => !page.includes("/drafts/") && !page.includes("/tags"),
@@ -110,7 +116,7 @@ export default defineConfig({
         remarkMath,
         [remarkObsidianLink, { contentDir, imageDir }],
       ],
-      rehypePlugins: [rehypeKatex, rehypeMathMetadata],
+      rehypePlugins: [rehypeKatex, rehypeMathMetadata, rehypeArticleImages],
     }),
   },
 });

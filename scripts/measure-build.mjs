@@ -13,9 +13,9 @@ function walk(dir) {
 function nodes(node) {
   return [node, ...(node.childNodes ?? []).flatMap(nodes)];
 }
-const links = nodes(
-  parse(fs.readFileSync(path.join(root, "index.html"), "utf8")),
-)
+const home = fs.readFileSync(path.join(root, "index.html"));
+const homeNodes = nodes(parse(home.toString()));
+const links = homeNodes
   .filter((node) => node.tagName === "link")
   .map((node) =>
     Object.fromEntries(node.attrs.map(({ name, value }) => [name, value])),
@@ -27,6 +27,15 @@ const sizes = (href) => {
 const stylesheets = links
   .filter((link) => link.rel === "stylesheet")
   .map((link) => sizes(link.href));
+const inlineStyles = homeNodes
+  .filter((node) => node.tagName === "style")
+  .map((node) => {
+    const css = (node.childNodes ?? [])
+      .map((child) => child.value ?? "")
+      .join("");
+    return { bytes: Buffer.byteLength(css), gzipBytes: gzipSync(css).length };
+  });
+const allStyles = [...stylesheets, ...inlineStyles];
 const searchFiles = walk(path.join(root, "pagefind"));
 const entry = JSON.parse(
   fs.readFileSync(path.join(root, "pagefind/pagefind-entry.json"), "utf8"),
@@ -35,8 +44,12 @@ console.log(
   JSON.stringify(
     {
       stylesheets,
-      homeCssBytes: stylesheets.reduce((sum, item) => sum + item.bytes, 0),
-      homeCssGzipBytes: stylesheets.reduce(
+      inlineStyles,
+      homeHtmlBytes: home.length,
+      homeHtmlGzipBytes: gzipSync(home).length,
+      homeBlockingCssRequests: stylesheets.length,
+      homeCssBytes: allStyles.reduce((sum, item) => sum + item.bytes, 0),
+      homeCssGzipBytes: allStyles.reduce(
         (sum, item) => sum + item.gzipBytes,
         0,
       ),
