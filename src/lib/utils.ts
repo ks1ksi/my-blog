@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
+import { parseFrontmatter } from "@astrojs/markdown-remark";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { basename, join, relative, sep } from "node:path";
+import { basename, join, relative, sep, posix, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { slug as githubSlug } from "github-slugger";
 import type { Image, Link, Parent, PhrasingContent, Text } from "mdast";
@@ -49,6 +50,7 @@ type ParentWithData = Parent & {
 export type ObsidianPostTarget = {
   stem: string;
   draft?: boolean;
+  slug?: string;
 };
 
 export type ObsidianLinkOptions = {
@@ -86,9 +88,15 @@ function hasMarkdownExtension(filePath: string) {
   return /\.(md|mdx)$/i.test(filePath);
 }
 
-function isDraft(content: string) {
-  const frontmatter = content.match(/^---\s*\n([\s\S]*?)\n---/);
-  return Boolean(frontmatter?.[1].match(/^draft:\s*true\s*$/im));
+export function getPostSlug(stem: string, slug?: string) {
+  return (
+    slug ??
+    stem
+      .split("/")
+      .map((segment) => githubSlug(segment))
+      .join("/")
+      .replace(/\/index$/, "")
+  );
 }
 
 function walkFiles(dir: string) {
@@ -112,12 +120,16 @@ function walkFiles(dir: string) {
 function createPostsFromContentDir(contentDir = BLOG_CONTENT_DIR) {
   return walkFiles(contentDir)
     .filter(hasMarkdownExtension)
-    .map((path) => ({
-      stem: stripMarkdownExtension(relative(contentDir, path))
-        .split(sep)
-        .join("/"),
-      draft: isDraft(readFileSync(path, "utf8")),
-    })) satisfies ObsidianPostTarget[];
+    .map((path) => {
+      const { frontmatter } = parseFrontmatter(readFileSync(path, "utf8"));
+      return {
+        stem: stripMarkdownExtension(relative(contentDir, path))
+          .split(sep)
+          .join("/"),
+        draft: frontmatter.draft === true,
+        slug: frontmatter.slug,
+      };
+    }) satisfies ObsidianPostTarget[];
 }
 
 function createImagesFromImageDir(imageDir = CONTENT_IMAGE_DIR) {
@@ -268,7 +280,10 @@ export function createObsidianLinkResolver(options: ObsidianLinkOptions = {}) {
 
       return {
         type: "image",
-        url: `../images/${resolvedImagePath}`,
+        url: posix.relative(
+          posix.dirname(currentPostStem ?? ""),
+          `../images/${resolvedImagePath}`,
+        ),
         alt,
         data:
           "width" in size
@@ -291,7 +306,9 @@ export function createObsidianLinkResolver(options: ObsidianLinkOptions = {}) {
       } as Link;
     }
 
-    const post = postIndex.get(normalizeLookupKey(target.path));
+    const post = postIndex.get(
+      normalizeLookupKey(stripMarkdownExtension(target.path)),
+    );
     if (!post || post.draft) {
       return {
         type: "text",
@@ -308,7 +325,7 @@ export function createObsidianLinkResolver(options: ObsidianLinkOptions = {}) {
       currentStem === postKey || currentStem === normalizeLookupKey(postStem);
     const url = isSamePost
       ? hash || `#`
-      : `/blog/${githubSlug(postStem)}/${hash}`;
+      : `/blog/${getPostSlug(post.stem, post.slug)}/${hash}`;
 
     return {
       type: "link",
@@ -318,13 +335,20 @@ export function createObsidianLinkResolver(options: ObsidianLinkOptions = {}) {
   };
 }
 
-function getCurrentPostStem(file?: { path?: string; history?: string[] }) {
+function getCurrentPostStem(
+  file: { path?: string; history?: string[] } | undefined,
+  contentDir = BLOG_CONTENT_DIR,
+) {
   const filePath = file?.path ?? file?.history?.[0];
   if (!filePath) {
     return undefined;
   }
 
-  return stripMarkdownExtension(basename(filePath));
+  return stripMarkdownExtension(
+    isAbsolute(filePath) ? relative(contentDir, filePath) : filePath,
+  )
+    .split(sep)
+    .join("/");
 }
 
 function transformBlockIds(tree: Node) {
@@ -361,7 +385,7 @@ export function remarkObsidianLink(options: ObsidianLinkOptions = {}) {
 
   return (tree: Node, file?: { path?: string; history?: string[] }) => {
     transformBlockIds(tree);
-    const currentPostStem = getCurrentPostStem(file);
+    const currentPostStem = getCurrentPostStem(file, options.contentDir);
 
     visit(
       tree,

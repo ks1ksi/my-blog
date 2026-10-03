@@ -1,8 +1,7 @@
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
-@import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
-@plugin '@tailwindcss/typography';
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 

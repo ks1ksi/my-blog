@@ -146,7 +146,9 @@ export function createDescription(content: string, fallback: string) {
 }
 
 export function getPostDescription(post: BlogPost) {
-  return post.data.description ?? createDescription(post.body ?? "", post.data.title);
+  return (
+    post.data.description ?? createDescription(post.body ?? "", post.data.title)
+  );
 }
 
 export function getPostModifiedDate(post: BlogPost) {

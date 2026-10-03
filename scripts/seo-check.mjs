@@ -4,7 +4,8 @@ import path from "node:path";
 const distDir = process.argv[2] ?? "dist";
 const RSS_MAX_BYTES = 10 * 1024 * 1024;
 const NAVER_SITE_VERIFICATION = "bf086187e0346e29d6a4cc46934cf84a85d74c76";
-const XML_INVALID_CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+const XML_INVALID_CONTROL_CHARS =
+  /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const SITE_URL = "https://ks1ksi.io/";
 
 function walkFiles(dir, predicate) {
@@ -24,7 +25,9 @@ function walkFiles(dir, predicate) {
 }
 
 function getTagContent(html, tagName) {
-  return html.match(new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)</${tagName}>`, "i"))?.[1]?.trim();
+  return html
+    .match(new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)</${tagName}>`, "i"))?.[1]
+    ?.trim();
 }
 
 function getAttr(tag, attr) {
@@ -47,12 +50,16 @@ function getLinkHref(html, rel) {
 }
 
 function getJsonLdScripts(html) {
-  const scripts = html.match(
-    /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi,
-  ) ?? [];
+  const scripts =
+    html.match(
+      /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi,
+    ) ?? [];
 
   return scripts.map((script) =>
-    script.replace(/^<script\b[^>]*>/i, "").replace(/<\/script>$/i, "").trim(),
+    script
+      .replace(/^<script\b[^>]*>/i, "")
+      .replace(/<\/script>$/i, "")
+      .trim(),
   );
 }
 
@@ -65,7 +72,9 @@ function getJsonLdItems(html) {
 }
 
 function isBlogPostHtml(rel) {
-  return rel.startsWith(`blog${path.sep}`) && rel !== path.join("blog", "index.html");
+  return (
+    rel.startsWith(`blog${path.sep}`) && rel !== path.join("blog", "index.html")
+  );
 }
 
 function getDistPathFromSiteUrl(value) {
@@ -84,13 +93,17 @@ function isPageUrl(value) {
 
 function hasExpectedPageTrailingSlash(value) {
   const url = new URL(value, SITE_URL);
-  return url.pathname === "/" || !isPageUrl(value) || url.pathname.endsWith("/");
+  return (
+    url.pathname === "/" || !isPageUrl(value) || url.pathname.endsWith("/")
+  );
 }
 
 const files = walkFiles(distDir, (file) => file.endsWith(".html"));
 
 if (!fs.existsSync(distDir)) {
-  console.error(`SEO check failed: ${distDir} does not exist. Run the build first.`);
+  console.error(
+    `SEO check failed: ${distDir} does not exist. Run the build first.`,
+  );
   process.exit(1);
 }
 
@@ -138,9 +151,18 @@ for (const file of files) {
   const ogTitle = getMetaContent(html, ["property", "og:title"]);
   const ogImage = getMetaContent(html, ["property", "og:image"]);
   const robots = getMetaContent(html, ["name", "robots"]) ?? "";
-  const naverVerification = getMetaContent(html, ["name", "naver-site-verification"]);
-  const articlePublishedTime = getMetaContent(html, ["property", "article:published_time"]);
-  const articleModifiedTime = getMetaContent(html, ["property", "article:modified_time"]);
+  const naverVerification = getMetaContent(html, [
+    "name",
+    "naver-site-verification",
+  ]);
+  const articlePublishedTime = getMetaContent(html, [
+    "property",
+    "article:published_time",
+  ]);
+  const articleModifiedTime = getMetaContent(html, [
+    "property",
+    "article:modified_time",
+  ]);
   const lang = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i)?.[1];
   const h1Count = (html.match(/<h1\b/gi) ?? []).length;
   const jsonLdScripts = getJsonLdScripts(html);
@@ -202,7 +224,9 @@ for (const file of files) {
   }
 
   if (isBlogPostHtml(rel)) {
-    const blogPosting = jsonLdItems.find((item) => item?.["@type"] === "BlogPosting");
+    const blogPosting = jsonLdItems.find(
+      (item) => item?.["@type"] === "BlogPosting",
+    );
 
     if (!articleModifiedTime) {
       summary.missingArticleModifiedTime += 1;
@@ -257,13 +281,21 @@ for (const sitemap of walkFiles(
   (file) => path.basename(file).startsWith("sitemap-") && file.endsWith(".xml"),
 )) {
   const xml = fs.readFileSync(sitemap, "utf8");
-  const tagUrls = xml.match(/<loc>https:\/\/ks1ksi\.io\/tags(?:\/[^<]*)?<\/loc>/g) ?? [];
-  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map((match) => match[1]);
+  const tagUrls =
+    xml.match(/<loc>https:\/\/ks1ksi\.io\/tags(?:\/[^<]*)?<\/loc>/g) ?? [];
+  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+    (match) => match[1],
+  );
+  const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(
+    (match) => match[1],
+  );
 
   summary.tagUrlsInSitemap += tagUrls.length;
   summary.sitemapPageUrlsMissingTrailingSlash += urls.filter(
-    (url) => url.startsWith(SITE_URL) && isPageUrl(url) && !hasExpectedPageTrailingSlash(url),
+    (url) =>
+      url.startsWith(SITE_URL) &&
+      isPageUrl(url) &&
+      !hasExpectedPageTrailingSlash(url),
   ).length;
   summary.blogSitemapUrlsMissingLastmod += entries.filter((entry) => {
     const loc = entry.match(/<loc>([^<]+)<\/loc>/)?.[1] ?? "";
@@ -284,35 +316,58 @@ if (!fs.existsSync(rssPath)) {
   const rssXml = fs.readFileSync(rssPath, "utf8");
   summary.rssItems = (rssXml.match(/<item>/g) ?? []).length;
   summary.rssContentItems = (rssXml.match(/<content:encoded>/g) ?? []).length;
-  summary.rootRelativeRssUrls = (rssXml.match(/\s(?:href|src)=&quot;\/(?!\/)/g) ?? []).length;
+  summary.rootRelativeRssUrls = (
+    rssXml.match(/\s(?:href|src)=&quot;\/(?!\/)/g) ?? []
+  ).length;
   summary.rssPageLinksMissingTrailingSlash = [
     ...rssXml.matchAll(/<link>(https:\/\/ks1ksi\.io\/[^<]*)<\/link>/g),
-  ].filter((match) => isPageUrl(match[1]) && !hasExpectedPageTrailingSlash(match[1])).length;
-  summary.invalidRssXmlChars = (rssXml.match(XML_INVALID_CONTROL_CHARS) ?? []).length;
+  ].filter(
+    (match) => isPageUrl(match[1]) && !hasExpectedPageTrailingSlash(match[1]),
+  ).length;
+  summary.invalidRssXmlChars = (
+    rssXml.match(XML_INVALID_CONTROL_CHARS) ?? []
+  ).length;
 
   if (Buffer.byteLength(rssXml) >= RSS_MAX_BYTES) {
     summary.rssTooLarge = 1;
-    failures.push({ file: "rss.xml", problems: ["RSS feed is 10MB or larger"] });
+    failures.push({
+      file: "rss.xml",
+      problems: ["RSS feed is 10MB or larger"],
+    });
   }
 
   if (summary.rssItems === 0 || summary.rssContentItems !== summary.rssItems) {
-    failures.push({ file: "rss.xml", problems: ["RSS items must include full content"] });
+    failures.push({
+      file: "rss.xml",
+      problems: ["RSS items must include full content"],
+    });
   }
 
   if (summary.rootRelativeRssUrls > 0) {
-    failures.push({ file: "rss.xml", problems: ["RSS content contains root-relative URLs"] });
+    failures.push({
+      file: "rss.xml",
+      problems: ["RSS content contains root-relative URLs"],
+    });
   }
 
   if (summary.rssPageLinksMissingTrailingSlash > 0) {
-    failures.push({ file: "rss.xml", problems: ["RSS page links are missing trailing slash"] });
+    failures.push({
+      file: "rss.xml",
+      problems: ["RSS page links are missing trailing slash"],
+    });
   }
 
   if (summary.invalidRssXmlChars > 0) {
-    failures.push({ file: "rss.xml", problems: ["RSS content contains invalid XML characters"] });
+    failures.push({
+      file: "rss.xml",
+      problems: ["RSS content contains invalid XML characters"],
+    });
   }
 }
 
-console.log(JSON.stringify({ summary, failures: failures.slice(0, 25) }, null, 2));
+console.log(
+  JSON.stringify({ summary, failures: failures.slice(0, 25) }, null, 2),
+);
 
 const hardFailures =
   summary.missingTitle +
@@ -335,7 +390,9 @@ const hardFailures =
   summary.missingNaverVerification +
   summary.missingRss +
   summary.rssTooLarge +
-  (summary.rssItems === 0 || summary.rssContentItems !== summary.rssItems ? 1 : 0) +
+  (summary.rssItems === 0 || summary.rssContentItems !== summary.rssItems
+    ? 1
+    : 0) +
   summary.rootRelativeRssUrls +
   summary.rssPageLinksMissingTrailingSlash +
   summary.invalidRssXmlChars;

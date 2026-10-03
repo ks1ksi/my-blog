@@ -78,6 +78,18 @@ describe("return-scroll", () => {
     expect(restoreReturnScrollPosition()).toBe(false);
   });
 
+  it("restores a tag list with trailing slashes only once", () => {
+    setWindow("/tags/algorithm/", 720);
+    rememberNavigationSource(
+      navigationEvent("/tags/algorithm/", "/blog/example/"),
+    );
+    const scrolls: number[] = [];
+    setWindow("/tags/algorithm/", 0, scrolls);
+    expect(restoreReturnScrollPosition()).toBe(true);
+    expect(scrolls).toContain(720);
+    expect(restoreReturnScrollPosition()).toBe(false);
+  });
+
   it("does not restore when the current route does not match the intent", () => {
     setWindow("/blog", 320);
     rememberNavigationSource(navigationEvent("/blog", "/blog/example"));

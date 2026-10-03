@@ -10,48 +10,39 @@ const { entry } = Astro.props;
 const tags = entry.data.tags ?? [];
 ---
 
-<article
-  class="not-prose group relative rounded-sm border-b border-[var(--color-border)] px-3 py-5 pr-10 transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)]"
->
+<article class="not-prose group relative rounded-sm border-b border-[var(--color-border)] px-3 py-5 pr-10 transition-colors duration-300 ease-in-out hover:bg-[var(--color-accent-subtle)]">
   <a
     href={`/${entry.collection}/${entry.id}/`}
     class="absolute inset-0 z-10 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]"
-    aria-label={entry.data.title}></a>
+    aria-label={entry.data.title}
+  ></a>
   <div class="pointer-events-none relative z-20 flex min-w-0 flex-col">
-    <div
-      class="line-clamp-2 leading-7 font-semibold text-black transition-colors duration-300 ease-in-out group-focus-within:text-[var(--color-accent)] group-hover:text-[var(--color-accent)] dark:text-white"
-    >
+    <div class="line-clamp-2 leading-7 font-semibold text-black transition-colors duration-300 ease-in-out group-focus-within:text-[var(--color-accent)] group-hover:text-[var(--color-accent)] dark:text-white">
       {entry.data.title}
     </div>
-    <div
-      class="relative z-10 mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-black/45 dark:text-white/45"
-    >
+    <div class="relative z-10 mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs leading-5 text-black/45 dark:text-white/45">
       <time datetime={entry.data.date.toISOString()}>
         {formatDate(entry.data.date)}
       </time>
-      {
-        tags.length > 0 && (
-          <>
-            <span aria-hidden="true">·</span>
-            {tags.map((tag) => (
-              <a
-                href={`/tags/${tag}/`}
-                class="pointer-events-auto text-black/45 no-underline transition-colors hover:text-[var(--color-accent)] focus-visible:text-[var(--color-accent)] focus-visible:outline-none dark:text-white/45"
-              >
-                #{tag}
-              </a>
-            ))}
-          </>
-        )
-      }
+      {tags.length > 0 && (
+        <>
+          <span aria-hidden="true">·</span>
+          {tags.map((tag) => (
+            <a
+              href={`/tags/${tag}/`}
+              class="pointer-events-auto text-black/45 no-underline transition-colors hover:text-[var(--color-accent)] focus-visible:text-[var(--color-accent)] focus-visible:outline-none dark:text-white/45"
+            >
+              #{tag}
+            </a>
+          ))}
+        </>
+      )}
     </div>
-    {
-      entry.data.description && (
-        <div class="mt-2 line-clamp-2 text-sm text-black/65 dark:text-white/65">
-          {entry.data.description}
-        </div>
-      )
-    }
+    {entry.data.description && (
+      <div class="mt-2 line-clamp-2 text-sm text-black/65 dark:text-white/65">
+        {entry.data.description}
+      </div>
+    )}
   </div>
   <svg
     xmlns="http://www.w3.org/2000/svg"

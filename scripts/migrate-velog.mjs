@@ -1,12 +1,6 @@
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import {
-  mkdir,
-  readdir,
-  readFile,
-  stat,
-  writeFile,
-} from "node:fs/promises";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { extname, join, relative } from "node:path";
 import { slug as githubSlug } from "github-slugger";
 import { normalizeTags } from "./tag-taxonomy.mjs";
@@ -145,7 +139,9 @@ async function fetchPostDetails(summaries) {
       throw new Error(`Missing post detail: ${summary.title}`);
     }
 
-    console.log(`Fetched detail ${index + 1}/${summaries.length}: ${post.title}`);
+    console.log(
+      `Fetched detail ${index + 1}/${summaries.length}: ${post.title}`,
+    );
     return post;
   });
 }
@@ -270,11 +266,7 @@ function duplicateHeadingCandidates(title) {
   );
   const withoutBracketPrefix = normalizedTitle.replace(/^\[[^\]]+]\s+/, "");
 
-  return new Set([
-    normalizedTitle,
-    withoutProblemPrefix,
-    withoutBracketPrefix,
-  ]);
+  return new Set([normalizedTitle, withoutProblemPrefix, withoutBracketPrefix]);
 }
 
 function removeDuplicateLeadingH1(body, title) {
@@ -324,8 +316,10 @@ function urlExtension(url) {
 
 function getImageUrls(markdown, thumbnail) {
   const urls = new Set();
-  const markdownImagePattern = /!\[[^\]]*]\((https?:\/\/[^)\s]+)(?:\s+"[^"]*")?\)/g;
-  const htmlImagePattern = /<img\b[^>]*\bsrc=["'](https?:\/\/[^"']+)["'][^>]*>/gi;
+  const markdownImagePattern =
+    /!\[[^\]]*]\((https?:\/\/[^)\s]+)(?:\s+"[^"]*")?\)/g;
+  const htmlImagePattern =
+    /<img\b[^>]*\bsrc=["'](https?:\/\/[^"']+)["'][^>]*>/gi;
 
   for (const match of markdown.matchAll(markdownImagePattern)) {
     urls.add(match[1]);

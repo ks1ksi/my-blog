@@ -4,10 +4,18 @@ Personal blog built with Astro, Tailwind CSS v4, MDX, KaTeX, Giscus, and Pagefin
 
 ## Commands
 
-- `npm install`
+- Node.js 22.12+ (the build uses the Node 22 LTS line from `.node-version`)
+- `npm ci`
+- `npm run lint`
+- `npm run check`
+- `npm test`
 - `npm run dev`
 - `npm run build`
 - `npm run preview`
+
+`build` also checks generated SEO metadata, sitemap coverage, robots, local links
+and anchors, math styles, and the search index. See `patches/README.md` before
+upgrading Astro; the Samsung Internet scroll workaround is applied at install.
 
 ## Structure
 
@@ -51,6 +59,7 @@ If you want to edit posts in Obsidian, open `src/content` as the vault.
 Search uses Pagefind.
 
 - the search index is generated during `npm run build`
+- only published article titles and bodies are indexed; lists, navigation and comments are excluded
 - the repository no longer tracks `public/pagefind`
 - search is guaranteed in built output such as `npm run build && npm run preview`
 

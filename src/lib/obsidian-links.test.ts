@@ -1,4 +1,11 @@
-import { readdirSync, readFileSync } from "node:fs";
+import {
+  readdirSync,
+  readFileSync,
+  mkdtempSync,
+  writeFileSync,
+  rmSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import { basename, join, relative, sep } from "node:path";
 import { describe, expect, it } from "vitest";
 import { slug as githubSlug } from "github-slugger";
@@ -12,6 +19,7 @@ import {
 
 const fixturePosts: ObsidianPostTarget[] = [
   { stem: "Simple Post" },
+  { stem: "notes/Nested Post" },
   { stem: "Real MySQL 8.0 8장 인덱스" },
   { stem: "2024 - 2025 회고" },
   { stem: "OSTEP 07 CPU Scheduling" },
@@ -139,6 +147,46 @@ describe("remarkObsidianLink", () => {
       type: "link",
       url: "#local-heading",
     });
+  });
+
+  it("preserves nested post paths and accepts explicit Markdown extensions", () => {
+    expect(resolveRaw("[[notes/Nested Post.md#Heading|nested]]")).toMatchObject(
+      {
+        type: "link",
+        url: "/blog/notes/nested-post/#heading",
+      },
+    );
+    expect(resolveRaw("[[Simple Post.md]]")).toMatchObject({
+      type: "link",
+      url: "#",
+    });
+    expect(resolveRaw("![[image.png]]", "notes/Nested Post")).toMatchObject({
+      type: "image",
+      url: "../../images/image.png",
+    });
+  });
+
+  it("reads YAML comments and quoted keys when excluding drafts and preserving custom slugs", () => {
+    const contentDir = mkdtempSync(join(tmpdir(), "blog-links-"));
+    try {
+      writeFileSync(
+        join(contentDir, "Hidden.md"),
+        '---\n"draft": true # private\ntitle: Hidden\ndate: 2026-01-01\n---\n',
+      );
+      writeFileSync(
+        join(contentDir, "Published.md"),
+        "---\nslug: stable-url # existing public address\ntitle: Published\ndate: 2026-01-01\n---\n",
+      );
+      const resolve = createObsidianLinkResolver({ contentDir, images: [] });
+      expect(resolve(parseObsidianLinkToken("[[Hidden]]")!)).toMatchObject({
+        type: "text",
+      });
+      expect(
+        resolve(parseObsidianLinkToken("[[Published.md]]")!),
+      ).toMatchObject({ type: "link", url: "/blog/stable-url/" });
+    } finally {
+      rmSync(contentDir, { recursive: true, force: true });
+    }
   });
 
   it("transforms block markers into paragraph ids and removes marker text", () => {

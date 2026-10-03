@@ -38,13 +38,14 @@ function buildToc(headings: Heading[]) {
   data-table-of-contents
   class="group rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)]/60 dark:bg-white/[0.02]"
 >
-  <summary
-    class="cursor-pointer px-3 py-2 text-sm font-medium text-black/70 transition-colors hover:bg-[var(--color-accent-subtle)] dark:text-white/70 dark:hover:bg-[var(--color-accent-subtle)]"
-    >On this page</summary
-  >
+  <summary class="cursor-pointer px-3 py-2 text-sm font-medium text-black/70 transition-colors hover:bg-[var(--color-accent-subtle)] dark:text-white/70 dark:hover:bg-[var(--color-accent-subtle)]">
+    On this page
+  </summary>
   <nav>
     <ul class="py-2">
-      {toc.map((heading) => <TableOfContentsHeading heading={heading} />)}
+      {toc.map((heading) => (
+        <TableOfContentsHeading heading={heading} />
+      ))}
     </ul>
   </nav>
 </details>

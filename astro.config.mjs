@@ -1,15 +1,16 @@
 import { defineConfig } from "astro/config";
+import { unified, parseFrontmatter } from "@astrojs/markdown-remark";
+import { rehypeMathMetadata } from "./src/lib/markdown";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 import pagefind from "astro-pagefind";
 import tailwindcss from "@tailwindcss/vite";
-import { remarkObsidianLink } from "./src/lib/utils";
+import { remarkObsidianLink, getPostSlug } from "./src/lib/utils";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { fileURLToPath } from "node:url";
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
-import GithubSlugger from "github-slugger";
 
 const contentDir = fileURLToPath(
   new URL("./src/content/blog", import.meta.url),
@@ -30,41 +31,27 @@ function walkMarkdownFiles(dir) {
   });
 }
 
-function getFrontmatterValue(frontmatter, key) {
-  return frontmatter.match(new RegExp(`^${key}:\\s*(.+)$`, "m"))?.[1]?.trim();
-}
-
-function normalizeFrontmatterValue(value) {
-  if (!value || value === "null") {
-    return undefined;
-  }
-
-  return value.replace(/^["']|["']$/g, "");
-}
-
 function createPostLastmodMap() {
   const posts = new Map();
 
   for (const file of walkMarkdownFiles(contentDir)) {
     const source = readFileSync(file, "utf8");
-    const frontmatter = source.match(/^---\s*\n([\s\S]*?)\n---/)?.[1] ?? "";
+    const { frontmatter } = parseFrontmatter(source);
 
-    if (getFrontmatterValue(frontmatter, "draft") === "true") {
+    if (frontmatter.draft === true) {
       continue;
     }
 
-    const date = normalizeFrontmatterValue(getFrontmatterValue(frontmatter, "date"));
-    const updatedDate = normalizeFrontmatterValue(
-      getFrontmatterValue(frontmatter, "updatedDate"),
-    );
-    const lastmod = updatedDate ?? date;
+    const lastmod = frontmatter.updatedDate ?? frontmatter.date;
 
     if (!lastmod) {
       continue;
     }
 
-    const id = relative(contentDir, file).slice(0, -extname(file).length).replaceAll("\\", "/");
-    const slug = new GithubSlugger().slug(id);
+    const id = relative(contentDir, file)
+      .slice(0, -extname(file).length)
+      .replaceAll("\\", "/");
+    const slug = getPostSlug(id, frontmatter.slug);
 
     posts.set(id, new Date(lastmod));
     posts.set(slug, new Date(lastmod));
@@ -118,7 +105,12 @@ export default defineConfig({
     shikiConfig: {
       theme: "css-variables",
     },
-    remarkPlugins: [remarkMath, [remarkObsidianLink, { contentDir, imageDir }]],
-    rehypePlugins: [rehypeKatex],
+    processor: unified({
+      remarkPlugins: [
+        remarkMath,
+        [remarkObsidianLink, { contentDir, imageDir }],
+      ],
+      rehypePlugins: [rehypeKatex, rehypeMathMetadata],
+    }),
   },
 });

@@ -1,10 +1,7 @@
 import { existsSync } from "node:fs";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import {
-  normalizeTags,
-  TAG_FORMAT_PATTERN,
-} from "./tag-taxonomy.mjs";
+import { normalizeTags, TAG_FORMAT_PATTERN } from "./tag-taxonomy.mjs";
 
 const ROOT_DIR = process.cwd();
 const BLOG_DIR = join(ROOT_DIR, "src/content/blog");
@@ -100,10 +97,7 @@ function serializeTags(tags) {
     return ["tags: []"];
   }
 
-  return [
-    "tags:",
-    ...tags.map((tag) => `  - ${JSON.stringify(tag)}`),
-  ];
+  return ["tags:", ...tags.map((tag) => `  - ${JSON.stringify(tag)}`)];
 }
 
 function updateFrontmatterTags(markdown) {
@@ -183,7 +177,9 @@ async function main() {
   }
 
   console.log(`Files scanned: ${files.length}`);
-  console.log(`Files ${CHECK_ONLY ? "needing changes" : "changed"}: ${changedCount}`);
+  console.log(
+    `Files ${CHECK_ONLY ? "needing changes" : "changed"}: ${changedCount}`,
+  );
   console.log(`Tags: ${allTags.size}`);
   for (const [tag, count] of [...allTags.entries()].sort((a, b) =>
     a[0].localeCompare(b[0]),
