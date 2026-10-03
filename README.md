@@ -71,8 +71,6 @@ draft: false
 - use full/relative paths when multiple notes or images share a basename; missing
   or ambiguous references produce source-located warnings instead of arbitrary links
 - keep literal array expressions such as `[[1, 2], [3, 4]]` inside inline code
-- curated post references in `src/lib/discovery.ts` are verified during
-  tests/build; update that curation when removing or making an included post private
 
 The starter template is available at `src/content/templates/template.md`.
 

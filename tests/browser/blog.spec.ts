@@ -263,11 +263,30 @@ test("home stays minimal and original article navigation remains available", asy
   await page.goto("/");
   await expect(page.locator("#featured-title, #series-title")).toHaveCount(0);
   await expect(page.locator('a[href^="/series/"]')).toHaveCount(0);
-  await expect(page.locator(".featured-posts .post-link")).toHaveCount(4);
-  await page
-    .locator('.featured-posts a[href="/blog/real-mysql-80-8장-인덱스/"]')
-    .click();
-  await expect(page.locator("h1")).toContainText("인덱스");
+  await expect(page.locator(".featured-posts")).toHaveCount(0);
+  await expect(page.locator(".home-stack .post-list")).toHaveCount(1);
+  const cards = page.locator(".home-stack .post-card");
+  await expect(cards).toHaveCount(5);
+  const dates = await cards
+    .locator("time")
+    .evaluateAll((nodes) =>
+      nodes.map((node) => new Date(node.getAttribute("datetime")!).valueOf()),
+    );
+  expect(dates).toEqual([...dates].sort((a, b) => b - a));
+  const recentLinks = await cards
+    .locator(".post-link")
+    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+  expect(new Set(recentLinks).size).toBe(recentLinks.length);
+  await page.locator('.section-heading a[href="/blog/"]').click();
+  await expect(page).toHaveURL(/\/blog\/$/);
+  const archiveLinks = await page
+    .locator(".archive-years .post-link")
+    .evaluateAll((nodes) =>
+      nodes.slice(0, 5).map((node) => node.getAttribute("href")),
+    );
+  expect(recentLinks).toEqual(archiveLinks);
+  await page.locator(".archive-years .post-link").first().click();
+  await expect(page.locator("h1")).toBeVisible();
   await expect(page.locator('nav[aria-label="다른 글"]')).toBeVisible();
   await expect(page.locator(".series-context")).toHaveCount(0);
   const removed = await page.goto("/series/ostep/");

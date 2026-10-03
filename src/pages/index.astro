@@ -5,13 +5,9 @@ import { SITE, HOME, SOCIALS } from "@consts";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
 import { getPublishedPosts } from "@lib/content";
-import { getFeaturedPosts, validateDiscoveryReferences } from "@lib/discovery";
 import { createWebsiteJsonLd } from "@lib/seo";
 const posts = await getPublishedPosts();
-const discoveryErrors = validateDiscoveryReferences(posts);
-if (discoveryErrors.length) throw new Error(discoveryErrors.join("\n"));
 const blog = posts.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
-const featured = getFeaturedPosts(posts);
 const jsonLd = createWebsiteJsonLd();
 ---
 
@@ -39,15 +35,6 @@ const jsonLd = createWebsiteJsonLd();
             회고와 일상 <span aria-hidden="true">↗</span>
           </a>
         </nav>
-      </section>
-      <section aria-label="글">
-        <ul class="post-list featured-posts">
-          {featured.map((post) => (
-            <li>
-              <ArrowCard entry={post} heading="h2" />
-            </li>
-          ))}
-        </ul>
       </section>
       <section aria-labelledby="recent-title">
         <div class="section-heading">
@@ -91,19 +78,3 @@ const jsonLd = createWebsiteJsonLd();
     </div>
   </Container>
 </Layout>
-
-<style>
-  .featured-posts {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0 var(--space-6);
-  }
-  .featured-posts li {
-    display: grid;
-  }
-  @media (max-width: 48rem) {
-    .featured-posts {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-</style>
