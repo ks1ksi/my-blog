@@ -4,94 +4,17 @@ import { SITE } from "@consts";
 import BackToTop from "@components/BackToTop.astro";
 ---
 
-<footer>
+<footer class="site-footer">
   <Container size="page">
-    <div class="mb-4 flex justify-end">
-      <BackToTop />
-    </div>
-    <div class="flex items-center justify-between">
-      <div class="inline-flex items-center gap-1.5">
-        <span>
-          &copy; {new Date().getFullYear()} • {SITE.TITLE}
-        </span>
-        <span class="text-[var(--color-accent)]" aria-hidden="true">
-          ~/
-        </span>
-      </div>
-      <div class="flex flex-wrap items-center gap-1.5">
-        <button
-          id="light-theme-button"
-          aria-label="Light theme"
-          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20 dark:hover:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)]"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="transition-colors duration-300 ease-in-out group-hover:animate-pulse group-hover:stroke-black group-focus-visible:animate-pulse group-focus-visible:stroke-black dark:group-hover:stroke-white dark:group-focus-visible:stroke-white"
-          >
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </button>
-        <button
-          id="dark-theme-button"
-          aria-label="Dark theme"
-          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20 dark:hover:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)]"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="transition-colors duration-300 ease-in-out group-hover:animate-pulse group-hover:stroke-black group-focus-visible:animate-pulse group-focus-visible:stroke-black dark:group-hover:stroke-white dark:group-focus-visible:stroke-white"
-          >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </button>
-        <button
-          id="system-theme-button"
-          aria-label="System theme"
-          class="group flex size-9 items-center justify-center rounded-sm border border-black/15 hover:bg-[var(--color-accent-subtle)] focus-visible:bg-[var(--color-accent-subtle)] dark:border-white/20 dark:hover:bg-[var(--color-accent-subtle)] dark:focus-visible:bg-[var(--color-accent-subtle)]"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="transition-colors duration-300 ease-in-out group-hover:animate-pulse group-hover:stroke-black group-focus-visible:animate-pulse group-focus-visible:stroke-black dark:group-hover:stroke-white dark:group-focus-visible:stroke-white"
-          >
-            <circle cx="12" cy="12" r="9"></circle>
-            <path
-              d="M12 3a9 9 0 0 1 0 18"
-              fill="currentColor"
-              stroke="none"
-            ></path>
-          </svg>
-        </button>
+    <div class="footer-inner">
+      <p>
+        &copy; {new Date().getFullYear()} {SITE.TITLE}
+      </p>
+      <div class="footer-links">
+        <a class="text-link" href="/rss.xml">
+          RSS
+        </a>
+        <BackToTop />
       </div>
     </div>
   </Container>

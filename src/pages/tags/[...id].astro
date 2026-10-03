@@ -34,12 +34,14 @@ const jsonLd = createBreadcrumbJsonLd([
 
 <Layout title={title} description={description} noindex jsonLd={jsonLd}>
   <Container size="page">
-    <div class="space-y-10" data-pagefind-ignore>
-      <BackToPrevious href="/tags/">All tags</BackToPrevious>
-      <h1 class="font-semibold text-black dark:text-white">
-        Posts tagged "{id}"
-      </h1>
-      <ul class="grid gap-x-8 lg:grid-cols-2">
+    <div data-pagefind-ignore>
+      <BackToPrevious href="/tags/">모든 태그</BackToPrevious>
+      <div class="page-heading tag-heading">
+        <p class="eyebrow">Topic</p>
+        <h1>#{id}</h1>
+        <p>{posts.length}편의 기록</p>
+      </div>
+      <ul class="post-list">
         {posts.map((post) => (
           <li>
             <ArrowCard entry={post} />

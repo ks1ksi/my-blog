@@ -1,0 +1,52 @@
+---
+import ThemeIcon from "./ThemeIcon.astro";
+const themes = [
+  { value: "light", label: "라이트 모드" },
+  { value: "dark", label: "다크 모드" },
+  { value: "system", label: "시스템 설정" },
+] as const;
+---
+
+<button
+  id="theme-toggle"
+  class="theme-control"
+  type="button"
+  popovertarget="theme-picker"
+  aria-label="테마 변경"
+  title="테마 변경"
+>
+  <ThemeIcon theme="light" class="theme-sun" />
+  <ThemeIcon theme="dark" class="theme-moon" />
+</button>
+<div
+  id="theme-picker"
+  popover="auto"
+  class="theme-picker"
+  role="group"
+  aria-label="화면 테마"
+>
+  {themes.map(({ value, label }) => (
+    <button
+      type="button"
+      data-theme-value={value}
+      aria-pressed={value === "system"}
+    >
+      <ThemeIcon theme={value} />
+      <span>{label}</span>
+      <svg
+        class="theme-check"
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        width="16"
+        height="16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m4 10 4 4 8-8" />
+      </svg>
+    </button>
+  ))}
+</div>

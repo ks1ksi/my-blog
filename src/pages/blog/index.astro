@@ -25,42 +25,42 @@ const jsonLd = [
 
 <Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION} jsonLd={jsonLd}>
   <Container size="page">
-    <aside data-pagefind-ignore>
-      <div class="space-y-10">
-        <h1 class="font-semibold text-black dark:text-white">Blog</h1>
-        <div class="space-y-4">
-          {postsByYear.map(({ year, posts }, yearIndex) => (
-            <details
-              id={`year-${year}`}
-              class="group/year space-y-4"
-              data-year-details
-              data-year={year}
-              open={yearIndex < 2}
-            >
-              <summary class="flex cursor-pointer list-none items-center justify-between border-b border-black/10 pb-2 text-black transition-colors marker:hidden hover:text-[var(--color-accent)] dark:border-white/10 dark:text-white [&::-webkit-details-marker]:hidden">
-                <span class="flex items-center gap-2 font-semibold">
-                  <span class="inline-block transition-transform group-open/year:rotate-90">
-                    ›
-                  </span>
-                  {year}
-                </span>
-                <span class="text-xs font-normal text-black/45 dark:text-white/45">
-                  {posts.length} posts
-                </span>
-              </summary>
-              <div class="pt-4">
-                <ul class="not-prose grid gap-x-8 lg:grid-cols-2">
-                  {posts.map((post) => (
-                    <li>
-                      <ArrowCard entry={post} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </details>
-          ))}
-        </div>
+    <div data-pagefind-ignore>
+      <div class="page-heading">
+        <h1>모든 글</h1>
+        <p>
+          {postsByYear.reduce((total, group) => total + group.posts.length, 0)}
+          편
+        </p>
       </div>
-    </aside>
+      <nav class="archive-nav" aria-label="연도별로 이동">
+        {postsByYear.map(({ year }) => (
+          <a href={`#year-${year}`}>{year}</a>
+        ))}
+      </nav>
+      <div class="archive-years">
+        {postsByYear.map(({ year, posts }, yearIndex) => (
+          <details
+            id={`year-${year}`}
+            class="year-section"
+            data-year-details
+            data-year={year}
+            open={yearIndex < 2}
+          >
+            <summary>
+              <h2>{year}</h2>
+              <span class="year-count">{posts.length}편</span>
+            </summary>
+            <ul class="post-list">
+              {posts.map((post) => (
+                <li>
+                  <ArrowCard entry={post} heading="h3" />
+                </li>
+              ))}
+            </ul>
+          </details>
+        ))}
+      </div>
+    </div>
   </Container>
 </Layout>

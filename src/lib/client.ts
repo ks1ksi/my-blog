@@ -18,7 +18,6 @@ declare global {
 }
 
 const THEME_STORAGE_KEY = "theme";
-const ACTIVE_THEME_CLASSES = ["bg-[var(--color-accent-subtle)]"];
 const TOC_OPEN_STORAGE_KEY = "article:toc-open";
 const EDITABLE_SELECTOR = [
   "input",
@@ -58,22 +57,6 @@ function shouldUseDarkTheme(theme = getStoredTheme()) {
   return theme === "dark" || (theme === "system" && prefersDarkTheme());
 }
 
-function withTransitionsDisabled(callback: () => void) {
-  const css = document.createElement("style");
-  css.textContent = `* {
-    -webkit-transition: none !important;
-    -moz-transition: none !important;
-    -o-transition: none !important;
-    -ms-transition: none !important;
-    transition: none !important;
-  }`;
-
-  document.head.appendChild(css);
-  callback();
-  window.getComputedStyle(css).opacity;
-  document.head.removeChild(css);
-}
-
 function syncGiscusTheme() {
   const giscusFrame =
     document.querySelector<HTMLIFrameElement>(".giscus-frame");
@@ -92,36 +75,31 @@ function syncGiscusTheme() {
   giscusFrame.src = url.toString();
 }
 
-function applyTheme(dark: boolean, disableTransitions = true) {
-  const syncDocumentTheme = () => {
-    document.documentElement.classList.toggle("dark", dark);
-    syncGiscusTheme();
-  };
-
-  if (disableTransitions) {
-    withTransitionsDisabled(syncDocumentTheme);
-    return;
-  }
-
-  syncDocumentTheme();
+function applyTheme(dark: boolean) {
+  document.documentElement.classList.toggle("dark", dark);
+  syncGiscusTheme();
 }
 
-function updateThemeButtons() {
-  const activeThemeButtonId =
-    getStoredTheme() === "light"
-      ? "light-theme-button"
-      : getStoredTheme() === "dark"
-        ? "dark-theme-button"
-        : "system-theme-button";
-
+function updateThemeControl() {
+  const theme = getStoredTheme();
   for (const button of document.querySelectorAll<HTMLButtonElement>(
-    "#light-theme-button, #dark-theme-button, #system-theme-button",
+    "[data-theme-value]",
   )) {
-    button.classList.remove(...ACTIVE_THEME_CLASSES);
-    if (button.id === activeThemeButtonId) {
-      button.classList.add(...ACTIVE_THEME_CLASSES);
-    }
+    button.setAttribute(
+      "aria-pressed",
+      String(button.dataset.themeValue === theme),
+    );
   }
+}
+
+function selectTheme(button: HTMLButtonElement) {
+  const theme = button.dataset.themeValue;
+  if (theme !== "light" && theme !== "dark" && theme !== "system") return;
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+  applyTheme(shouldUseDarkTheme(theme));
+  updateThemeControl();
+  document.querySelector<HTMLElement>("#theme-picker")?.hidePopover();
+  document.querySelector<HTMLButtonElement>("#theme-toggle")?.focus();
 }
 
 function getSearchDialog() {
@@ -267,8 +245,8 @@ function preloadSearch() {
 }
 
 function initializePage() {
-  applyTheme(shouldUseDarkTheme(), false);
-  updateThemeButtons();
+  applyTheme(shouldUseDarkTheme());
+  updateThemeControl();
   restoreTableOfContentsState();
   initBlogIndexState();
   enhanceCodeBlocks();
@@ -277,20 +255,10 @@ function initializePage() {
 function handleDocumentClick(event: MouseEvent) {
   if (!(event.target instanceof Element)) return;
 
-  const themeButton = event.target.closest<HTMLButtonElement>(
-    "#light-theme-button, #dark-theme-button, #system-theme-button",
-  );
+  const themeButton =
+    event.target.closest<HTMLButtonElement>("[data-theme-value]");
   if (themeButton) {
-    const nextTheme: ThemePreference =
-      themeButton.id === "light-theme-button"
-        ? "light"
-        : themeButton.id === "dark-theme-button"
-          ? "dark"
-          : "system";
-
-    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-    applyTheme(shouldUseDarkTheme(nextTheme));
-    updateThemeButtons();
+    selectTheme(themeButton);
     return;
   }
 
@@ -379,7 +347,7 @@ function handleSystemThemeChange(event: MediaQueryListEvent) {
   }
 
   applyTheme(event.matches);
-  updateThemeButtons();
+  updateThemeControl();
 }
 
 export function registerGlobalUi() {

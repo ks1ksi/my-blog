@@ -1,33 +1,57 @@
 ---
 import Container from "@components/Container.astro";
-import Link from "@components/Link.astro";
 import { SITE } from "@consts";
+import ThemeToggle from "@components/ThemeToggle.astro";
+const pathname = Astro.url.pathname;
+const current = (path: string) =>
+  pathname === path
+    ? "page"
+    : pathname.startsWith(path)
+      ? "location"
+      : undefined;
 ---
 
-<header transition:persist>
+<header class="site-header">
   <Container size="page">
-    <div class="flex flex-wrap justify-between gap-y-2">
-      <Link href="/" underline={false}>
-        <div class="inline-flex items-center gap-1.5 font-semibold">
-          <span>{SITE.TITLE}</span>
-          <span class="text-[var(--color-accent)]" aria-hidden="true">
-            ~/
-          </span>
-        </div>
-      </Link>
-      <nav class="flex items-center gap-1.5 text-sm font-semibold">
-        <Link href="/blog/">blog</Link>
-        <span class="text-black/25 dark:text-white/25">·</span>
-        <Link href="/tags/">tags</Link>
-        <span class="text-black/25 dark:text-white/25">·</span>
-        <button
-          id="magnifying-glass"
-          aria-label="Search"
-          class="inline-block text-current underline decoration-black/30 underline-offset-[3px] transition-colors duration-300 ease-in-out hover:text-[var(--color-accent)] hover:decoration-[var(--color-accent)]/60 focus-visible:text-[var(--color-accent)] focus-visible:decoration-[var(--color-accent)]/60 focus-visible:outline-none dark:decoration-white/30"
-        >
-          search
-        </button>
-      </nav>
+    <div class="header-inner">
+      <a href="/" class="site-brand" aria-label={SITE.TITLE}>
+        <span class="brand-mark" aria-hidden="true">
+          k.
+        </span>
+        <span>Seungil Kim</span>
+      </a>
+      <div class="header-actions">
+        <nav aria-label="주요 메뉴" class="primary-nav">
+          <a href="/blog/" aria-current={current("/blog/")}>
+            글
+          </a>
+          <a href="/tags/" aria-current={current("/tags/")}>
+            태그
+          </a>
+          <button
+            id="magnifying-glass"
+            type="button"
+            aria-label="검색"
+            aria-haspopup="dialog"
+            aria-controls="search-dialog"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+            >
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path d="m16 16 4 4" />
+            </svg>
+          </button>
+        </nav>
+        <ThemeToggle />
+      </div>
     </div>
   </Container>
 </header>

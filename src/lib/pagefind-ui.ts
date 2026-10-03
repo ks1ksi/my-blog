@@ -99,18 +99,18 @@ export async function ensurePagefindUi() {
       excerptLength: 15,
       resetStyles: false,
       translations: {
-        placeholder: "Search",
-        clear_search: "Clear",
-        load_more: "Load more results",
-        search_label: "Search this site",
-        zero_results: "No results for [SEARCH_TERM]",
-        many_results: "[COUNT] results for [SEARCH_TERM]",
-        one_result: "[COUNT] result for [SEARCH_TERM]",
+        placeholder: "검색어를 입력하세요",
+        clear_search: "지우기",
+        load_more: "결과 더 보기",
+        search_label: "블로그 검색",
+        zero_results: "‘[SEARCH_TERM]’ 검색 결과가 없습니다",
+        many_results: "‘[SEARCH_TERM]’ 검색 결과 [COUNT]개",
+        one_result: "‘[SEARCH_TERM]’ 검색 결과 [COUNT]개",
         alt_search:
-          "No results for [SEARCH_TERM]. Showing results for [DIFFERENT_TERM] instead",
+          "‘[SEARCH_TERM]’ 대신 ‘[DIFFERENT_TERM]’ 검색 결과를 표시합니다",
         search_suggestion:
-          "No results for [SEARCH_TERM]. Try one of the following searches:",
-        searching: "Searching for [SEARCH_TERM]...",
+          "‘[SEARCH_TERM]’ 검색 결과가 없습니다. 다른 검색어를 입력해 보세요:",
+        searching: "‘[SEARCH_TERM]’ 검색 중…",
       },
     });
   }

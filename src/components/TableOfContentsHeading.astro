@@ -7,12 +7,12 @@ import Link from "./Link.astro";
 const { heading } = Astro.props;
 ---
 
-<li class="list-inside list-disc px-5 py-1 text-sm text-black/60 dark:text-white/60">
+<li class="toc-item">
   <Link href={"#" + heading.slug} underline>
     {heading.text}
   </Link>
   {heading.subheadings.length > 0 && (
-    <ul class="translate-x-3">
+    <ul class="toc-children">
       {heading.subheadings.map((subheading: Heading) => (
         <Astro.self heading={subheading} />
       ))}

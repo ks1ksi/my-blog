@@ -33,16 +33,12 @@ function buildToc(headings: Heading[]) {
 }
 ---
 
-<details
-  open
-  data-table-of-contents
-  class="group rounded-sm border border-[var(--color-border)] bg-[var(--color-surface)]/60 dark:bg-white/[0.02]"
->
-  <summary class="cursor-pointer px-3 py-2 text-sm font-medium text-black/70 transition-colors hover:bg-[var(--color-accent-subtle)] dark:text-white/70 dark:hover:bg-[var(--color-accent-subtle)]">
-    On this page
+<details data-table-of-contents class="table-of-contents">
+  <summary>
+    목차 <span>{toc.length}개 섹션</span>
   </summary>
-  <nav>
-    <ul class="py-2">
+  <nav aria-label="글 목차">
+    <ul>
       {toc.map((heading) => (
         <TableOfContentsHeading heading={heading} />
       ))}
