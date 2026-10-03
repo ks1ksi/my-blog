@@ -38,7 +38,9 @@ cover:
 - Article heading links, native hash history, and back-to-top
 - Clipboard rejection and retry; deferred comments network failure and retry
 - 320px horizontal overflow and popover/dialog bounds
-- Curated series navigation and representative WCAG A/AA axe scans, including
+- Short mobile viewports and simulated visual-viewport keyboard resize/pan,
+  result scrolling, focus retention, subscription cleanup, and desktop centering
+- Minimal home/article navigation and representative WCAG A/AA axe scans, including
   dark mode and populated search
 
 Third-party comments are intercepted in tests; they never post a comment or

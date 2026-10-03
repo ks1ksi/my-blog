@@ -47,6 +47,29 @@ function deferred() {
 }
 
 describe("search open, close and retry", () => {
+  it("restores an explicit pointer opener even when clicking did not focus it", async () => {
+    const search = await import("./search");
+    expect(document.activeElement).toBe(document.body);
+    await search.openSearch(trigger());
+    frames.forEach((frame) => frame(0));
+    expect(document.activeElement).toBe(input());
+    search.closeSearch();
+    expect(dialog().open).toBe(false);
+    expect(document.activeElement).toBe(trigger());
+  });
+
+  it("restores the previously focused control for a keyboard shortcut", async () => {
+    const previous = document.createElement("a");
+    previous.href = "/blog/";
+    document.body.prepend(previous);
+    previous.focus();
+    const search = await import("./search");
+    await search.openSearch();
+    frames.forEach((frame) => frame(0));
+    search.closeSearch();
+    expect(document.activeElement).toBe(previous);
+  });
+
   it("opens repeatedly without replacing the original focus target", async () => {
     const search = await import("./search");
     trigger().focus();
@@ -63,8 +86,7 @@ describe("search open, close and retry", () => {
   it("shows an accessible error with retry and refresh, then recovers", async () => {
     ensurePagefindUi.mockRejectedValueOnce(new Error("offline"));
     const search = await import("./search");
-    trigger().focus();
-    await search.openSearch();
+    await search.openSearch(trigger());
     const status = document.querySelector<HTMLElement>("#search-load-status")!;
     expect(status.getAttribute("role")).toBe("alert");
     expect(status.textContent).toContain("검색을 불러오지 못했습니다");
@@ -72,7 +94,9 @@ describe("search open, close and retry", () => {
     expect(
       document.querySelector<HTMLButtonElement>("#search-reload")!.hidden,
     ).toBe(false);
-    await search.openSearch();
+    await search.openSearch(
+      document.querySelector<HTMLButtonElement>("#search-retry")!,
+    );
     expect(status.hidden).toBe(true);
     frames.forEach((frame) => frame(0));
     expect(document.activeElement).toBe(input());
@@ -84,14 +108,33 @@ describe("search open, close and retry", () => {
     const waiting = deferred();
     ensurePagefindUi.mockReturnValueOnce(waiting.promise);
     const search = await import("./search");
-    trigger().focus();
-    const opening = search.openSearch();
+    expect(document.activeElement).toBe(document.body);
+    const opening = search.openSearch(trigger());
     await vi.waitFor(() => expect(ensurePagefindUi).toHaveBeenCalledOnce());
     search.closeSearch();
     waiting.resolve({});
     await opening;
     expect(dialog().open).toBe(false);
     expect(frames).toHaveLength(0);
+    expect(document.activeElement).toBe(trigger());
+  });
+
+  it("does not steal focus when a queued focus frame runs after close", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    expect(frames).toHaveLength(1);
+    search.closeSearch();
+    frames.forEach((frame) => frame(0));
+    expect(dialog().open).toBe(false);
+    expect(document.activeElement).toBe(trigger());
+  });
+
+  it("restores the explicit opener after a native dialog close", async () => {
+    const search = await import("./search");
+    await search.openSearch(trigger());
+    frames.forEach((frame) => frame(0));
+    dialog().close();
+    search.handleSearchClose(eventOn("close", dialog()));
     expect(document.activeElement).toBe(trigger());
   });
 

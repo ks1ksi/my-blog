@@ -57,9 +57,12 @@ function handleDocumentClick(event: MouseEvent) {
     return;
   }
 
-  if (event.target.closest("#magnifying-glass, #search-retry")) {
+  const searchButton = event.target.closest<HTMLButtonElement>(
+    "#magnifying-glass, #search-retry",
+  );
+  if (searchButton) {
     event.preventDefault();
-    void openSearch();
+    void openSearch(searchButton);
     return;
   }
 

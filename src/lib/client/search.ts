@@ -1,8 +1,10 @@
 import { createRetryableLoader } from "./retryable-loader";
+import { trackSearchViewport } from "./search-viewport";
 
 const loadPagefindUi = createRetryableLoader(() => import("../pagefind-ui"));
 let searchTrigger: HTMLElement | null = null;
 let openAttempt = 0;
+let stopTrackingViewport: (() => void) | undefined;
 
 export function getSearchDialog() {
   return document.querySelector<HTMLDialogElement>("#search-dialog");
@@ -55,15 +57,20 @@ function updateSearchStatus(
   }
 }
 
-export async function openSearch() {
+export async function openSearch(trigger?: HTMLElement) {
   const dialog = getSearchDialog();
   if (!dialog) return;
 
   if (!dialog.open) {
+    // Pointer activation does not focus buttons in Safari. Remember the
+    // explicit opener, while keyboard shortcuts keep their existing focus.
     searchTrigger =
-      document.activeElement instanceof HTMLElement
+      trigger ??
+      (document.activeElement instanceof HTMLElement
         ? document.activeElement
-        : null;
+        : null);
+    stopTrackingViewport?.();
+    stopTrackingViewport = trackSearchViewport(dialog);
     dialog.showModal();
   }
 
@@ -94,6 +101,8 @@ export async function openSearch() {
 export function finishSearchClose({ restoreFocus = true } = {}) {
   // Invalidates pending imports, stylesheet loads and scheduled focus callbacks.
   ++openAttempt;
+  stopTrackingViewport?.();
+  stopTrackingViewport = undefined;
   const input = getSearchInput();
   if (input) {
     input.value = "";

@@ -11,14 +11,18 @@ article code, image bytes, and page-specific variable-font strategy.
   retry, and an explicit page refresh for browser-cached module failures. Initial
   metadata/WASM readiness is checked with a bounded timeout. Query-time fragment
   or index-fetch failures inside the upstream default UI remain a known limit.
+- On small screens, search is top-aligned with safe-area spacing and tracks
+  the visual viewport while open. Results scroll separately so keyboard resizing
+  leaves the input and close control visible. Automated viewport simulations
+  supplement browser checks; physical phone keyboards were not available.
 - Clipboard failures are announced and retryable; blocked/full web storage no
   longer aborts theme or disclosure initialization. Comments remain on demand
   and expose retry plus a GitHub fallback after failure or timeout.
-- Home presents four existing posts and two ordered reading paths. OSTEP's 30
-  published entries and Real MySQL's two chapters have series positions and
-  previous/next navigation. Related posts use actual shared tags. The helper
-  validates every curated target and excludes drafts. Navigational hubs stay
-  noindex and out of the sitemap; article indexing is unchanged.
+- Home presents four existing post titles without an invented introduction or
+  promotional heading. The proposed series hubs and chapter navigation were
+  removed during preview review; existing article routes, tags, archive, and
+  chronological previous/next navigation are preserved. Related posts use
+  actual shared tags and the helper validates curated targets while excluding drafts.
 - All 495 source image embeds (including draft posts) were inspected as pixels and given meaningful
   Korean aliases. No image content was regenerated or inferred from filenames.
   Dense technical diagrams use concise descriptions of their visible topic or

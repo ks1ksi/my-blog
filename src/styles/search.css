@@ -134,3 +134,32 @@
 #search-reload {
   margin-left: var(--space-2);
 }
+
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
+  #search-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #search-dialog .search-heading,
+  #search-dialog > .search-help,
+  #search .pagefind-ui__search-input {
+    flex-shrink: 0;
+  }
+  #search:not([hidden]),
+  #search > .pagefind-ui,
+  #search .pagefind-ui__form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  #search .pagefind-ui__drawer {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    margin-top: var(--space-4);
+  }
+  #search .pagefind-ui__results-area {
+    margin-top: 0;
+  }
+}

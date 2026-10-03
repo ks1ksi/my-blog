@@ -75,6 +75,15 @@ article[data-pagefind-body] {
   --tw-prose-th-borders: var(--color-border-strong);
   --tw-prose-td-borders: var(--color-border);
 }
+/* Explicit semantic colors also update descendants consistently after a theme
+   switch; relying only on inherited color left stale values in WebKit. */
+article[data-pagefind-body] li > p,
+.post-navigation a > span:not(.eyebrow) {
+  color: var(--color-text);
+}
+.footer-inner > p {
+  color: var(--color-muted);
+}
 article[data-pagefind-body] :is(h2, h3, h4):target {
   background: var(--color-accent-subtle);
   outline: 2px solid var(--color-accent);

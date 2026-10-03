@@ -92,10 +92,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) =>
-        !page.includes("/drafts/") &&
-        !page.includes("/tags") &&
-        !page.includes("/series/"),
+      filter: (page) => !page.includes("/drafts/") && !page.includes("/tags"),
       serialize(item) {
         const postId = getBlogPostIdFromSitemapUrl(item.url);
         const lastmod = postId ? postLastmodById.get(postId) : undefined;

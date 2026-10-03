@@ -58,21 +58,47 @@ test("keyboard skip link and modal focus remain usable", async ({ page }) => {
   await expect(page.locator("#content")).toBeFocused();
   await page.locator("#magnifying-glass").focus();
   await page.keyboard.press("Enter");
-  await expect(page.locator("#search input[type='text']")).toBeFocused();
-  for (let index = 0; index < 8; index += 1) {
-    await page.keyboard.press("Tab");
-    expect(
-      await page.evaluate(() =>
-        Boolean(document.activeElement?.closest("#search-dialog")),
-      ),
-    ).toBe(true);
+  const input = page.locator("#search input[type='text']");
+  await expect(input).toBeFocused();
+  expect(
+    await page
+      .locator("#search-dialog")
+      .evaluate((node) => node.matches(":modal")),
+  ).toBe(true);
+  // Native modal inertness must prevent even programmatic background focus.
+  await page.locator("#magnifying-glass").evaluate((node) => node.focus());
+  await expect(input).toBeFocused();
+  for (const key of ["Tab", "Shift+Tab"]) {
+    for (let index = 0; index < 8; index += 1) {
+      await page.keyboard.press(key);
+      const focus = await page.evaluate(() => ({
+        insideDialog: Boolean(
+          document.activeElement?.closest("#search-dialog"),
+        ),
+        browserChrome:
+          document.activeElement === document.body && !document.hasFocus(),
+      }));
+      // Native dialogs may tab to browser chrome at the document boundary:
+      // https://html.spec.whatwg.org/multipage/interaction.html#sequential-focus-navigation
+      // No background page control may receive focus, and tabbing back into
+      // the document must reach the dialog's corresponding edge control.
+      expect(focus.insideDialog || focus.browserChrome).toBe(true);
+      if (focus.browserChrome) {
+        await page.keyboard.press(key);
+        await expect(
+          key === "Tab" ? page.locator("#search-close") : input,
+        ).toBeFocused();
+      }
+    }
   }
   await page.keyboard.press("Escape");
   await expect(page.locator("#search-dialog")).not.toBeVisible();
   await expect(page.locator("#magnifying-glass")).toBeFocused();
+  await page.locator(".site-brand").focus();
   await page.keyboard.press("/");
-  await expect(page.locator("#search input[type='text']")).toBeFocused();
+  await expect(input).toBeFocused();
   await page.keyboard.press("Escape");
+  await expect(page.locator(".site-brand")).toBeFocused();
 });
 
 test("search survives result navigation and back/forward without losing its CSS", async ({
@@ -162,6 +188,9 @@ test("closing search while loading does not reopen it or steal focus", async ({
   await expect(page.locator("#search-dialog")).not.toBeVisible();
   await expect(page.locator("#magnifying-glass")).toBeFocused();
   await openSearch(page, "OSTEP");
+  await page.locator("#search-close").click();
+  await expect(page.locator("#search-dialog")).not.toBeVisible();
+  await expect(page.locator("#magnifying-glass")).toBeFocused();
 });
 
 test("search engine failure offers an explicit reload recovery", async ({
@@ -217,20 +246,21 @@ test("search metadata failure reaches an error state and reload recovery", async
   await expect(page.locator("#search-load-status")).not.toBeVisible();
 });
 
-test("curated series follows its explicit reading order", async ({ page }) => {
+test("home stays minimal and original article navigation remains available", async ({
+  page,
+}) => {
   await page.goto("/");
-  await expect(page.locator("#featured-title")).toBeVisible();
-  await expect(page.locator("#series-title")).toBeVisible();
-  await page.locator('a[href="/series/real-mysql/"]').click();
-  await expect(page).toHaveURL(/\/series\/real-mysql\/$/);
-  await page.locator('a[href="/blog/real-mysql-80-8장-인덱스/"]').click();
+  await expect(page.locator("#featured-title, #series-title")).toHaveCount(0);
+  await expect(page.locator('a[href^="/series/"]')).toHaveCount(0);
+  await expect(page.locator(".featured-posts .post-link")).toHaveCount(4);
+  await page
+    .locator('.featured-posts a[href="/blog/real-mysql-80-8장-인덱스/"]')
+    .click();
   await expect(page.locator("h1")).toContainText("인덱스");
-  const next = page.locator('nav[aria-label="Real MySQL 8.0 읽기 순서"] a');
-  await expect(next).toContainText("시리즈 다음 글");
-  await next.click();
-  await expect(page.locator("h1")).toContainText("옵티마이저");
-  await page.locator(".series-context a").click();
-  await expect(page).toHaveURL(/\/series\/real-mysql\/$/);
+  await expect(page.locator('nav[aria-label="다른 글"]')).toBeVisible();
+  await expect(page.locator(".series-context")).toHaveCount(0);
+  const removed = await page.goto("/series/ostep/");
+  expect(removed?.status()).toBe(404);
 });
 
 test("theme selection persists across Astro navigation and a reload", async ({
@@ -421,7 +451,6 @@ test("representative routes have no automated WCAG A/AA violations", async ({
     ["home", "/"],
     ["archive", "/blog/"],
     ["tags", "/tags/"],
-    ["series", "/series/ostep/"],
     ["article", ARTICLE],
   ]) {
     await page.goto(path);
@@ -435,6 +464,16 @@ test("dark article, theme picker, and populated search pass automated accessibil
   await page.goto(ARTICLE);
   await page.locator("#theme-toggle").click();
   await page.locator('[data-theme-value="dark"]').click();
+  // Assert the previously stale inherited colors directly before the full audit.
+  for (const text of await page
+    .locator("article li > p, .post-navigation a > span:not(.eyebrow)")
+    .all()) {
+    await expect(text).toHaveCSS("color", "rgb(215, 226, 219)");
+  }
+  await expect(page.locator(".footer-inner > p")).toHaveCSS(
+    "color",
+    "rgb(170, 189, 176)",
+  );
   await audit(page, testInfo, "dark-article");
   await page.locator("#theme-toggle").click();
   await audit(page, testInfo, "theme-picker");

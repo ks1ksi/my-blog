@@ -66,7 +66,18 @@
   .post-navigation {
     grid-template-columns: 1fr;
   }
+}
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
   #search-dialog {
+    --search-top-gap: max(var(--space-4), env(safe-area-inset-top));
+    --search-bottom-gap: max(var(--space-4), env(safe-area-inset-bottom));
+    top: calc(var(--search-viewport-top, 0px) + var(--search-top-gap));
+    bottom: auto;
+    max-height: calc(
+      var(--search-viewport-height, 100dvh) - var(--search-top-gap) -
+        var(--search-bottom-gap)
+    );
+    margin-block: 0;
     padding: var(--space-4);
   }
 }

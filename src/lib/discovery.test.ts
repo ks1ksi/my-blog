@@ -8,8 +8,6 @@ import {
   FEATURED_POST_IDS,
   getFeaturedPosts,
   getRelatedPosts,
-  getSeriesNavigation,
-  getSeriesWithPosts,
   validateDiscoveryReferences,
 } from "./discovery";
 
@@ -45,7 +43,7 @@ const actualPosts = readdirSync(contentDir)
   });
 
 describe("curated content references", () => {
-  it("points every curated and series entry at a unique, published repository post", () => {
+  it("points every curated entry at a unique, published repository post", () => {
     expect(validateDiscoveryReferences(actualPosts)).toEqual([]);
     expect(FEATURED_POST_IDS.length).toBeGreaterThanOrEqual(3);
     expect(FEATURED_POST_IDS.length).toBeLessThanOrEqual(5);
@@ -64,46 +62,6 @@ describe("curated content references", () => {
     expect(validateDiscoveryReferences([])).toContain(
       `대표 글: unpublished or missing post ${FEATURED_POST_IDS[0]}`,
     );
-  });
-});
-
-describe("series reading order", () => {
-  it("orders the available OSTEP chapters numerically with references first", () => {
-    const series = getSeriesWithPosts([...actualPosts].reverse()).find(
-      (entry) => entry.id === "ostep",
-    )!;
-    expect(series.posts).toHaveLength(30);
-    expect(series.posts[0].id).toBe("ostep-교재");
-    const chapters = series.posts
-      .slice(1)
-      .map((entry) => Number(entry.id.match(/^ostep-(\d+)/)?.[1]));
-    expect(chapters).toEqual([...chapters].sort((a, b) => a - b));
-    expect(series.groups).toHaveLength(5);
-  });
-  it("links adjacent chapters instead of chronological neighbors", () => {
-    const nav = getSeriesNavigation("real-mysql-80-8장-인덱스", actualPosts)!;
-    expect(nav.position).toBe(1);
-    expect(nav.previous).toBeUndefined();
-    expect(nav.next?.id).toBe("real-mysql-80-9장-옵티마이저와-힌트");
-    const last = getSeriesNavigation(
-      "ostep-40-file-system-implementation",
-      actualPosts,
-    )!;
-    expect(last.previous?.id).toBe("ostep-38-redundant-disk-arrays-raid");
-    expect(last.next).toBeUndefined();
-  });
-  it("excludes draft chapters and keeps unrelated posts out", () => {
-    const posts = [
-      post("ostep-04-process"),
-      post("ostep-05-process-api", [], undefined, true),
-      post("ostep-06-direct-execution"),
-    ];
-    expect(getSeriesNavigation("ostep-04-process", posts)?.next?.id).toBe(
-      "ostep-06-direct-execution",
-    );
-    expect(getSeriesNavigation("ostep-05-process-api", posts)).toBeUndefined();
-    expect(getSeriesNavigation("another-post", actualPosts)).toBeUndefined();
-    expect(getSeriesWithPosts([])).toEqual([]);
   });
 });
 
