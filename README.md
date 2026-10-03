@@ -17,6 +17,13 @@ Personal blog built with Astro, Tailwind CSS v4, MDX, KaTeX, Giscus, and Pagefin
 and anchors, math styles, and the search index. Navigation and scroll restoration
 use Astro’s unmodified `ClientRouter`; dependencies are not patched at install.
 
+Production builds generate a content-hashed variable-font subset for each page
+using the same Pretendard outlines, weights, and metrics. The original unicode
+subsets remain available for dynamic search results and input. The generated
+faces have distinct font names and retain the original font license. Subsetting
+runs entirely in Node/WASM, with build-only caches under `node_modules/.astro`;
+no Python or browser-time font processing is required.
+
 ## Structure
 
 - `src/pages`: Astro routes for home, blog, tags, RSS, and error pages

@@ -52,6 +52,25 @@ for (const page of pages.values()) {
     tag: node.tagName,
     ...attrs(node),
   }));
+  const fontStyles = page.nodes.filter(
+    (node) => node.tagName === "style" && "data-page-font" in attrs(node),
+  );
+  const fontPreloads = nodes.filter(
+    (node) =>
+      node.tag === "link" && node.rel === "preload" && node.as === "font",
+  );
+  const fontCss =
+    fontStyles[0]?.childNodes?.map((node) => node.value ?? "").join("") ?? "";
+  if (
+    fontStyles.length !== 1 ||
+    fontPreloads.length !== 1 ||
+    !("crossorigin" in (fontPreloads[0] ?? {})) ||
+    !fontCss.includes(fontPreloads[0]?.href) ||
+    !fontCss.includes("font-display:swap") ||
+    !fontCss.includes('"Pretendard Variable"')
+  ) {
+    fail(page, "missing or inconsistent page font and dynamic-text fallback");
+  }
   const meta = (name) =>
     nodes.find(
       (node) =>
@@ -120,6 +139,12 @@ for (const page of pages.values()) {
       fail(page, `missing anchor: ${value}`);
   }
 }
+const fontLicense = path.join(root, "_astro/pretendard-OFL.txt");
+if (
+  !fs.existsSync(fontLicense) ||
+  !fs.readFileSync(fontLicense, "utf8").includes("SIL OPEN FONT LICENSE")
+)
+  failures.push("missing original font license");
 const sitemapPaths = walk(root).filter((file) =>
   /sitemap-\d+\.xml$/.test(file),
 );
