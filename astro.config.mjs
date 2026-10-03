@@ -1,11 +1,12 @@
 import { defineConfig } from "astro/config";
+import { SITE_URL } from "./src/config/site.mjs";
 import { unified, parseFrontmatter } from "@astrojs/markdown-remark";
 import { rehypeArticleImages, rehypeMathMetadata } from "./src/lib/markdown";
 import sitemap from "@astrojs/sitemap";
 import mdx from "@astrojs/mdx";
 import pagefind from "astro-pagefind";
 import tailwindcss from "@tailwindcss/vite";
-import { remarkObsidianLink, getPostSlug } from "./src/lib/utils";
+import { remarkObsidianLink, getPostSlug } from "./src/lib/obsidian-links";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { fileURLToPath } from "node:url";
@@ -80,7 +81,7 @@ function getBlogPostIdFromSitemapUrl(url) {
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://ks1ksi.io",
+  site: SITE_URL,
   output: "static",
   trailingSlash: "always",
   // Start rendering without an extra stylesheet round trip on mobile networks.
@@ -91,7 +92,10 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes("/drafts/") && !page.includes("/tags"),
+      filter: (page) =>
+        !page.includes("/drafts/") &&
+        !page.includes("/tags") &&
+        !page.includes("/series/"),
       serialize(item) {
         const postId = getBlogPostIdFromSitemapUrl(item.url);
         const lastmod = postId ? postLastmodById.get(postId) : undefined;

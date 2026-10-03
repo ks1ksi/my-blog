@@ -57,11 +57,11 @@ void func() {
 - 주소 135의 명령어를 반입
 - 이 명령어 실행 (15 KB에 저장)
 
-![[OSTEP 15 Address Translation-1689616534903.jpeg]]
+![[OSTEP 15 Address Translation-1689616534903.jpeg|프로그램 코드, 힙, 스택을 포함한 16KB 프로세스 가상 주소 공간]]
 
 이렇게 프로세스 관점에서 메모리 주소가 0부터 시작하도록 가상 환경을 제공해야 한다.
 
-![[OSTEP 15 Address Translation-1689616860906.jpeg]]
+![[OSTEP 15 Address Translation-1689616860906.jpeg|프로세스 주소 공간을 물리 메모리의 32KB 위치로 재배치한 구조]]
 
 실제로는 0부터 시작하지 않더라도 프로그램이 0부터 시작하는 것 처럼 작동해야 한다.
 
@@ -95,13 +95,13 @@ physical address = virtual address + base
 ### 예제
 주소 공간의 크기가 4KB(4096)인 프로세스가 물리 주소 16KB(16384)에 탑재되어 있다고 가정하자.
 
-![[OSTEP 15 Address Translation-1689617753303.jpeg]]
+![[OSTEP 15 Address Translation-1689617753303.jpeg|가상 주소에 16KB 베이스를 더해 물리 주소로 변환하고 범위 밖 주소는 폴트로 처리하는 예]]
 
 가상 주소가 너무 크면(바운드를 벗어나면) 오류가 발생한다.
 
 ## 4. 하드웨어 지원 요약
 
-![[OSTEP 15 Address Translation-1689673685369.jpeg]]
+![[OSTEP 15 Address Translation-1689673685369.jpeg|동적 재배치에 필요한 특권 모드, 베이스·바운드 레지스터, 주소 변환과 예외 처리 기능 표]]
 
 ## 5. 운영체제 이슈
 
@@ -112,6 +112,6 @@ physical address = virtual address + base
 3. 운영체제는 문맥 교환이 일어날 때, 베이스와 바운드 쌍을 저장하고 복원해야 한다. -> PCB에 있음
 4. 예외가 발생할 때 호출될 함수를 제공해야 한다. -> 부팅할 때 설치
 
-![[OSTEP 15 Address Translation-1689674031826.jpeg]]
+![[OSTEP 15 Address Translation-1689674031826.jpeg|동적 재배치에서 운영체제가 담당하는 메모리 관리, 베이스·바운드 관리, 예외 처리 표]]
 
-![[OSTEP 15 Address Translation-1689674090849.jpeg]]
+![[OSTEP 15 Address Translation-1689674090849.jpeg|동적 재배치를 포함한 제한적 직접 실행에서 운영체제와 하드웨어가 수행하는 단계]]

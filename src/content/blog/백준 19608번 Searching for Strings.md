@@ -91,7 +91,7 @@ int main() {
 }
 ```
 
-![[백준 19608번 Searching for Strings-1-170ffdc3af.png]]
+![[백준 19608번 Searching for Strings-1-170ffdc3af.png|백준 19608번 Searching for Strings 온라인 채점 제출 결과]]
 
 
 ## 여담

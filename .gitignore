@@ -27,3 +27,7 @@ tmp/
 
 # obsidian workspace state
 src/content/.obsidian/workspace.json
+
+# browser test artifacts
+playwright-report/
+test-results/

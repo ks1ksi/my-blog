@@ -1,4 +1,5 @@
 import { type CollectionEntry, getCollection } from "astro:content";
+import { getSiteYear } from "./dates";
 
 export type BlogPost = CollectionEntry<"blog">;
 
@@ -32,7 +33,7 @@ export async function getPostsGroupedByYear() {
   const postsByYear = new Map<string, BlogPost[]>();
 
   for (const post of posts) {
-    const year = post.data.date.getFullYear().toString();
+    const year = getSiteYear(post.data.date);
     const yearPosts = postsByYear.get(year) ?? [];
     yearPosts.push(post);
     postsByYear.set(year, yearPosts);

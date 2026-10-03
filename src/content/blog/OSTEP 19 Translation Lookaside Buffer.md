@@ -15,7 +15,7 @@ tags:
 
 ## 1. TLB의 기본 알고리즘
 
-![[OSTEP 19 Translation Lookaside Buffer-1690881642585.jpeg]]
+![[OSTEP 19 Translation Lookaside Buffer-1690881642585.jpeg|TLB 적중 시 바로 주소를 변환하고 미스 시 페이지 테이블을 읽어 TLB에 삽입하는 코드]]
 
 먼저 가상 주소에서 가상 페이지 번호를 추출하고, 해당 VPN의 TLB 존재 여부를 검사한다.
 만약 존재하면 TLB 히트이다. 여기서 PFN을 추출할 수 있다. 해당 페이지에 대한 접근 권한 검사가 성공하면, 그 정보를 원래 가상 주소의 오프셋과 합쳐서 원하는 물리 주소를 구성하고, 메모리에 접근할 수 있다.
@@ -26,7 +26,7 @@ TLB에 변환 정보가 존재하지 않는다면 (TLB 미스) 할 일이 많아
 
 ## 2. 예제: 배열 접근
 
-![[OSTEP 19 Translation Lookaside Buffer-1690881925789.jpeg]]
+![[OSTEP 19 Translation Lookaside Buffer-1690881925789.jpeg|배열 a의 열 개 원소가 VPN 6, 7, 8의 세 페이지에 걸쳐 배치된 예]]
 
 이렇게 배열이 구성되어 있을 때, `a[0], a[3], a[7]`에 접근할 때 빼고 모두 TLB 히트이다. 이 예제에서는 1 page가 16 byte의 크기를 가지는데 만약 페이지 크기가 더 커진다면, TLB 히트 확률이 더 올라갈 것이다.
 
@@ -42,7 +42,7 @@ TLB에 변환 정보가 존재하지 않는다면 (TLB 미스) 할 일이 많아
 
 하드웨어에서 처리하는 경우, 하드웨어가 페이지 테이블에 대한 명확한 정보를 가지고 있어야 한다. 이를 위해서 페이지 테이블 레지스터를 두고, 이 레지스터로 TLB를 갱신했다.
 
-![[OSTEP 19 Translation Lookaside Buffer-1690882580633.jpeg]]
+![[OSTEP 19 Translation Lookaside Buffer-1690882580633.jpeg|TLB 미스가 발생하면 예외를 발생시켜 소프트웨어 처리를 요청하는 코드]]
 
 TLB에서 주소 찾는 것이 실패한 경우, 하드웨어는 예외 시그널을 발생시킨다. 시그널을 받은 운영체제는 잠시 실행을 중단하고 커널 모드로 변경한 후 TLB 미스를 처리하는 트랩 핸들러를 실행시킨다. 이 핸들러는 페이지 테이블을 검색하여 변환 정보를 찾고, TLB를 갱신한 후 리턴한다.
 
@@ -69,7 +69,7 @@ TLB에 탑재된 가상 주소와 실제 주소 간의 변환 정보는 그것�
 
 이 부담을 개선하기 위해 몇몇 시스템에서는 문맥 교환이 발생하더라도 TLB의 내용을 보존할 수 있는 하드웨어 기능을 추가하였다. TLB 내에 주소 공간 식별자 (Address Space Identifier) 필드를 추가하는 것이다.
 
-![[OSTEP 19 Translation Lookaside Buffer-1690883218200.jpeg]]
+![[OSTEP 19 Translation Lookaside Buffer-1690883218200.jpeg|같은 VPN 10을 ASID 1과 2로 구분해 각각 다른 PFN으로 연결한 TLB 항목]]
 
 이를 통해 프로세스 별로 TLB 변환 정보를 구분할 수 있다.
 
@@ -87,7 +87,7 @@ LRU같은 합리적인 정책은 $n$개의 변환 정보를 저장할 수 있는
 
 ## 7. 실제 TLB
 
-![[OSTEP 19 Translation Lookaside Buffer-1690883505312.jpeg]]
+![[OSTEP 19 Translation Lookaside Buffer-1690883505312.jpeg|VPN, PFN, ASID와 상태 비트로 구성된 MIPS TLB 항목의 비트 배치]]
 
 MIPS R4000는 32비트 주소 공간에서 4KB 페이지를 지원한다.
 

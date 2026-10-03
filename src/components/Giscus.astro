@@ -1,7 +1,10 @@
 <giscus-comments>
   <details class="comments">
     <summary>댓글 보기 · 쓰기</summary>
-    <p class="comments-status" role="status"></p>
+    <p class="comments-status" role="status" aria-live="polite"></p>
+    <button class="comments-retry" type="button" hidden>
+      댓글 다시 시도
+    </button>
     <div class="giscus"></div>
     <p class="comments-fallback">
       <a href="https://github.com/ks1ksi/my-blog/discussions">
@@ -31,47 +34,24 @@
 </giscus-comments>
 
 <script>
-  class GiscusComments extends HTMLElement {
-    private loaded = false;
-
-    connectedCallback() {
-      this.querySelector("details")?.addEventListener("toggle", this.load);
-    }
-
-    disconnectedCallback() {
-      this.querySelector("details")?.removeEventListener("toggle", this.load);
-    }
-
-    private load = () => {
-      if (this.loaded || !this.querySelector("details")?.open) return;
-      const source =
-        this.querySelector("template")?.content.querySelector("script");
-      const status = this.querySelector<HTMLElement>("[role='status']");
-      if (!source || !status) return;
-
-      this.loaded = true;
-      status.textContent = "댓글을 불러오는 중…";
-      const script = document.createElement("script");
-      for (const { name, value } of source.attributes) {
-        script.setAttribute(name, value);
-      }
-      script.dataset.theme = document.documentElement.classList.contains("dark")
-        ? "dark"
-        : "light";
-      script.addEventListener("load", () => {
-        status.textContent = "";
-      });
-      script.addEventListener("error", () => {
-        status.textContent =
-          "댓글을 불러오지 못했습니다. 다시 펼치거나 GitHub에서 확인해 주세요.";
-        this.loaded = false;
-        script.remove();
-      });
-      this.append(script);
-    };
-  }
-
-  if (!customElements.get("giscus-comments")) {
-    customElements.define("giscus-comments", GiscusComments);
-  }
+  import { registerGiscusComments } from "@lib/giscus-comments";
+  registerGiscusComments();
 </script>
+
+<style>
+  .comments-retry {
+    min-height: 44px;
+    padding: 0.5rem 0.85rem;
+    margin: 0.5rem 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0.35rem;
+    color: var(--color-text);
+    background: var(--color-surface);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .comments-retry:hover {
+    background: var(--color-accent-subtle);
+  }
+</style>

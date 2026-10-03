@@ -1,0 +1,31 @@
+---
+import type { BlogPost } from "@lib/content";
+import ArrowCard from "./ArrowCard.astro";
+type Props = { posts: BlogPost[] };
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section
+    class="related-posts"
+    aria-labelledby="related-posts-title"
+    data-pagefind-ignore
+  >
+    <div class="section-heading">
+      <h2 id="related-posts-title">같은 주제의 글</h2>
+    </div>
+    <ul class="post-list">
+      {posts.map((entry) => (
+        <li>
+          <ArrowCard entry={entry} heading="h3" />
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .related-posts {
+    margin-block: var(--space-12);
+  }
+</style>

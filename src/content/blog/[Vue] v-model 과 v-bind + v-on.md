@@ -105,10 +105,10 @@ const app = Vue.createApp({
 app.mount("#ex");
 ```
 
-![[[Vue] v-model 과 v-bind + v-on-1-3d64d5046e.png]]
-![[[Vue] v-model 과 v-bind + v-on-2-3b7a109030.png]]
-![[[Vue] v-model 과 v-bind + v-on-3-9c05f6c14d.png]]
-![[[Vue] v-model 과 v-bind + v-on-4-3d108f41ba.png]]
+![[[Vue] v-model 과 v-bind + v-on-1-3d64d5046e.png|입력창의 김승일1234가 아래 문단에도 동일하게 표시된 양방향 바인딩 예제]]
+![[[Vue] v-model 과 v-bind + v-on-2-3b7a109030.png|Vue 개발자 도구의 myInput 데이터에 김승일1234가 저장된 상태]]
+![[[Vue] v-model 과 v-bind + v-on-3-9c05f6c14d.png|Reset 실행 후 입력창과 아래 출력 문단이 모두 비어 있는 예제]]
+![[[Vue] v-model 과 v-bind + v-on-4-3d108f41ba.png|초기화 후 myInput 데이터가 빈 문자열로 표시된 Vue 개발자 도구]]
 
 "input" event가 발생하면 changeInputText 메서드가 실행되고, "click" event가 발생하면 resetInputText 메서드가 실행된다.
 
@@ -127,7 +127,7 @@ v-model은 input, textarea, select element에 양방향 데이터 바인딩을 �
 ## 단점
 
 한글이 이상하게 나온다.
-![[[Vue] v-model 과 v-bind + v-on-5-c7c95aa31d.png]]
-![[[Vue] v-model 과 v-bind + v-on-6-3502ca97af.png]]
+![[[Vue] v-model 과 v-bind + v-on-5-c7c95aa31d.png|한글 조합 중 입력창에는 김승일이 보이지만 아래 문단에는 김승까지만 표시된 상태]]
+![[[Vue] v-model 과 v-bind + v-on-6-3502ca97af.png|한글 조합 중 myInput 데이터에 김승까지만 반영된 Vue 개발자 도구]]
 
 한글을 꼭 써야하는 경우라면 v-model 대신 :value, @input을 사용하도록 하자.

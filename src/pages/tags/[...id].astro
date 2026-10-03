@@ -23,12 +23,12 @@ type Props = {
 
 const { id } = Astro.params;
 const { posts } = Astro.props as Props;
-const title = `Tag: ${id}`;
+const title = `태그: ${id}`;
 const description = `${id} 태그가 달린 Seungil Kim 블로그 글 ${posts.length}개.`;
 const jsonLd = createBreadcrumbJsonLd([
-  { name: "Home", url: getCanonicalUrl("/") },
-  { name: "Tags", url: getCanonicalUrl("/tags") },
-  { name: id ?? "Tag", url: getCanonicalUrl(Astro.url.pathname) },
+  { name: "홈", url: getCanonicalUrl("/") },
+  { name: "태그", url: getCanonicalUrl("/tags") },
+  { name: id ?? "태그", url: getCanonicalUrl(Astro.url.pathname) },
 ]);
 ---
 
@@ -37,7 +37,7 @@ const jsonLd = createBreadcrumbJsonLd([
     <div data-pagefind-ignore>
       <BackToPrevious href="/tags/">모든 태그</BackToPrevious>
       <div class="page-heading tag-heading">
-        <p class="eyebrow">Topic</p>
+        <p class="eyebrow">주제</p>
         <h1>#{id}</h1>
         <p>{posts.length}편의 기록</p>
       </div>

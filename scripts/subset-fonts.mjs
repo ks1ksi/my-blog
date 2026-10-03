@@ -10,6 +10,7 @@ import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import subsetFont from "subset-font";
 import fontverter from "fontverter";
+import { readFontCache, writeFontCache } from "./font-cache.mjs";
 import {
   pageCharacters,
   renameFont,
@@ -27,6 +28,7 @@ const sourceHash = createHash("sha256")
   .update(font)
   .update(await readFile(new URL("./font-subset-utils.mjs", import.meta.url)))
   .update(await readFile(new URL("./subset-fonts.mjs", import.meta.url)))
+  .update(await readFile(new URL("./font-cache.mjs", import.meta.url)))
   .update(await readFile(new URL("../package-lock.json", import.meta.url)))
   .update(require("subset-font/package.json").version)
   .update(require("fontverter/package.json").version)
@@ -58,20 +60,14 @@ for (const file of pages) {
     .digest("hex")
     .slice(0, 16);
   if (!cache.has(hash)) {
-    let output;
     const cacheFile = join(cacheDir, `${hash}.woff2`);
-    try {
-      output = await readFile(cacheFile);
-      if (output.toString("ascii", 0, 4) !== "wOF2") output = undefined;
-    } catch (error) {
-      if (error.code !== "ENOENT") throw error;
-    }
+    let output = await readFontCache(cacheFile);
     if (!output) {
       output = await subsetFont(font, characters, {
         targetFormat: "woff2",
         preserveNameIds: nameIds,
       });
-      await writeFile(cacheFile, output);
+      await writeFontCache(cacheFile, output);
     }
     const assetHash = createHash("sha256")
       .update(output)

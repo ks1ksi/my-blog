@@ -1,0 +1,48 @@
+@layer base {
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--color-border);
+  }
+  html {
+    color-scheme: light;
+    scroll-padding-top: 6rem;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply min-h-screen font-sans antialiased;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+  main {
+    flex: 1;
+    padding-block: var(--space-12) var(--space-16);
+  }
+  button,
+  select,
+  summary {
+    cursor: pointer;
+  }
+  button,
+  select,
+  input {
+    font: inherit;
+  }
+  :where(a, button, select, input, summary):focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 4px;
+    border-radius: 3px;
+  }
+  ::selection {
+    color: var(--color-bg);
+    background: var(--color-accent);
+  }
+  :where(h1, h2, h3) {
+    color: var(--color-text-strong);
+  }
+}

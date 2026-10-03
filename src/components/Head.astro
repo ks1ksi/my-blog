@@ -117,7 +117,12 @@ const toIsoString = (date: string | Date) =>
 <ClientRouter />
 
 <script is:inline>
-  const storedTheme = localStorage.getItem("theme");
+  let storedTheme = null;
+  try {
+    storedTheme = localStorage.getItem("theme");
+  } catch {
+    // Use the system theme when browser storage is unavailable.
+  }
   const prefersDarkTheme = window.matchMedia(
     "(prefers-color-scheme: dark)",
   ).matches;

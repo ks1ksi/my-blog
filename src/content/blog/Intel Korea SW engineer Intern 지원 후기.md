@@ -8,7 +8,7 @@ tags:
   - "job"
 ---
 
-![[Intel Korea SW engineer Intern 지원 후기-1703088654976.jpeg]]
+![[Intel Korea SW engineer Intern 지원 후기-1703088654976.jpeg|Intel 서울 SW engineer intern 채용 공고]]
 
 인텔 인턴이라니.. 이름만 들어도 멋지지 않은가?
 
@@ -48,7 +48,7 @@ tags:
 
 ## Resume
 
-![[Intel Korea SW Engineer Intern 지원 후기-1703150984010.jpeg]]
+![[Intel Korea SW Engineer Intern 지원 후기-1703150984010.jpeg|경력, 학력, 관련 과목, 프로젝트 경험을 정리한 영문 이력서 일부]]
 
 대충 이런식으로 써서 제출했다. 이력서같은거 써본적도 없는데 영문 이력서를 먼저 쓰게 되었다. 같은 말이라도 영어로 쓰면 있어보이는 효과가 있다.
 
@@ -58,7 +58,7 @@ tags:
 
 졸업 안할거고 학생 신분 유지할거고 1년동안 인턴 잘 할 수 있다고 써서 답장을 보내주도록 하자. 종강하자마자 바로 일할 수 있다고 써서 보냈다.
 
-![[Intel Korea SW engineer Intern 지원 후기-1703088971166.jpeg]]
+![[Intel Korea SW engineer Intern 지원 후기-1703088971166.jpeg|Intel 채용 담당자에게 인턴 근무 가능 기간과 시작일을 답한 이메일]]
 
 ## Task
 
@@ -105,7 +105,7 @@ tags:
 
 최종 경쟁률이 얼만지 여쭤봤는데 2:1이라고 하셨다. 그러니까 내 포지션 기준 2명 중 1명 안에 들었다는 이야기다. 면접 말아먹은 주제에 이 말 듣고 기분 좋아져서 김칫국 원샷 후 장렬히 전사했다.
 
-![[Intel Korea SW engineer Intern 지원 후기-1703089820134.jpeg]]
+![[Intel Korea SW engineer Intern 지원 후기-1703089820134.jpeg|Intel 지원 내역에서 SW engineer intern 상태가 Not Selected로 표시된 화면]]
 
 그렇게.. 아쉽게 떨어지게 되었다고 한다..
 

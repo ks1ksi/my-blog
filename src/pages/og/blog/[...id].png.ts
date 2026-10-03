@@ -4,6 +4,7 @@ import { Resvg } from "@resvg/resvg-js";
 import type { APIRoute, GetStaticPaths } from "astro";
 import satori from "satori";
 import { SITE } from "@consts";
+import { formatLongDate } from "@lib/dates";
 import { type BlogPost, getPublishedPosts } from "@lib/content";
 
 const WIDTH = 1200;
@@ -36,15 +37,6 @@ function h(type: string, props: ElementProps = {}, ...children: unknown[]) {
             children: children.length === 1 ? children[0] : children,
           },
   };
-}
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "Asia/Seoul",
-  }).format(date);
 }
 
 function getTitleFontSize(title: string) {
@@ -151,7 +143,7 @@ async function renderOgImage(post: BlogPost) {
             },
           },
           h("div", { style: { display: "flex" } }, SITE.TITLE),
-          h("div", { style: { display: "flex" } }, "ks1ksi.io"),
+          h("div", { style: { display: "flex" } }, new URL(SITE.URL).hostname),
         ),
         h(
           "div",
@@ -189,7 +181,7 @@ async function renderOgImage(post: BlogPost) {
                 fontWeight: 400,
               },
             },
-            formatDate(post.data.date),
+            formatLongDate(post.data.date),
           ),
         ),
         h(

@@ -50,7 +50,7 @@ app.mount('#blog-posts-demo')
 
 일반적으로는 props를 사용해 데이터를 전달하지만 이게 매우 불편한 상황이 있다. **컴포넌트가 중첩**되어 멀리 있는 컴포넌트한테 데이터를 전달해야 하는 상황이다.
 
-![[[Vue] Provide Inject vs Props-1-6081b48c8d.png]]
+![[[Vue] Provide Inject vs Props-1-6081b48c8d.png|Vue 개발자 도구에서 App 아래 KnowledgeBase와 그 하위 KnowledgeGrid의 중첩 관계를 보여 주는 화면]]
 
 다음과 같이 컴포넌트가 구성되어 있을 때, 루트 컴포넌트에서 Grid로 데이터를 전달하고 싶으면 어떻게 해야 할까?
 

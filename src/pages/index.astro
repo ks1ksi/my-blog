@@ -4,9 +4,20 @@ import Container from "@components/Container.astro";
 import { SITE, HOME, SOCIALS } from "@consts";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
-import { getRecentPosts } from "@lib/content";
+import { getPublishedPosts } from "@lib/content";
+import {
+  getFeaturedPosts,
+  getSeriesWithPosts,
+  validateDiscoveryReferences,
+} from "@lib/discovery";
+import SeriesOverview from "@components/SeriesOverview.astro";
 import { createWebsiteJsonLd } from "@lib/seo";
-const blog = await getRecentPosts(SITE.NUM_POSTS_ON_HOMEPAGE);
+const posts = await getPublishedPosts();
+const discoveryErrors = validateDiscoveryReferences(posts);
+if (discoveryErrors.length) throw new Error(discoveryErrors.join("\n"));
+const blog = posts.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
+const featured = getFeaturedPosts(posts);
+const series = getSeriesWithPosts(posts);
 const jsonLd = createWebsiteJsonLd();
 ---
 
@@ -35,6 +46,27 @@ const jsonLd = createWebsiteJsonLd();
           </a>
         </nav>
       </section>
+      <section aria-labelledby="featured-title">
+        <div class="section-heading">
+          <h2 id="featured-title">먼저 읽어볼 글</h2>
+        </div>
+        <p class="discovery-intro">
+          데이터베이스, 운영체제, 알고리즘과 개발자 채용 경험을 골라 담았습니다.
+        </p>
+        <ul class="post-list featured-posts">
+          {featured.map((post) => (
+            <li>
+              <ArrowCard entry={post} heading="h3" />
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section aria-labelledby="series-title">
+        <div class="section-heading">
+          <h2 id="series-title">시리즈로 읽기</h2>
+        </div>
+        <SeriesOverview series={series} />
+      </section>
       <section aria-labelledby="recent-title">
         <div class="section-heading">
           <h2 id="recent-title">최근 글</h2>
@@ -58,7 +90,7 @@ const jsonLd = createWebsiteJsonLd();
               <Link
                 href={social.HREF}
                 external
-                aria-label={`${SITE.TITLE} on ${social.NAME}`}
+                aria-label={`${SITE.TITLE}의 ${social.NAME} 프로필`}
               >
                 {social.NAME} <span aria-hidden="true">↗</span>
               </Link>
@@ -67,7 +99,7 @@ const jsonLd = createWebsiteJsonLd();
           <li>
             <Link
               href={`mailto:${SITE.EMAIL}`}
-              aria-label={`Email ${SITE.TITLE}`}
+              aria-label={`${SITE.TITLE}에게 이메일 보내기`}
             >
               {SITE.EMAIL}
             </Link>
@@ -77,3 +109,25 @@ const jsonLd = createWebsiteJsonLd();
     </div>
   </Container>
 </Layout>
+
+<style>
+  .discovery-intro {
+    margin-bottom: var(--space-3);
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.8;
+  }
+  .featured-posts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--space-6);
+  }
+  .featured-posts li {
+    display: grid;
+  }
+  @media (max-width: 48rem) {
+    .featured-posts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

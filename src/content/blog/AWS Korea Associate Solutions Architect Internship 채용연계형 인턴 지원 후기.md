@@ -62,7 +62,7 @@ Seoul, KOR
 ---
 ## Assessment
 
-![[AWS Korea Associate Solutions Architect Internship 채용연계형 인턴 지원 후기-1717142288967.jpeg]]
+![[AWS Korea Associate Solutions Architect Internship 채용연계형 인턴 지원 후기-1717142288967.jpeg|AWS 솔루션스 아키텍트 인턴 지원 후 온라인 평가 완료를 요청하는 이메일]]
 
 Resume를 작성해서 제출하면, Online Assessment를 하라고 메일이 날아온다. 코딩 테스트는 아니고 객관식 문제를 풀어야 한다.
 
@@ -144,7 +144,7 @@ We use our Leadership Principles every day, whether we’re discussing ideas for
 
     We started in a garage, but we’re not there anymore. We are big, we impact the world, and we are far from perfect. We must be humble and thoughtful about even the secondary effects of our actions. Our local communities, planet, and future generations need us to be better every day. We must begin each day with a determination to make better, do better, and be better for our customers, our employees, our partners, and the world at large. And we must end every day knowing we can do even more tomorrow. Leaders create more than they consume and always leave things better than how they found them.
 
-![[AWS Korea Associate Solutions Architect Internship 채용연계형 인턴 지원 후기-1717143151637.jpeg]]
+![[AWS Korea Associate Solutions Architect Internship 채용연계형 인턴 지원 후기-1717143151637.jpeg|Amazon Chime 인터뷰 일정과 접속 방법을 안내하는 이메일]]
 
 이런 식으로 인터뷰어가 누구인지 알려준다. 링크드인에 들어가서 인터뷰어의 경력을 확인하고, 어떤 질문이 들어올 지 예상할 수 있다.
 
@@ -152,6 +152,6 @@ We use our Leadership Principles every day, whether we’re discussing ideas for
 
 내 인터뷰어는 ML 전공하신 분이었고, 최근에는 LLM, RAG 관련해서 발표도 하셨다. LLM 관련 깊은 질문을 받아 대답을 잘 하지 못했다. 또 아마존은 데이터 기반 의사 결정을 좋아하는데 그쪽으로도 잘 대답하지 못한 것 같아서 아쉽다.
 
-![[AWS Korea Associate Solutions Architect Internship 채용연계형 인턴 지원 후기-1717143292794.jpeg]]
+![[AWS Korea Associate Solutions Architect Internship 채용연계형 인턴 지원 후기-1717143292794.jpeg|면접 후 해당 인턴 채용을 진행하지 않기로 했다는 AWS 결과 이메일]]
 
 아쉽게 탈락했지만 면접 경험이 굉장히 좋았기 때문에 후회는 없다.

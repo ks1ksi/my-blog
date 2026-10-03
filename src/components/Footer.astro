@@ -1,6 +1,7 @@
 ---
 import Container from "@components/Container.astro";
 import { SITE } from "@consts";
+import { getSiteYear } from "@lib/dates";
 import BackToTop from "@components/BackToTop.astro";
 ---
 
@@ -8,7 +9,7 @@ import BackToTop from "@components/BackToTop.astro";
   <Container size="page">
     <div class="footer-inner">
       <p>
-        &copy; {new Date().getFullYear()} {SITE.TITLE}
+        &copy; {getSiteYear(new Date())} {SITE.TITLE}
       </p>
       <div class="footer-links">
         <a class="text-link" href="/rss.xml">

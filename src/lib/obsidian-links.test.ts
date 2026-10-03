@@ -1,21 +1,31 @@
 import {
   readdirSync,
+  existsSync,
   readFileSync,
   mkdtempSync,
   writeFileSync,
   rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, join, relative, sep } from "node:path";
-import { describe, expect, it } from "vitest";
-import { slug as githubSlug } from "github-slugger";
+import { dirname, join, relative, sep } from "node:path";
+import { pathToFileURL } from "node:url";
+import { describe, expect, it, vi } from "vitest";
+import {
+  createMarkdownProcessor,
+  parseFrontmatter,
+} from "@astrojs/markdown-remark";
+import { VFile } from "vfile";
+import { visit } from "unist-util-visit";
 import type { Root } from "mdast";
 import {
   createObsidianLinkResolver,
+  getPostSlug,
+  type ObsidianLinkDiagnostic,
+  type ObsidianLinkOptions,
   parseObsidianLinkToken,
   remarkObsidianLink,
   type ObsidianPostTarget,
-} from "./utils";
+} from "./obsidian-links";
 
 const fixturePosts: ObsidianPostTarget[] = [
   { stem: "Simple Post" },
@@ -59,7 +69,11 @@ function transformText(value: string, currentPostStem = "Simple Post") {
   return paragraph.children;
 }
 
-function resolveRaw(raw: string, currentPostStem = "Simple Post") {
+function resolveRaw(
+  raw: string,
+  currentPostStem = "Simple Post",
+  options: ObsidianLinkOptions = {},
+) {
   const token = parseObsidianLinkToken(raw);
   if (!token) {
     throw new Error(`Invalid token fixture: ${raw}`);
@@ -68,6 +82,7 @@ function resolveRaw(raw: string, currentPostStem = "Simple Post") {
   return createObsidianLinkResolver({
     posts: fixturePosts,
     images: fixtureImages,
+    ...options,
   })(token, currentPostStem);
 }
 
@@ -83,11 +98,6 @@ function walkFiles(dir: string) {
   }
 
   return files;
-}
-
-function isDraft(content: string) {
-  const frontmatter = content.match(/^---\s*\n([\s\S]*?)\n---/);
-  return Boolean(frontmatter?.[1].match(/^draft:\s*true\s*$/im));
 }
 
 describe("remarkObsidianLink", () => {
@@ -250,97 +260,361 @@ describe("remarkObsidianLink", () => {
     });
   });
 
-  it("leaves draft or missing posts and missing images as text", () => {
-    expect(resolveRaw("[[Draft Post|private note]]")).toEqual({
+  it("leaves known drafts as text without diagnostics", () => {
+    const onDiagnostic = vi.fn();
+    expect(
+      resolveRaw("[[Draft Post|private note]]", "Simple Post", {
+        onDiagnostic,
+      }),
+    ).toEqual({
       type: "text",
       value: "private note",
     });
-    expect(resolveRaw("[[Missing Post]]")).toEqual({
+    expect(onDiagnostic).not.toHaveBeenCalled();
+  });
+
+  it("warns about missing posts and images while preserving readable text", () => {
+    const diagnostics: ObsidianLinkDiagnostic[] = [];
+    const options = {
+      onDiagnostic: (diagnostic: ObsidianLinkDiagnostic) =>
+        diagnostics.push(diagnostic),
+    };
+    expect(resolveRaw("[[Missing Post]]", "Simple Post", options)).toEqual({
       type: "text",
       value: "Missing Post",
     });
-    expect(resolveRaw("![[missing.png]]")).toEqual({
+    expect(resolveRaw("![[missing.png]]", "Simple Post", options)).toEqual({
       type: "text",
       value: "missing.png",
     });
-    expect(resolveRaw("![[missing.png|300]]")).toEqual({
+    expect(resolveRaw("![[missing.png|300]]", "Simple Post", options)).toEqual({
       type: "text",
       value: "missing.png",
     });
+    expect(diagnostics.map(({ code }) => code)).toEqual([
+      "missing-post",
+      "missing-image",
+      "missing-image",
+    ]);
+    expect(diagnostics[0]).toMatchObject({
+      source: "Simple Post",
+      target: "Missing Post",
+      candidates: [],
+    });
+    expect(diagnostics[0].message).toContain("[[Missing Post]]");
+  });
+
+  it("does not warn for unfinished references in known draft source files", () => {
+    const onDiagnostic = vi.fn();
+    expect(
+      resolveRaw("[[Unwritten Post]]", "Draft Post", { onDiagnostic }),
+    ).toMatchObject({ type: "text" });
+    expect(
+      resolveRaw("![[unfinished.png]]", "Draft Post", { onDiagnostic }),
+    ).toMatchObject({ type: "text" });
+    expect(onDiagnostic).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])(
+    "never picks a colliding post basename based on index order (reverse=%s)",
+    (reverse) => {
+      const posts = [
+        { stem: "Same" },
+        { stem: "notes/Same" },
+        { stem: "private/Same", draft: true },
+      ];
+      const onDiagnostic = vi.fn();
+      const options = {
+        posts: reverse ? posts.reverse() : posts,
+        onDiagnostic,
+      };
+      expect(resolveRaw("[[Same|ambiguous]]", "Simple Post", options)).toEqual({
+        type: "text",
+        value: "ambiguous",
+      });
+      expect(onDiagnostic).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: "ambiguous-post",
+          candidates: ["Same", "notes/Same", "private/Same"],
+        }),
+      );
+      expect(onDiagnostic.mock.calls[0][0].message).toContain("explicit path");
+      expect(resolveRaw("[[notes/Same]]", "Same", options)).toMatchObject({
+        type: "link",
+        url: "/blog/notes/same/",
+      });
+      expect(resolveRaw("[[/Same]]", "notes/Same", options)).toMatchObject({
+        type: "link",
+        url: "/blog/same/",
+      });
+      expect(resolveRaw("[[./Same]]", "notes/Same", options)).toMatchObject({
+        type: "link",
+        url: "#",
+      });
+      expect(resolveRaw("[[private/Same]]", "Same", options)).toMatchObject({
+        type: "text",
+      });
+      expect(onDiagnostic).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it.each([false, true])(
+    "never picks a colliding image basename based on index order (reverse=%s)",
+    (reverse) => {
+      const images = ["same.png", "one/same.png", "two/same.png"];
+      const onDiagnostic = vi.fn();
+      const options = {
+        images: reverse ? images.reverse() : images,
+        onDiagnostic,
+      };
+      expect(resolveRaw("![[same.png|300]]", "Simple Post", options)).toEqual({
+        type: "text",
+        value: "same.png",
+      });
+      expect(onDiagnostic).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: "ambiguous-image",
+          candidates: ["one/same.png", "same.png", "two/same.png"],
+        }),
+      );
+      expect(
+        resolveRaw("![[one/same.png]]", "Simple Post", options),
+      ).toMatchObject({ type: "image", url: "../images/one/same.png" });
+      expect(
+        resolveRaw("![[/same.png]]", "Simple Post", options),
+      ).toMatchObject({ type: "image", url: "../images/same.png" });
+      expect(onDiagnostic).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it("diagnoses normalized full-path collisions instead of overwriting them", () => {
+    const onDiagnostic = vi.fn();
+    const options = {
+      posts: [{ stem: "notes/Example" }, { stem: "notes/example" }],
+      images: ["photos/Example.png", "photos/example.png"],
+      onDiagnostic,
+    };
+    expect(
+      resolveRaw("[[notes/Example]]", "Simple Post", options),
+    ).toMatchObject({ type: "text" });
+    expect(
+      resolveRaw("![[photos/Example.png]]", "Simple Post", options),
+    ).toMatchObject({ type: "text" });
+    expect(
+      onDiagnostic.mock.calls.map(([diagnostic]) => diagnostic.code),
+    ).toEqual(["ambiguous-post", "ambiguous-image"]);
+  });
+
+  it("never falls back to a basename after an explicit path fails", () => {
+    const onDiagnostic = vi.fn();
+    expect(
+      resolveRaw("[[wrong/Nested Post.md]]", "Simple Post", { onDiagnostic }),
+    ).toMatchObject({ type: "text" });
+    expect(
+      resolveRaw("![[wrong/screenshot.jpeg]]", "Simple Post", { onDiagnostic }),
+    ).toMatchObject({ type: "text" });
+    expect(
+      onDiagnostic.mock.calls.map(([diagnostic]) => diagnostic.code),
+    ).toEqual(["missing-post", "missing-image"]);
+  });
+
+  it("resolves explicit relative post and image paths from the source directory", () => {
+    expect(
+      resolveRaw("[[./Nested Post.md#Heading]]", "notes/Other Post"),
+    ).toMatchObject({ type: "link", url: "/blog/notes/nested-post/#heading" });
+    expect(resolveRaw("[[../Simple Post]]", "notes/Nested Post")).toMatchObject(
+      { type: "link", url: "/blog/simple-post/" },
+    );
+    expect(
+      resolveRaw("[[../notes/Nested Post.mdx]]", "notes/Other Post"),
+    ).toMatchObject({ type: "link", url: "/blog/notes/nested-post/" });
+    expect(
+      resolveRaw(
+        "![[../../images/nested/screenshot.jpeg]]",
+        "notes/Nested Post",
+      ),
+    ).toMatchObject({
+      type: "image",
+      url: "../../images/nested/screenshot.jpeg",
+    });
+    expect(resolveRaw("![[../images/image.png]]", "Simple Post")).toMatchObject(
+      { type: "image", url: "../images/image.png" },
+    );
+  });
+
+  it("preserves nested index routes and custom slugs", () => {
+    const options = {
+      posts: [
+        { stem: "notes/index" },
+        { stem: "notes/Custom Name", slug: "stable/nested-url" },
+      ],
+    };
+    expect(getPostSlug("notes/index")).toBe("notes");
+    expect(getPostSlug("notes/Custom Name", "")).toBe("notes/custom-name");
+    expect(getPostSlug("notes/Custom Name", "stable/nested-url")).toBe(
+      "stable/nested-url",
+    );
+    expect(resolveRaw("[[notes/index]]", "Simple Post", options)).toMatchObject(
+      { type: "link", url: "/blog/notes/" },
+    );
+    expect(
+      resolveRaw("[[notes/Custom Name#Heading]]", "Simple Post", options),
+    ).toMatchObject({ type: "link", url: "/blog/stable/nested-url/#heading" });
+  });
+
+  it("attaches file location and rule to remark diagnostics and logs by default", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const file = new VFile({ path: "/vault/blog/notes/Source.md" });
+    const position = {
+      start: { line: 12, column: 3, offset: 50 },
+      end: { line: 12, column: 14, offset: 61 },
+    };
+    const tree: Root = {
+      type: "root",
+      children: [
+        {
+          type: "paragraph",
+          children: [{ type: "text", value: "[[Missing]]", position }],
+        },
+      ],
+    };
+    try {
+      remarkObsidianLink({ contentDir: "/vault/blog", posts: [], images: [] })(
+        tree,
+        file,
+      );
+      expect(file.messages).toHaveLength(1);
+      expect(file.messages[0]).toMatchObject({
+        source: "remark-obsidian-link",
+        ruleId: "missing-post",
+        line: 12,
+        column: 3,
+      });
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining("/vault/blog/notes/Source.md:12:3"),
+      );
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining("[[Missing]]"));
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("uses absolute source paths and the history fallback for nested relative links", () => {
+    for (const file of [
+      { path: "/vault/blog/notes/Source.md" },
+      { history: ["/vault/blog/notes/Source.md"] },
+    ]) {
+      const tree: Root = {
+        type: "root",
+        children: [
+          {
+            type: "paragraph",
+            children: [{ type: "text", value: "[[./Nested Post]]" }],
+          },
+        ],
+      };
+      remarkObsidianLink({
+        contentDir: "/vault/blog",
+        posts: fixturePosts,
+        images: [],
+      })(tree, file);
+      expect(tree.children[0]).toMatchObject({
+        children: [{ type: "link", url: "/blog/notes/nested-post/" }],
+      });
+    }
+  });
+
+  it("does not inspect inline code, fenced code, or frontmatter as wiki references", async () => {
+    const onDiagnostic = vi.fn();
+    const renderer = await createMarkdownProcessor({
+      syntaxHighlight: false,
+      remarkPlugins: [
+        [remarkObsidianLink, { posts: [], images: [], onDiagnostic }],
+      ],
+    });
+    const source =
+      '---\ntitle: "[[Not A Link]]"\n---\n`[[Inline Code]]`\n\n```text\n![[Fenced Code]]\n```';
+    await renderer.render(parseFrontmatter(source).content);
+    expect(onDiagnostic).not.toHaveBeenCalled();
   });
 });
 
 describe("actual content Obsidian links", () => {
-  it("does not produce broken blog links from published content", () => {
+  it("has no missing or ambiguous targets in published Markdown", async () => {
     const contentDir = join(process.cwd(), "src/content/blog");
     const imageDir = join(process.cwd(), "src/content/images");
-    const contentFiles = walkFiles(contentDir).filter((path) =>
-      /\.(md|mdx)$/i.test(path),
-    );
-    const imageFiles = walkFiles(imageDir).map((path) =>
-      relative(imageDir, path).split(sep).join("/"),
-    );
-    const posts = contentFiles.map((path) => ({
-      stem: relative(contentDir, path)
-        .replace(/\.(md|mdx)$/i, "")
-        .split(sep)
-        .join("/"),
-      draft: isDraft(readFileSync(path, "utf8")),
-    }));
+    const posts = walkFiles(contentDir)
+      .filter((path) => /\.(md|mdx)$/i.test(path))
+      .map((path) => {
+        const parsed = parseFrontmatter(readFileSync(path, "utf8"), {
+          frontmatter: "empty-with-spaces",
+        });
+        return {
+          path,
+          content: parsed.content,
+          frontmatter: parsed.frontmatter,
+          stem: relative(contentDir, path)
+            .replace(/\.(md|mdx)$/i, "")
+            .split(sep)
+            .join("/"),
+          draft: parsed.frontmatter.draft === true,
+          slug: parsed.frontmatter.slug,
+        };
+      });
+    const published = posts.filter((post) => !post.draft);
     const publishedSlugs = new Set(
-      posts
-        .filter((post) => !post.draft)
-        .map((post) => githubSlug(basename(post.stem))),
+      published.map((post) => getPostSlug(post.stem, post.slug)),
     );
-    const resolve = createObsidianLinkResolver({
-      posts,
-      images: imageFiles,
-    });
-
+    const diagnostics: ObsidianLinkDiagnostic[] = [];
     const brokenLinks: string[] = [];
     const brokenImages: string[] = [];
-    const obsidianLinkPattern = /!?\[\[(.+?)\]\]/g;
-
-    for (const file of contentFiles) {
-      const content = readFileSync(file, "utf8");
-      if (isDraft(content)) {
-        continue;
-      }
-
-      for (const [raw] of content.matchAll(obsidianLinkPattern)) {
-        const token = parseObsidianLinkToken(raw);
-        if (!token) {
-          continue;
-        }
-
-        const node = resolve(
-          token,
-          relative(contentDir, file).replace(/\.(md|mdx)$/i, ""),
-        );
-        if (token.embedded) {
-          if (node.type !== "image") {
-            brokenImages.push(`${relative(contentDir, file)}: ${raw}`);
-          }
-          continue;
-        }
-
-        if (node.type !== "link" || !node.url.startsWith("/blog/")) {
-          continue;
-        }
-
-        const slug = node.url
-          .replace(/^\/blog\//, "")
-          .split("#")[0]
-          .replace(/\/$/, "");
-        if (!publishedSlugs.has(slug)) {
-          brokenLinks.push(
-            `${relative(contentDir, file)}: ${raw} -> ${node.url}`,
-          );
-        }
-      }
+    let blogLinkCount = 0;
+    let imageCount = 0;
+    const renderer = await createMarkdownProcessor({
+      syntaxHighlight: false,
+      remarkPlugins: [
+        [
+          remarkObsidianLink,
+          {
+            contentDir,
+            imageDir,
+            onDiagnostic: (diagnostic: ObsidianLinkDiagnostic) =>
+              diagnostics.push(diagnostic),
+          },
+        ],
+        () => (tree: Root, file: VFile) => {
+          visit(tree, "link", (node) => {
+            if (!node.url.startsWith("/blog/")) return;
+            blogLinkCount++;
+            const slug = node.url
+              .replace(/^\/blog\//, "")
+              .split("#")[0]
+              .replace(/\/$/, "");
+            if (!publishedSlugs.has(slug))
+              brokenLinks.push(`${file.path}: ${node.url}`);
+          });
+          visit(tree, "image", (node) => {
+            imageCount++;
+            if (/^(?:[a-z]+:|\/\/)/i.test(node.url)) return;
+            const imagePath = join(dirname(file.path), node.url);
+            if (!existsSync(imagePath))
+              brokenImages.push(`${file.path}: ${node.url}`);
+          });
+        },
+      ],
+    });
+    for (const post of published) {
+      await renderer.render(post.content, {
+        fileURL: pathToFileURL(post.path),
+        frontmatter: post.frontmatter,
+      });
     }
-
+    // Diagnostics catch missing references even when they degrade to plain text.
+    // Parsing real Markdown avoids treating code examples as links.
+    expect(diagnostics).toEqual([]);
     expect(brokenLinks).toEqual([]);
     expect(brokenImages).toEqual([]);
+    expect(blogLinkCount).toBeGreaterThan(0);
+    expect(imageCount).toBeGreaterThan(0);
   });
 });

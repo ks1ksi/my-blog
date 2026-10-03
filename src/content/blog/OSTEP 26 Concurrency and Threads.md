@@ -18,7 +18,7 @@ tags:
 
 쓰레드와 프로세스의 또 다른 차이는 **스택**에 있다. 멀티 쓰레드 프로세스의 경우에는, 각 쓰레드가 독립적으로 실행되며, 주소 공간에는 **쓰레드마다 스택이 할당되어 있다.**
 
-![[OSTEP 26 Concurrency and Threads-1694363175880.jpeg]]
+![[OSTEP 26 Concurrency and Threads-1694363175880.jpeg|코드와 힙을 공유하지만 스레드별 스택이 따로 있는 단일·멀티 스레드 주소 공간 비교]]
 
 오른쪽 주소 공간에는 두 개의 스택이 존재한다. 스택에서 할당되는 변수들이나 매개변수, 리턴값 등은 **해당 쓰레드의 스택인 쓰레드-로컬 저장소(Thread-local storage)** 에 저장된다.
 
@@ -58,8 +58,8 @@ int main(int argc, char *argv[]) {
 
 두 개의 쓰레드를 생성한 후에 메인 쓰레드는 `pthread_join()`을 호출하여 특정 쓰레드의 동작의 종료를 대기한다.
 
-![[OSTEP 26 Concurrency and Threads-1694363842948.jpeg]]
-![[OSTEP 26 Concurrency and Threads-1694363849892.jpeg]]
+![[OSTEP 26 Concurrency and Threads-1694363842948.jpeg|메인 스레드가 두 스레드를 생성한 뒤 각각의 종료를 기다리는 실행 순서]]
+![[OSTEP 26 Concurrency and Threads-1694363849892.jpeg|각 스레드가 생성 직후 실행을 마쳐 메인의 join이 즉시 반환하는 실행 순서]]
 
 이렇게 실행 순서는 여러 가지로 나올 수 있다. 쓰레드 1이 쓰레드 2보다 먼저 생성된 경우라도, 스케줄러가 쓰레드 2를 먼저 실행하면 "B"가 "A"보다 먼저 출력될 수도 있다.
 
@@ -174,7 +174,7 @@ mov %eax, 0x8049a1c
 
 마지막으로 문맥 교환이 한번 더 일어나서 1번 쓰레드가 실행된다. `counter`의 주소 `0x8049a1c`에 `eax` 레지스터의 값 51을 저장한다.
 
-![[OSTEP 26 Concurrency and Threads-1694368241373.jpeg]]
+![[OSTEP 26 Concurrency and Threads-1694368241373.jpeg|두 스레드의 counter 증가 연산이 엇갈려 두 번 증가해도 값이 51에 머무르는 실행 추적]]
 
 이 예시처럼 명령어의 실행 순서에 따라 결과가 달라지는 상황을 ***경쟁 조건 (race condition)*** 이라고 한다. 경쟁 조건에 처한 경우 실행할 때마다 다른 결과를 얻는다. 즉, **비결정적(indeterminate)**이다.
 

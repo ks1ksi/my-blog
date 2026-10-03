@@ -25,7 +25,7 @@ MLFQ의 두 가지 기본 규칙은 다음과 같다:
 - 규칙 1: Priority(A) > Priority(B) 이면, A가 실행된다 (B는 실행되지 않는다).
 - 규칙 2: Priority(A) = Priority(B) 이면, A와 B는 **RR 방식**으로 실행된다.
 
-![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808739461.jpeg]]
+![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808739461.jpeg|여러 우선순위 큐에 A, B, C, D 작업을 배치한 MLFQ 구조]]
 
 ## 2. 시도 1: 우선순위의 변경
 
@@ -39,19 +39,19 @@ MLFQ는 작업의 우선순위를 동적으로 변경한다. 작업이 키보드
 
 ### 예시 1: 한 개의 긴 실행 시간을 가진 작업
 
-![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808781509.jpeg]]
+![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808781509.jpeg|장시간 실행하는 작업이 Q2에서 Q1, Q0으로 우선순위가 내려가는 시간표]]
 
 긴 실행 시간을 가진 작업이 도착했을 때, 작업은 최고 우선순위로 진입한다. 타임 슬라이스가 지나면 스케줄러는 작업의 우선순위를 한 단계 낮추어 해당 작업을 아래 큐로 이동시킨다. 이 과정이 반복되어 작업은 결국 가장 낮은 우선순위를 가지게 된다.
 
 ### 예시 2: 짧은 작업과 함께
 
-![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808800094.jpeg]]
+![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808800094.jpeg|긴 작업이 Q0에서 실행되는 동안 새 대화형 작업이 상위 큐에서 먼저 실행되는 시간표]]
 
 2개의 작업이 존재하는 경우를 가정해보자. A는 오래 실행되는 CPU 위주 작업이고 B는 짧은 대화형 작업이다. A는 이미 실행 중이고 B는 이제 도착했다고 가정하면, B는 높은 우선순위를 부여받아 빨리 실행되고 바로 종료된다. 이후에 A는 낮은 우선순위에서 실행을 재개한다.
 
 ### 예시 3: 입출력 작업에 대해서는 어떻게?
 
-![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808844209.jpeg]]
+![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687808844209.jpeg|입출력 중심 작업은 Q2에, CPU 중심 작업은 Q0에 머무르는 실행 시간표]]
 
 입출력 작업을 수행하는 경우, **프로세스가 타임 슬라이스를 소진하기 전에 CPU를 양도하면 같은 우선순위를 유지하게 된다.** 이 규칙은 대화형 작업이 키보드나 마우스로부터 사용자 입력을 대기하며 자주 입출력을 수행하면 타임 슬라이스가 종료되기 전에 CPU를 양도하게 될 것이라는 점을 반영한 것이다. 이 경우, MLFQ는 해당 작업을 빠르게 실행시키기 위해 우선순위를 높게 유지한다.
 
@@ -79,7 +79,7 @@ MLFQ는 작업의 우선순위를 동적으로 변경한다. 작업이 키보드
 
 규칙 4: 주어진 단계에서 시간 할당량을 소진하면 (CPU를 몇 번 양도하였는지 상관없이), 우선순위는 낮아진다 (즉, 아래 단계의 큐로 이동한다).
 
-![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687809290188.jpeg]]
+![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687809290188.jpeg|CPU 사용 시간 누적 측정 여부에 따른 MLFQ 스케줄러 조작 방지 효과 비교]]
 
 방지책이 마련되면 프로세스의 입출력 행동과 무관하게 아래 단계 큐로 천천히 이동하게 되어 CPU를 자기 몫 이상으로 사용할 수 없게 된다.
 
@@ -89,7 +89,7 @@ MLFQ는 작업의 우선순위를 동적으로 변경한다. 작업이 키보드
 
 큐의 우선순위에 따라 타임 슬라이스의 크기를 다르게 설정한다.
 
-![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687809532148.jpeg]]
+![[OSTEP 08 Multi-level Feedback Queue, MLFQ-1687809532148.jpeg|낮은 우선순위 큐일수록 더 긴 타임 슬라이스를 부여한 실행 시간표]]
 
 Solaris의 MLFQ 구현 테이블의 기본 값
 

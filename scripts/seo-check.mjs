@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { SITE_URL } from "../src/config/site.mjs";
 
 const distDir = process.argv[2] ?? "dist";
 const RSS_MAX_BYTES = 10 * 1024 * 1024;
 const NAVER_SITE_VERIFICATION = "bf086187e0346e29d6a4cc46934cf84a85d74c76";
 const XML_INVALID_CONTROL_CHARS =
   /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
-const SITE_URL = "https://ks1ksi.io/";
 
 function walkFiles(dir, predicate) {
   if (!fs.existsSync(dir)) {

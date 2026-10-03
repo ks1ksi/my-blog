@@ -12,9 +12,23 @@ Personal blog built with Astro, Tailwind CSS v4, MDX, KaTeX, Giscus, and Pagefin
 - `npm run dev`
 - `npm run build`
 - `npm run preview`
+- `npm run test:browser:install` (one-time local Chromium/WebKit installation)
+- `npm run test:browser` (after building)
+- `npm run check:production -- --commit <full commit SHA>`
 
-`build` also checks generated SEO metadata, sitemap coverage, robots, local links
-and anchors, math styles, and the search index. Navigation and scroll restoration
+`build` gates formatting, unit tests, tag taxonomy, and Astro types before
+producing the site. Generated checks cover SEO metadata, sitemap coverage,
+robots, local links and anchors, image alt quality, math styles, fonts, and the
+search index. The Quality GitHub Actions workflow also runs Chromium and WebKit
+regressions at desktop/mobile sizes with automated accessibility checks. A clean
+Node 22 install uses strict peer resolution; no legacy bypass is enabled.
+
+`dist/build-info.json` identifies the exact source commit and checkout
+cleanliness. Production verification requires that identity before checking
+public endpoints. See [quality and release checks](docs/quality-and-release.md)
+for coverage and limitations.
+
+Navigation and scroll restoration
 use Astro’s unmodified `ClientRouter`; dependencies are not patched at install.
 
 Production builds generate a content-hashed variable-font subset for each page
@@ -30,7 +44,10 @@ no Python or browser-time font processing is required.
 - `src/content/blog`: Markdown and MDX posts
 - `src/content/images`: images referenced from posts
 - `src/layouts` and `src/components`: shared page shell and UI building blocks
-- `src/lib`: shared content selectors, markdown helpers, and browser-side UI logic
+- `src/lib`: content/discovery selectors, Markdown helpers, and browser UI modules
+- `src/config/site.mjs`: shared canonical URL, locale, and KST timezone
+- `src/styles`: theme tokens and ordered base/layout/article/search/responsive styles
+- `tests/browser`: navigation, failure-recovery, viewport and accessibility regressions
 
 ## Writing Posts
 
@@ -49,7 +66,13 @@ draft: false
 - `title` and `date` are required
 - `description`, `tags`, and `draft` are optional
 - `[[wiki links]]` and `![[image embeds]]` are supported through a custom remark plugin
-- embedded images should live in `src/content/images`
+- embedded images should live in `src/content/images`; use meaningful aliases such
+  as `![[diagram.png|프로세스 상태가 실행, 준비, 대기 사이에서 바뀌는 과정]]`
+- use full/relative paths when multiple notes or images share a basename; missing
+  or ambiguous references produce source-located warnings instead of arbitrary links
+- keep literal array expressions such as `[[1, 2], [3, 4]]` inside inline code
+- curated post and series references in `src/lib/discovery.ts` are verified during
+  tests/build; update that curation when removing or making an included post private
 
 The starter template is available at `src/content/templates/template.md`.
 

@@ -87,7 +87,7 @@ The program provides maximum support for internships through the university-oper
 
 **물론 영어다.**
 
-![[SAP Labs Korea Vocational Training Program Intern 지원 및 합격 후기-1717147680658.jpeg]]
+![[SAP Labs Korea Vocational Training Program Intern 지원 및 합격 후기-1717147680658.jpeg|SAP Vocational Training Program 인턴 영어 인터뷰 일정 초대 이메일]]
 
 in English? 벌써부터 어지럽다.
 
@@ -120,7 +120,7 @@ HR Interview를 너무 말아먹고 오히려 마음 편하게 봐서 잘 본 �
 Resume Screening - Phone Screening - Coding Test - HR Interview - PT Interview 라는 험난한 과정을 거쳐서 합격하게 되었다.
 
 
-![[SAP Labs Korea Vocational Training Program Intern 지원 및 합격 후기-1717150878671.jpeg]]
+![[SAP Labs Korea Vocational Training Program Intern 지원 및 합격 후기-1717150878671.jpeg|SAP Labs Korea 인턴 선발과 오퍼 수락 회신을 안내하는 이메일]]
 
 합격 이후 삼성전자 인턴, NH투자증권 인턴, 네이버 클라우드 인턴 등 진행중인 전형 전부 중단했다.
 

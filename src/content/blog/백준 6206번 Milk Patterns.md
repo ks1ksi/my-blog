@@ -102,7 +102,7 @@ int main() {
 }
 ```
 
-![[백준 6206번 Milk Patterns-1-b41218d114.jpeg]]
+![[백준 6206번 Milk Patterns-1-b41218d114.jpeg|백준 6206번 Milk Patterns 온라인 채점 제출 결과]]
 
 ## 여담
 > 라빈카프 넘 어렵다

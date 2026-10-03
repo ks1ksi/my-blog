@@ -82,7 +82,7 @@ int main() {
 }
 ```
 
-![[백준 4343번 Arctic Network-1-075d39baa5.jpeg]]
+![[백준 4343번 Arctic Network-1-075d39baa5.jpeg|백준 4343번 Arctic Network 온라인 채점 제출 결과]]
 
 ## 여담
 > 문제 해석이 제일 어렵다.

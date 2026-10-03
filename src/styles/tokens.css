@@ -1,0 +1,77 @@
+@theme {
+  --font-sans:
+    "Pretendard Variable", "Pretendard", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+}
+
+/* Roles stay the same across themes; component styles use these tokens. */
+:root {
+  --color-bg: #f7f6f2;
+  --color-header-bg: #f7f6f2;
+  --color-surface: #ffffff;
+  --color-surface-muted: #efefea;
+  --color-text: #353c38;
+  --color-text-strong: #172a25;
+  --color-muted: #5a665f;
+  --color-border: #d6ddd6;
+  --color-border-strong: #708276;
+  --color-accent: #146450;
+  --color-accent-subtle: #e9f2ed;
+  --color-accent-active: #d5e7dd;
+  --color-visited: #52695d;
+  --color-link-decoration: #708276;
+  --color-focus: #146450;
+  --color-overlay: rgb(13 25 19 / 0.55);
+  --radius: 0.5rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --astro-code-foreground: #263c32;
+  --astro-code-background: #efefea;
+  --astro-code-token-comment: #5a665f;
+  --astro-code-token-keyword: #845123;
+  --astro-code-token-string: #146450;
+  --astro-code-token-function: #375b91;
+  --astro-code-token-constant: #74518c;
+  --astro-code-token-parameter: #375b91;
+  --astro-code-token-string-expression: #74518c;
+  --astro-code-token-punctuation: #5a665f;
+  --astro-code-token-link: #146450;
+}
+.dark {
+  --color-bg: #131c19;
+  --color-header-bg: #131c19;
+  --color-surface: #1b2822;
+  --color-surface-muted: #202f27;
+  --color-text: #d7e2db;
+  --color-text-strong: #f2f5ef;
+  --color-muted: #aabdb0;
+  --color-border: #415549;
+  --color-border-strong: #7e9888;
+  --color-accent: #82d6b0;
+  --color-accent-subtle: #213d30;
+  --color-accent-active: #2b4b3b;
+  --color-visited: #a6b8ab;
+  --color-link-decoration: #7e9888;
+  --color-focus: #82d6b0;
+  --color-overlay: rgb(0 0 0 / 0.7);
+  --astro-code-foreground: #d7e2db;
+  --astro-code-background: #202f27;
+  --astro-code-token-comment: #aabdb0;
+  --astro-code-token-keyword: #e8bc87;
+  --astro-code-token-string: #82d6b0;
+  --astro-code-token-function: #a0c3f4;
+  --astro-code-token-constant: #d2abe0;
+  --astro-code-token-parameter: #a0c3f4;
+  --astro-code-token-string-expression: #d2abe0;
+  --astro-code-token-punctuation: #aabdb0;
+  --astro-code-token-link: #82d6b0;
+}

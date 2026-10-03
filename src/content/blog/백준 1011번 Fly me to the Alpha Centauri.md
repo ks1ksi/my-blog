@@ -41,7 +41,7 @@ for _ in range(T):
     solve(dist)
 ```
 
-![[백준 1011번 Fly me to the Alpha Centauri-1-8d5591c938.png]]
+![[백준 1011번 Fly me to the Alpha Centauri-1-8d5591c938.png|백준 1011번 Fly me to the Alpha Centauri 온라인 채점 제출 결과]]
 
 ## 여담
 >대학교 1학년때 풀다 어려워서 도망간 문제다. 이걸 왜 못풀었지?

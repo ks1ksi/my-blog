@@ -1,24 +1,29 @@
 import { navigate } from "astro:transitions/client";
+import { initBlogIndexState, restoreBlogIndexState } from "./blog-index-state";
+import { enhanceCodeBlocks, copyCode } from "./client/code-copy";
 import {
-  initBlogIndexState,
-  restoreBlogIndexState,
-} from "@lib/blog-index-state";
-
-type ThemePreference = "light" | "dark" | "system";
-
-type GlobalUiState = {
-  registered: boolean;
-  pagefindModulePromise?: Promise<typeof import("@lib/pagefind-ui")>;
-};
+  restoreTableOfContentsState,
+  storeTableOfContentsState,
+} from "./client/disclosures";
+import {
+  closeSearch,
+  getSearchDialog,
+  handleSearchClose,
+  handleSearchPreloadIntent,
+  openSearch,
+} from "./client/search";
+import {
+  handleSystemThemeChange,
+  initializeTheme,
+  selectTheme,
+} from "./client/theme";
 
 declare global {
   interface Window {
-    __ks1ksiBlogUi?: GlobalUiState;
+    __ks1ksiBlogUi?: { registered: boolean };
   }
 }
 
-const THEME_STORAGE_KEY = "theme";
-const TOC_OPEN_STORAGE_KEY = "article:toc-open";
 const EDITABLE_SELECTOR = [
   "input",
   "textarea",
@@ -28,221 +33,8 @@ const EDITABLE_SELECTOR = [
   "[contenteditable='plaintext-only']",
 ].join(", ");
 
-let searchTrigger: HTMLElement | null = null;
-let shouldRestoreSearchFocus = true;
-
-function getState() {
-  window.__ks1ksiBlogUi ??= {
-    registered: false,
-  };
-
-  return window.__ks1ksiBlogUi;
-}
-
-function getStoredTheme(): ThemePreference {
-  const theme = localStorage.getItem(THEME_STORAGE_KEY);
-
-  if (theme === "light" || theme === "dark") {
-    return theme;
-  }
-
-  return "system";
-}
-
-function prefersDarkTheme() {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-
-function shouldUseDarkTheme(theme = getStoredTheme()) {
-  return theme === "dark" || (theme === "system" && prefersDarkTheme());
-}
-
-function syncGiscusTheme() {
-  const giscusFrame =
-    document.querySelector<HTMLIFrameElement>(".giscus-frame");
-  if (!giscusFrame) return;
-
-  const theme = document.documentElement.classList.contains("dark")
-    ? "dark"
-    : "light";
-  giscusFrame.contentWindow?.postMessage(
-    { giscus: { setConfig: { theme } } },
-    "https://giscus.app",
-  );
-}
-
-function applyTheme(dark: boolean) {
-  document.documentElement.classList.toggle("dark", dark);
-  syncGiscusTheme();
-}
-
-function updateThemeControl() {
-  const theme = getStoredTheme();
-  for (const button of document.querySelectorAll<HTMLButtonElement>(
-    "[data-theme-value]",
-  )) {
-    button.setAttribute(
-      "aria-pressed",
-      String(button.dataset.themeValue === theme),
-    );
-  }
-}
-
-function selectTheme(button: HTMLButtonElement) {
-  const theme = button.dataset.themeValue;
-  if (theme !== "light" && theme !== "dark" && theme !== "system") return;
-  localStorage.setItem(THEME_STORAGE_KEY, theme);
-  applyTheme(shouldUseDarkTheme(theme));
-  updateThemeControl();
-  document.querySelector<HTMLElement>("#theme-picker")?.hidePopover();
-  document.querySelector<HTMLButtonElement>("#theme-toggle")?.focus();
-}
-
-function getSearchDialog() {
-  return document.querySelector<HTMLDialogElement>("#search-dialog");
-}
-
-function getSearchInput() {
-  return document.querySelector<HTMLInputElement>("#search input[type='text']");
-}
-
-function clearSearch() {
-  const input = getSearchInput();
-  if (!input) return;
-
-  input.value = "";
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-}
-
-async function loadPagefindUi() {
-  const state = getState();
-  state.pagefindModulePromise ??= import("@lib/pagefind-ui");
-  return state.pagefindModulePromise;
-}
-
-async function openSearch() {
-  const dialog = getSearchDialog();
-  if (!dialog) return;
-
-  if (document.activeElement instanceof HTMLElement) {
-    searchTrigger = document.activeElement;
-  }
-
-  shouldRestoreSearchFocus = true;
-
-  if (!dialog.open) {
-    dialog.showModal();
-  }
-
-  const { ensurePagefindUi } = await loadPagefindUi();
-  await ensurePagefindUi();
-
-  window.requestAnimationFrame(() => {
-    if (dialog.open) {
-      getSearchInput()?.focus();
-    }
-  });
-}
-
-function finishSearchClose() {
-  clearSearch();
-
-  if (shouldRestoreSearchFocus && searchTrigger?.isConnected) {
-    searchTrigger.focus();
-  }
-
-  searchTrigger = null;
-  shouldRestoreSearchFocus = true;
-}
-
-function closeSearch({ restoreFocus = true } = {}) {
-  const dialog = getSearchDialog();
-  shouldRestoreSearchFocus = restoreFocus;
-
-  if (dialog?.open) {
-    dialog.close();
-    return;
-  }
-
-  finishSearchClose();
-}
-
-function isEditableTarget(target: EventTarget | null) {
-  return (
-    target instanceof Element && Boolean(target.closest(EDITABLE_SELECTOR))
-  );
-}
-
-function restoreTableOfContentsState(root = document) {
-  const toc = root.querySelector<HTMLDetailsElement>(
-    "details[data-table-of-contents]",
-  );
-  if (!toc) return;
-
-  const storedOpen = sessionStorage.getItem(TOC_OPEN_STORAGE_KEY);
-  if (storedOpen === "true" || storedOpen === "false") {
-    toc.open = storedOpen === "true";
-  }
-}
-
-function storeTableOfContentsState(event: Event) {
-  const toc = event.target;
-  if (!(toc instanceof HTMLDetailsElement)) {
-    return;
-  }
-
-  if (!toc.matches("[data-table-of-contents]")) {
-    return;
-  }
-
-  sessionStorage.setItem(TOC_OPEN_STORAGE_KEY, String(toc.open));
-}
-
-function enhanceCodeBlocks() {
-  for (const codeBlock of document.querySelectorAll<HTMLElement>(
-    "article pre:not([data-copy-ready])",
-  )) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "copy-code-wrapper";
-
-    codeBlock.dataset.copyReady = "true";
-    codeBlock.parentNode?.insertBefore(wrapper, codeBlock);
-    wrapper.appendChild(codeBlock);
-
-    const copyButton = document.createElement("button");
-    copyButton.type = "button";
-    copyButton.className = "copy-code";
-    copyButton.setAttribute("aria-label", "Copy code");
-    copyButton.textContent = "Copy";
-
-    codeBlock.appendChild(copyButton);
-  }
-}
-
-async function copyCode(copyButton: HTMLButtonElement) {
-  const codeBlock = copyButton.closest("pre");
-  if (!codeBlock) return;
-
-  const clone = codeBlock.cloneNode(true) as HTMLElement;
-  clone.querySelector(".copy-code")?.remove();
-
-  await navigator.clipboard.writeText((clone.textContent ?? "").trimEnd());
-  copyButton.textContent = "Copied";
-
-  window.setTimeout(() => {
-    if (copyButton.isConnected) {
-      copyButton.textContent = "Copy";
-    }
-  }, 2000);
-}
-
-function preloadSearch() {
-  void loadPagefindUi().then(({ ensurePagefindUi }) => ensurePagefindUi());
-}
-
 function initializePage() {
-  applyTheme(shouldUseDarkTheme());
-  updateThemeControl();
+  initializeTheme();
   restoreTableOfContentsState();
   initBlogIndexState();
   enhanceCodeBlocks();
@@ -265,22 +57,26 @@ function handleDocumentClick(event: MouseEvent) {
     return;
   }
 
-  const searchButton =
-    event.target.closest<HTMLButtonElement>("#magnifying-glass");
-  if (searchButton) {
+  if (event.target.closest("#magnifying-glass, #search-retry")) {
     event.preventDefault();
     void openSearch();
     return;
   }
 
-  if (event.target.closest<HTMLButtonElement>("#search-close")) {
+  if (event.target.closest("#search-reload")) {
+    event.preventDefault();
+    window.location.reload();
+    return;
+  }
+
+  if (event.target.closest("#search-close")) {
     event.preventDefault();
     closeSearch();
     return;
   }
 
   if (event.target.closest(".pagefind-ui__result-link")) {
-    closeSearch();
+    closeSearch({ restoreFocus: false });
     return;
   }
 
@@ -291,19 +87,16 @@ function handleDocumentClick(event: MouseEvent) {
     const link = searchResult.querySelector<HTMLAnchorElement>(
       ".pagefind-ui__result-link",
     );
-
     if (link?.href) {
       event.preventDefault();
-      closeSearch();
+      closeSearch({ restoreFocus: false });
       void navigate(link.href);
     }
     return;
   }
 
   const dialog = getSearchDialog();
-  if (dialog?.open && event.target === dialog) {
-    closeSearch();
-  }
+  if (dialog?.open && event.target === dialog) closeSearch();
 }
 
 function handleDocumentKeydown(event: KeyboardEvent) {
@@ -311,56 +104,32 @@ function handleDocumentKeydown(event: KeyboardEvent) {
     closeSearch();
     return;
   }
-
-  if (isEditableTarget(event.target)) {
+  if (
+    event.target instanceof Element &&
+    event.target.closest(EDITABLE_SELECTOR)
+  )
     return;
-  }
 
   const isSlashShortcut = event.key === "/";
   const isSearchShortcut =
     (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
-
-  if (!isSlashShortcut && !isSearchShortcut) {
-    return;
-  }
+  if (!isSlashShortcut && !isSearchShortcut) return;
 
   event.preventDefault();
   void openSearch();
 }
 
-function handleSearchPreloadIntent(event: Event) {
-  if (
-    event.target instanceof Element &&
-    event.target.closest("#magnifying-glass")
-  ) {
-    preloadSearch();
-  }
-}
-
-function handleSystemThemeChange(event: MediaQueryListEvent) {
-  if (getStoredTheme() !== "system") {
-    return;
-  }
-
-  applyTheme(event.matches);
-  updateThemeControl();
-}
-
 export function registerGlobalUi() {
-  const state = getState();
-  if (state.registered) {
-    return;
-  }
+  window.__ks1ksiBlogUi ??= { registered: false };
+  if (window.__ks1ksiBlogUi.registered) return;
+  window.__ks1ksiBlogUi.registered = true;
 
-  state.registered = true;
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("toggle", storeTableOfContentsState, true);
   document.addEventListener("keydown", handleDocumentKeydown);
   document.addEventListener("pointerover", handleSearchPreloadIntent);
   document.addEventListener("focusin", handleSearchPreloadIntent);
-  document.addEventListener("astro:after-swap", () =>
-    applyTheme(shouldUseDarkTheme()),
-  );
+  document.addEventListener("astro:after-swap", initializeTheme);
   document.addEventListener("astro:before-swap", (event) => {
     closeSearch({ restoreFocus: false });
     // Restore disclosure layout before the router restores its scroll position.
@@ -368,18 +137,9 @@ export function registerGlobalUi() {
     restoreTableOfContentsState(event.newDocument);
   });
   document.addEventListener("astro:page-load", initializePage);
-  document.addEventListener(
-    "close",
-    (event) => {
-      if (event.target === getSearchDialog()) {
-        finishSearchClose();
-      }
-    },
-    true,
-  );
+  document.addEventListener("close", handleSearchClose, true);
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", handleSystemThemeChange);
-
   initializePage();
 }

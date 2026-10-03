@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parse } from "parse5";
+import { SITE_URL } from "../src/config/site.mjs";
 
 const root = path.resolve(process.argv[2] ?? "dist");
-const origin = "https://ks1ksi.io";
+const origin = new URL(SITE_URL).origin;
 const failures = [];
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -37,6 +38,7 @@ for (const file of walk(root).filter((file) => file.endsWith(".html"))) {
 }
 let posts = 0;
 let mathPages = 0;
+let images = 0;
 let checkedLinks = 0;
 const indexableUrls = new Set();
 const fail = (page, message) => failures.push(`${page.relative}: ${message}`);
@@ -111,6 +113,18 @@ for (const page of pages.values()) {
   if (hasMath !== mathStyle)
     fail(page, "math stylesheet does not match rendered formulas");
   for (const node of nodes) {
+    if (node.tag === "img") {
+      images++;
+      if (typeof node.alt !== "string") fail(page, "image is missing alt text");
+      // Empty alt is valid for a genuinely decorative image. File names are
+      // never a useful replacement for the content of an article diagram.
+      if (
+        /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(
+          node.alt?.trim() ?? "",
+        )
+      )
+        fail(page, `image alt is a filename: ${node.alt}`);
+    }
     if (node.class?.split(/\s+/).includes("katex-error"))
       fail(page, `invalid formula: ${node.title}`);
     const value =
@@ -180,6 +194,7 @@ console.log(
       pages: pages.size,
       posts,
       mathPages,
+      images,
       checkedLinks,
       sitemapUrls: sitemapUrls.size,
       indexedPages,

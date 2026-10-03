@@ -46,10 +46,10 @@ Google is and always will be an engineering company. We hire people with a broad
 
 Resume, Transcript, Cover Letter를 작성해서 제출했다.
 
-![[Google Software Engineering Intern, Summer 2024 지원 후기-1717141188123.jpeg]]
+![[Google Software Engineering Intern, Summer 2024 지원 후기-1717141188123.jpeg|Google 서울 Software Engineering Intern, Summer 2024 지원서 제출 완료 화면]]
 
 일주일 후 이런 메일이 와서 인터뷰 일정을 고르게 된다.
 
-![[Google Software Engineering Intern, Summer 2024 지원 후기-1717141143973.jpeg]]
+![[Google Software Engineering Intern, Summer 2024 지원 후기-1717141143973.jpeg|Google 인턴 지원 검토를 위해 추가 정보 입력을 요청하는 이메일]]
 
 이후 연락이 없는걸 보면 서류가 갈려버린 듯 하다.. :(

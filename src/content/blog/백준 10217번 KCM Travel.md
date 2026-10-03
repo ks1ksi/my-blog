@@ -85,7 +85,7 @@ int main() {
 }
 ```
 
-![[백준 10217번 KCM Travel-1-03054a6a2a.jpeg]]
+![[백준 10217번 KCM Travel-1-03054a6a2a.jpeg|백준 10217번 KCM Travel 온라인 채점 제출 결과]]
 
 ## 여담
 > 왜 5초나 걸렸을까?

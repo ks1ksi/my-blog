@@ -1,8 +1,10 @@
+import { readPreference, writePreference } from "./client/storage";
+
 const YEAR_STORAGE_KEY = "blog:open-years";
 
 function readStoredYears() {
   try {
-    const value = sessionStorage.getItem(YEAR_STORAGE_KEY);
+    const value = readPreference("session", YEAR_STORAGE_KEY);
     if (!value) {
       return null;
     }
@@ -38,7 +40,7 @@ export function initBlogIndexState() {
       .map((details) => details.dataset.year)
       .filter(Boolean);
 
-    sessionStorage.setItem(YEAR_STORAGE_KEY, JSON.stringify(openYears));
+    writePreference("session", YEAR_STORAGE_KEY, JSON.stringify(openYears));
   };
 
   yearDetails.forEach((details) => {

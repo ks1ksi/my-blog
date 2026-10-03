@@ -8,6 +8,8 @@ import BackToPrevious from "@components/BackToPrevious.astro";
 import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import Giscus from "@components/Giscus.astro";
+import RelatedPosts from "@components/RelatedPosts.astro";
+import { getRelatedPosts, getSeriesNavigation } from "@lib/discovery";
 import { type BlogPost, getPublishedPosts } from "@lib/content";
 import {
   createBlogPostingJsonLd,
@@ -20,23 +22,36 @@ import {
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
-  return posts.map((post, index) => ({
-    params: { id: post.id },
-    props: {
-      post,
-      prevPost: posts[index - 1],
-      nextPost: posts[index + 1],
-    },
-  }));
+  return posts.map((post, index) => {
+    const seriesNavigation = getSeriesNavigation(post.id, posts);
+    const navigationIds = seriesNavigation
+      ? seriesNavigation.series.posts.map((entry) => entry.id)
+      : [posts[index - 1]?.id, posts[index + 1]?.id].filter(
+          (id): id is string => Boolean(id),
+        );
+    return {
+      params: { id: post.id },
+      props: {
+        post,
+        prevPost: posts[index - 1],
+        nextPost: posts[index + 1],
+        seriesNavigation,
+        relatedPosts: getRelatedPosts(post, posts, 3, navigationIds),
+      },
+    };
+  });
 }
 
 type Props = {
   post: BlogPost;
   prevPost?: BlogPost;
   nextPost?: BlogPost;
+  seriesNavigation?: ReturnType<typeof getSeriesNavigation>;
+  relatedPosts: BlogPost[];
 };
 
-const { post, prevPost, nextPost } = Astro.props;
+const { post, prevPost, nextPost, seriesNavigation, relatedPosts } =
+  Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(post);
 const description = getPostDescription(post);
 const canonicalURL = getCanonicalUrl(Astro.url.pathname);
@@ -51,8 +66,8 @@ const jsonLd = [
     description,
   }),
   createBreadcrumbJsonLd([
-    { name: "Home", url: getCanonicalUrl("/") },
-    { name: "Blog", url: getCanonicalUrl("/blog") },
+    { name: "홈", url: getCanonicalUrl("/") },
+    { name: "모든 글", url: getCanonicalUrl("/blog") },
     { name: post.data.title, url: canonicalURL },
   ]),
 ];
@@ -94,15 +109,51 @@ const jsonLd = [
         </div>
       ) : null}
     </div>
+    {seriesNavigation && (
+      <p class="series-context" data-pagefind-ignore>
+        <a href={`/series/${seriesNavigation.series.id}/`}>
+          {seriesNavigation.series.title} 시리즈
+        </a>
+        <span>
+          {seriesNavigation.series.posts.length}편 중{" "}
+          {seriesNavigation.position}번째 글
+        </span>
+      </p>
+    )}
     {headings.length > 0 && <TableOfContents headings={headings} />}
     <article data-pagefind-body>
       <Content />
-      <div class="mt-16" data-pagefind-ignore>
-        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
-      </div>
-      <div class="mt-16" data-pagefind-ignore>
-        <Giscus />
-      </div>
     </article>
+    <div class="mt-16" data-pagefind-ignore>
+      <PostNavigation
+        prevPost={prevPost}
+        nextPost={nextPost}
+        seriesNavigation={seriesNavigation}
+      />
+    </div>
+    <RelatedPosts posts={relatedPosts} />
+    <div class="mt-16" data-pagefind-ignore>
+      <Giscus />
+    </div>
   </Container>
 </Layout>
+
+<style>
+  .series-context {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin-bottom: var(--space-4);
+    color: var(--color-muted);
+    font-size: 0.875rem;
+  }
+  .series-context a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

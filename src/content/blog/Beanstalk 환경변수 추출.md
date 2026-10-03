@@ -8,7 +8,7 @@ tags:
 
 prisma db 설정 문제로 EC2에 접속하여 직접 npm run start를 하려고 했는데 환경 변수가 주입되어 있지 않았다.
 
-![[Beanstalk 환경변수 추출-1694451989390.jpeg]]
+![[Beanstalk 환경변수 추출-1694451989390.jpeg|Prisma 실행 중 DATABASE_URL 환경변수를 찾지 못해 발생한 P1012 오류]]
 
 AWS Elastic Beanstalk를 통해 배포된 애플리케이션의 경우, 환경 변수는 일반적으로 EC2 인스턴스 내에서 `/opt/elasticbeanstalk/bin/get-config` 스크립트를 사용하여 조회할 수 있다고 한다.
 
@@ -20,5 +20,5 @@ AWS Elastic Beanstalk를 통해 배포된 애플리케이션의 경우, 환경 �
 sudo /opt/elasticbeanstalk/bin/get-config --output YAML environment > .env
 ```
 
-![[Beanstalk 환경변수 추출-1694452040551.jpeg]]
+![[Beanstalk 환경변수 추출-1694452040551.jpeg|Beanstalk 설정을 .env로 추출한 뒤 Prisma가 환경변수를 읽는 터미널 화면]]
 성공...!

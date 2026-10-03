@@ -1,6 +1,7 @@
 # Blog interface
 
-Use Astro-rendered HTML and shared CSS tokens in `src/styles/global.css`.
+Use Astro-rendered HTML and shared CSS tokens in `src/styles/tokens.css`. The small `global.css` entry imports
+tokens, base, layout, article, search, and responsive rules in a fixed order.
 Keep introductions factual: the author's name, role, and existing stack. Avoid
 slogans or invented descriptions of the author's work.
 
@@ -30,11 +31,12 @@ text, borders, accents, visited links, and focus indicators have separate roles.
   session preference. Navigation/scroll restoration belongs to Astro ClientRouter.
 - Reduced motion: suppress decorative transitions and animations.
 
-Small text contrasts against the page background are 4.92:1 in light mode and
-7.95:1 in dark mode (previously 3.35:1 and 4.41:1). The final token checks cover
-normal, secondary, accent, and visited text on page, standard, muted, and hover
-surfaces, code tokens,
-and control/focus boundaries. Text pairs meet 4.5:1; control boundaries meet 3:1.
+Automated token tests cover body, strong, secondary, accent, and visited text
+on page, standard, muted, hover, and pressed surfaces in both themes. These text
+pairs meet 4.5:1; focus and strong control boundaries meet 3:1. The 2026-10-03
+hardening slightly deepens the light secondary color and lightens the dark one
+to retain that contrast on pressed surfaces as well. This is a token-level
+regression guard, not a substitute for rendered-page accessibility checks.
 The search placeholder uses the secondary text color at full opacity.
 Visited links contrast with the page background at 5.49:1 in light mode and
 8.33:1 in dark mode, and remain above 4.5:1 on hover/pressed card backgrounds.

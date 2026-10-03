@@ -1,0 +1,43 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main, "quality/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Clean install with strict peer dependency resolution
+        run: npm ci
+      - name: Format, unit, tag, type, build, and generated-output checks
+        run: npm run build
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Desktop and mobile browser smoke and accessibility checks
+        run: npm run test:browser
+      - name: Preserve failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-failure-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore

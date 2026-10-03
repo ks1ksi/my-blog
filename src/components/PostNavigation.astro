@@ -1,18 +1,78 @@
 ---
-const { prevPost, nextPost } = Astro.props;
+import type { BlogPost } from "@lib/content";
+import type { getSeriesNavigation } from "@lib/discovery";
+type Props = {
+  prevPost?: BlogPost;
+  nextPost?: BlogPost;
+  seriesNavigation?: ReturnType<typeof getSeriesNavigation>;
+};
+const { prevPost, nextPost, seriesNavigation } = Astro.props;
+const previous = seriesNavigation ? seriesNavigation.previous : prevPost;
+const next = seriesNavigation ? seriesNavigation.next : nextPost;
 ---
 
-<nav class="post-navigation" aria-label="다른 글">
-  {prevPost?.id && (
-    <a href={`/blog/${prevPost.id}/`}>
-      <span class="eyebrow">← 더 최근 글</span>
-      <span>{prevPost.data.title}</span>
+{seriesNavigation && (
+  <div class="series-navigation-heading">
+    <h2>{seriesNavigation.series.title}</h2>
+    <a href={`/series/${seriesNavigation.series.id}/`}>
+      시리즈 전체 {seriesNavigation.series.posts.length}편{" "}
+      <span aria-hidden="true">→</span>
+    </a>
+  </div>
+)}
+<nav
+  class="post-navigation"
+  aria-label={
+    seriesNavigation ? `${seriesNavigation.series.title} 읽기 순서` : "다른 글"
+  }
+>
+  {previous?.id && (
+    <a href={`/blog/${previous.id}/`}>
+      <span class="eyebrow">
+        ← {seriesNavigation ? "시리즈 이전 글" : "더 최근 글"}
+      </span>
+      <span>{previous.data.title}</span>
     </a>
   )}
-  {nextPost?.id && (
-    <a href={`/blog/${nextPost.id}/`}>
-      <span class="eyebrow">이전 글 →</span>
-      <span>{nextPost.data.title}</span>
+  {next?.id && (
+    <a href={`/blog/${next.id}/`}>
+      <span class="eyebrow">
+        {seriesNavigation ? "시리즈 다음 글" : "이전 글"} →
+      </span>
+      <span>{next.data.title}</span>
     </a>
   )}
 </nav>
+
+<style>
+  .series-navigation-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+  h2 {
+    font-size: 1.125rem;
+    font-weight: 650;
+    line-height: 1.5;
+  }
+  .series-navigation-heading a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    gap: var(--space-2);
+    color: var(--color-accent);
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .post-navigation a {
+    min-height: 44px;
+  }
+  .post-navigation a:focus-visible {
+    background: var(--color-accent-subtle);
+    border-color: var(--color-accent);
+  }
+</style>

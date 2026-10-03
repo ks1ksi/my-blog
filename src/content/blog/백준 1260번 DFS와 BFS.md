@@ -60,7 +60,7 @@ bfs(graph, V, deq, visited)
 
 ```
 
-![[백준 1260번 DFS와 BFS-1-e1cb7d84fa.png]]
+![[백준 1260번 DFS와 BFS-1-e1cb7d84fa.png|백준 1260번 DFS와 BFS 온라인 채점 제출 결과]]
 
 ## 여담
 인터넷 검색 한번도 안하고 구현해서 기분이 상당히 좋다.

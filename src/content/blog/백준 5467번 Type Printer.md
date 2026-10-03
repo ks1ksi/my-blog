@@ -89,7 +89,7 @@ int main() {
 }
 ```
 
-![[백준 5467번 Type Printer-1-674b21e988.png]]
+![[백준 5467번 Type Printer-1-674b21e988.png|백준 5467번 Type Printer 온라인 채점 제출 결과]]
 
 
 ## 여담

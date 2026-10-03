@@ -14,7 +14,7 @@ tags:
 
 > 동시성(Concurrency) vs 병렬성(Parallelism)
 > [참고](https://black7375.tistory.com/90)
-> ![[OSTEP 10 Multi-CPU Scheduling-1688397745618.jpeg]]
+> ![[OSTEP 10 Multi-CPU Scheduling-1688397745618.jpeg|순차 실행, 동시성, 병렬성을 작업 흐름과 단일·다중 코어 시간표로 비교한 도표]]
 
 보통 **쓰레드**를 여러 코어에 할당하는 방식을 통해 이를 해결한다.
 
@@ -36,7 +36,7 @@ tags:
 - 시간 지역성(temporal locality): 데이터가 한 번 접근되면 가까운 미래에 다시 접근될 확률이 높다. ex) 루프에서 여러 번 반복해서 접근되는 변수
 - 공간 지역성(spatial locality): 프로그램이 주소 x의 데이터를 접근하면, x 근처에 있는 데이터가 접근될 확률이 높다. ex) 전체 배열을 차례대로 접근하는 프로그램
 
-![[OSTEP 10 Multi-CPU Scheduling-1688409586302.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688409586302.jpeg|각각 캐시가 있는 두 CPU가 버스를 통해 메모리를 공유하는 구조]]
 
 그런데 이렇게 하나의 시스템에 여러 CPU가 존재하고, 하나의 공유 메모리가 존재하는 경우에는 어떤 일이 일어날까?
 
@@ -57,7 +57,7 @@ CPU 1에서 실행 중인 프로그램이 주소 A에 써있는 값 D를 읽는�
 CPU가 동일한 데이터 또는 구조체에 접근할 때, 올바른 연산 결과를 보장하기 위해 락과 같은 상호 배제를 보장하는 동기화 기법이 사용된다.
 
 연결 리스트에서 원소를 삭제하는 코드를 생각해보자.
-![[OSTEP 10 Multi-CPU Scheduling-1688410677868.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688410677868.jpeg|락 없이 연결 리스트의 첫 노드를 제거하고 메모리를 해제하는 List_Pop 코드]]
 사용자가 함수를 두 번 호출하여 두 쓰레드가 동시에 루틴으로 진입했을 때, $tmp$ 포인터에는 같은 메모리 주소가 기록되고, 같은 메모리를 두 번 해제하게 된다. 두 번 호출했는데, 한 번만 지워졌다.
 
 해결책은 락을 걸어서 올바르게 작동하도록 만드는 것이다. 간단한 `mutex`를 할당하고 (`pthread_mutex_t m;`) 루틴의 시작에 `lock(&m)`, 마지막에 `unlock(&m)` 을 추가하면 문제를 해결할 수 있다. 하지만 CPU의 개수가 증가할수록, 동기화된 자료구조에 접근하는 연산은 매우 느려진다.
@@ -81,9 +81,9 @@ CPU에서 프로세스가 실행될 때, 해당 CPU 캐시와 TLB에 상당한 �
 
 1. 확장성 (scalability) 결여: 스케줄러가 다수의 CPU에서 동작하도록 코드에 락을 삽입해야 한다. 그래야 실행시킬 다음 작업을 올바르게 찾을 수 있다(동시에 같은 작업 고르면?). CPU 개수가 증가할수록 락은 성능을 크게 저하시킨다.
 2. 캐시 친화성 (cache affinity): 각 CPU는 공유 큐에서 다음 작업을 선택하기 때문에 각 작업은 CPU를 옮겨다니게 된다.
-![[OSTEP 10 Multi-CPU Scheduling-1688411970608.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688411970608.jpeg|단일 실행 큐의 작업 A부터 E가 네 CPU 사이를 옮겨 다니는 시간표]]
 특정 작업들에 대해서 캐시 친화성을 고려하여 스케줄링하고, 다른 작업들은 여러군데로 분산시키는 정책을 사용할 수 있긴 하다. 하지만 구현이 복잡해진다.
-![[OSTEP 10 Multi-CPU Scheduling-1688412107270.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688412107270.jpeg|A부터 D의 CPU 친화성을 유지하고 E를 분산 실행하는 시간표]]
 
 ## 5. 멀티 큐 스케줄링
 
@@ -91,11 +91,11 @@ CPU에서 프로세스가 실행될 때, 해당 CPU 캐시와 TLB에 상당한 �
 
 각각의 큐는 라운드 로빈같은 특정 스케줄링 규칙을 따르고 있다. 작업이 여러 스케줄링 큐 중 하나에 배치된다.
 
-![[OSTEP 10 Multi-CPU Scheduling-1688412265974.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688412265974.jpeg|CPU별 큐 Q0에 A와 C, Q1에 B와 D를 배치한 멀티 큐 구조]]
 
 $Q0$에 $A$, $C$가 배치되었고, $Q1$에 $B$, $D$가 배치되었다.
 
-![[OSTEP 10 Multi-CPU Scheduling-1688412327426.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688412327426.jpeg|CPU 0은 A와 C를, CPU 1은 B와 D를 번갈아 실행하는 시간표]]
 
 라운드 로빈 방식이라면 이렇게 스케줄링 될 것이다.
 
@@ -103,21 +103,21 @@ SQMS에 비해 확장성이 좋다. CPU 개수가 증가할수록 큐의 개수�
 
 하지만 MQMS는 워크로드의 불균형 (load imbalance) 문제를 가지고 있다.
 
-![[OSTEP 10 Multi-CPU Scheduling-1688412473870.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688412473870.jpeg|Q0은 비어 있고 Q1에는 B와 D가 남은 부하 불균형 상태]]
 
 이렇게 $Q0$에 있는 모든 작업들이 종료된다면
 
-![[OSTEP 10 Multi-CPU Scheduling-1688413591826.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688413591826.jpeg|CPU 0이 유휴 상태인 동안 CPU 1만 B와 D를 실행하는 시간표]]
 
 CPU 0은 일을 하지 않을 것이다.
 
 이를 해결하기 위해 **작업을 다른 CPU로 이주 (migration)** 시킴으로써 워크로드의 균형을 달성할 수 있다.
 
-![[OSTEP 10 Multi-CPU Scheduling-1688412633462.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688412633462.jpeg|Q0에 A 하나, Q1에 B와 D가 배치된 멀티 큐 상태]]
 
 $Q0$에 작업이 하나, $Q1$에 작업이 두 개 있다고 가정하자. 이주 없이 그냥 실행시키면 작업 A가 남들보다 2배의 CPU 자원을 받을 것이다.
 
-![[OSTEP 10 Multi-CPU Scheduling-1688412683555.jpeg]]
+![[OSTEP 10 Multi-CPU Scheduling-1688412683555.jpeg|작업을 CPU 사이로 이동시켜 A, B, D의 실행 부하를 분산한 시간표]]
 
 이런 식으로 작업을 지속적으로 이주시켜, 워크로드의 균형을 달성할 수 있다. $A, B, D$ 모두 8번의 타임 슬라이스를 받았다.
 작업이 적게 할당된 큐가, 다른 큐를 가끔 검사한다. 작업이 많다면, 작업을 가져와서 균형을 맞춘다.

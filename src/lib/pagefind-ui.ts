@@ -1,5 +1,7 @@
 import { PagefindUI } from "@pagefind/default-ui";
 import pagefindUiStyles from "@pagefind/default-ui/css/ui.css?url";
+import { ensureStylesheet } from "./client/stylesheet";
+import { loadPagefindEngine, resetPagefindEngine } from "./pagefind-engine";
 
 const SEARCH_ROOT_SELECTOR = "#search";
 const BUNDLE_PATH = `${import.meta.env.BASE_URL}pagefind/`;
@@ -7,62 +9,8 @@ const PAGEFIND_STYLESHEET_ID = "pagefind-ui-styles";
 const PAGEFIND_OVERRIDES_ID = "pagefind-ui-overrides";
 
 let pagefindUi: PagefindUI | null = null;
-let pagefindStylesPromise: Promise<void> | null = null;
-
-function waitForStylesheet(stylesheet: HTMLLinkElement) {
-  if (stylesheet.sheet) {
-    return Promise.resolve();
-  }
-
-  return new Promise<void>((resolve, reject) => {
-    stylesheet.addEventListener("load", () => resolve(), { once: true });
-    stylesheet.addEventListener(
-      "error",
-      () => {
-        pagefindStylesPromise = null;
-        stylesheet.remove();
-        reject(new Error("Failed to load Pagefind UI styles."));
-      },
-      { once: true },
-    );
-  });
-}
-
-function ensurePagefindStyles() {
-  if (pagefindStylesPromise) {
-    return pagefindStylesPromise;
-  }
-
-  const existingStylesheet = document.getElementById(PAGEFIND_STYLESHEET_ID);
-  if (existingStylesheet) {
-    if (existingStylesheet instanceof HTMLLinkElement) {
-      pagefindStylesPromise = waitForStylesheet(existingStylesheet);
-      return pagefindStylesPromise;
-    }
-
-    return Promise.resolve();
-  }
-
-  pagefindStylesPromise = new Promise((resolve, reject) => {
-    const stylesheet = document.createElement("link");
-    stylesheet.id = PAGEFIND_STYLESHEET_ID;
-    stylesheet.rel = "stylesheet";
-    stylesheet.href = pagefindUiStyles;
-    stylesheet.addEventListener("load", () => resolve(), { once: true });
-    stylesheet.addEventListener(
-      "error",
-      () => {
-        pagefindStylesPromise = null;
-        stylesheet.remove();
-        reject(new Error("Failed to load Pagefind UI styles."));
-      },
-      { once: true },
-    );
-    document.head.appendChild(stylesheet);
-  });
-
-  return pagefindStylesPromise;
-}
+let pagefindRoot: HTMLElement | null = null;
+let rootTeardown: Promise<void> | null = null;
 
 function ensurePagefindOverrides() {
   if (document.getElementById(PAGEFIND_OVERRIDES_ID)) {
@@ -84,16 +32,45 @@ function ensurePagefindOverrides() {
 }
 
 export async function ensurePagefindUi() {
-  if (!document.querySelector(SEARCH_ROOT_SELECTOR)) {
+  const root = document.querySelector<HTMLElement>(SEARCH_ROOT_SELECTOR);
+  if (!root) return null;
+
+  if (rootTeardown) await rootTeardown;
+  if (pagefindRoot !== root && pagefindUi) {
+    const previousUi = pagefindUi;
+    rootTeardown = resetPagefindEngine(() => {
+      previousUi.destroy();
+      pagefindUi = null;
+      pagefindRoot = null;
+    }).finally(() => {
+      rootTeardown = null;
+    });
+    await rootTeardown;
+  }
+  if (
+    !root.isConnected ||
+    root !== document.querySelector(SEARCH_ROOT_SELECTOR)
+  ) {
     return null;
   }
+  pagefindRoot = root;
 
-  await ensurePagefindStyles();
+  await Promise.all([
+    ensureStylesheet(PAGEFIND_STYLESHEET_ID, pagefindUiStyles),
+    loadPagefindEngine(),
+  ]);
+  // Do not mount into another page when an earlier open/preload was interrupted.
+  if (
+    !root.isConnected ||
+    root !== document.querySelector(SEARCH_ROOT_SELECTOR)
+  ) {
+    return null;
+  }
   ensurePagefindOverrides();
 
   if (!pagefindUi) {
     pagefindUi = new PagefindUI({
-      element: SEARCH_ROOT_SELECTOR,
+      element: root,
       bundlePath: BUNDLE_PATH,
       showImages: false,
       excerptLength: 15,

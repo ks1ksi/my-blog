@@ -66,7 +66,7 @@ int main() {
 }
 ```
 
-![[백준 2342번 Dance Dance Revolution-1-d5d24bcaa3.jpeg]]
+![[백준 2342번 Dance Dance Revolution-1-d5d24bcaa3.jpeg|백준 2342번 Dance Dance Revolution 온라인 채점 제출 결과]]
 
 ## 여담
 > 쉽다.
