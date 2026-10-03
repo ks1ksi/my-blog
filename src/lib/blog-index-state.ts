@@ -14,22 +14,23 @@ function readStoredYears() {
   }
 }
 
+export function restoreBlogIndexState(root = document) {
+  const storedYears = readStoredYears();
+  if (!storedYears) return;
+
+  for (const details of root.querySelectorAll<HTMLDetailsElement>(
+    "[data-year-details]",
+  )) {
+    const year = details.dataset.year;
+    details.open = Boolean(year && storedYears.has(year));
+  }
+}
+
 export function initBlogIndexState() {
+  restoreBlogIndexState();
   const yearDetails = Array.from(
     document.querySelectorAll<HTMLDetailsElement>("[data-year-details]"),
   );
-
-  if (yearDetails.length === 0) {
-    return;
-  }
-
-  const storedYears = readStoredYears();
-  if (storedYears) {
-    yearDetails.forEach((details) => {
-      const year = details.dataset.year;
-      details.open = Boolean(year && storedYears.has(year));
-    });
-  }
 
   const writeStoredYears = () => {
     const openYears = yearDetails

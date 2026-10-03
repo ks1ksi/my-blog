@@ -1,12 +1,8 @@
 import { navigate } from "astro:transitions/client";
-import { initBlogIndexState } from "@lib/blog-index-state";
 import {
-  rememberNavigationSource,
-  rememberReturnScrollIntentFromClick,
-  restoreReturnScrollPosition,
-  saveCurrentReturnScrollPosition,
-  scheduleReturnScrollPositionSave,
-} from "@lib/return-scroll";
+  initBlogIndexState,
+  restoreBlogIndexState,
+} from "@lib/blog-index-state";
 
 type ThemePreference = "light" | "dark" | "system";
 
@@ -203,31 +199,8 @@ function isEditableTarget(target: EventTarget | null) {
   );
 }
 
-function scrollToHashTarget() {
-  if (!window.location.hash) {
-    return;
-  }
-
-  const target = document.getElementById(
-    decodeURIComponent(window.location.hash.slice(1)),
-  );
-  if (!target) {
-    return;
-  }
-
-  const scrollToTarget = () => {
-    target.scrollIntoView();
-    window.setTimeout(() => {
-      saveCurrentReturnScrollPosition();
-    }, 50);
-  };
-
-  window.requestAnimationFrame(scrollToTarget);
-  window.setTimeout(scrollToTarget, 50);
-}
-
-function restoreTableOfContentsState() {
-  const toc = document.querySelector<HTMLDetailsElement>(
+function restoreTableOfContentsState(root = document) {
+  const toc = root.querySelector<HTMLDetailsElement>(
     "details[data-table-of-contents]",
   );
   if (!toc) return;
@@ -298,10 +271,6 @@ function initializePage() {
   updateThemeButtons();
   restoreTableOfContentsState();
   initBlogIndexState();
-  const restoredReturnScroll = restoreReturnScrollPosition();
-  if (!restoredReturnScroll) {
-    scrollToHashTarget();
-  }
   enhanceCodeBlocks();
 }
 
@@ -322,17 +291,6 @@ function handleDocumentClick(event: MouseEvent) {
     localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     applyTheme(shouldUseDarkTheme(nextTheme));
     updateThemeButtons();
-    return;
-  }
-
-  const backToTopButton =
-    event.target.closest<HTMLButtonElement>("#back-to-top");
-  if (backToTopButton) {
-    event.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
     return;
   }
 
@@ -431,11 +389,6 @@ export function registerGlobalUi() {
   }
 
   state.registered = true;
-  history.scrollRestoration = "manual";
-
-  document.addEventListener("click", rememberReturnScrollIntentFromClick, {
-    capture: true,
-  });
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("toggle", storeTableOfContentsState, true);
   document.addEventListener("keydown", handleDocumentKeydown);
@@ -444,13 +397,12 @@ export function registerGlobalUi() {
   document.addEventListener("astro:after-swap", () =>
     applyTheme(shouldUseDarkTheme()),
   );
-  document.addEventListener(
-    "astro:before-preparation",
-    rememberNavigationSource,
-  );
-  document.addEventListener("astro:before-swap", () =>
-    closeSearch({ restoreFocus: false }),
-  );
+  document.addEventListener("astro:before-swap", (event) => {
+    closeSearch({ restoreFocus: false });
+    // Restore disclosure layout before the router restores its scroll position.
+    restoreBlogIndexState(event.newDocument);
+    restoreTableOfContentsState(event.newDocument);
+  });
   document.addEventListener("astro:page-load", initializePage);
   document.addEventListener(
     "close",
@@ -461,11 +413,6 @@ export function registerGlobalUi() {
     },
     true,
   );
-  window.addEventListener("pagehide", rememberNavigationSource);
-  window.addEventListener("pageshow", restoreReturnScrollPosition);
-  window.addEventListener("scroll", scheduleReturnScrollPositionSave, {
-    passive: true,
-  });
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", handleSystemThemeChange);

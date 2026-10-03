@@ -22,9 +22,11 @@ preserved. The original checkout was clean and was not modified.
   coverage. Preserve existing metadata, public paths, feeds, and robots policy.
 - Correct three obvious Korean typos in OSTEP 33. Do not alter its technical
   claims, code examples, publication dates, or URL.
-- Retain the Samsung Internet workaround after reviewing upstream evidence;
-  replace patch-package with a small version-guarded, tested install script.
-  See [the investigation and removal criteria](../patches/README.md).
+- After a user-reported Samsung Internet regression, remove the browser-specific
+  install patch and all custom scroll storage, restoration, and hash retries.
+  Use Astro’s unmodified `ClientRouter` for history and anchor navigation.
+  The back-to-top control is a standard anchor. Restore existing disclosure
+  preferences in `astro:before-swap` before Astro measures the new page layout.
 
 ## Deterministic asset measurements
 
@@ -50,7 +52,9 @@ measured.
 
 - Clean `npm ci`, strict peer-resolution dry run, Prettier lint, Astro type
   checks, and the production build passed.
-- 18 tests passed across four suites (baseline: nine tests).
+- The initial upgrade passed 18 tests across four suites (baseline: nine tests).
+  Removing the patch and custom scroll module also removes their seven obsolete
+  tests; the remaining 11 content tests cover the retained behavior.
 - All 335 generated HTML pages passed metadata and content checks: 283 posts,
   29 math pages, 11,093 local references, 285 sitemap URLs, 50 full-content RSS
   items, and no broken local anchors or rendered KaTeX errors.
@@ -59,9 +63,24 @@ measured.
 - Chrome checks covered home layout, search and article navigation, code and
   math rendering, deferred comments, and responsive layout at 390 × 844.
   Back navigation restored `/blog/` at 657px and the OS tag list at 785px.
-- Samsung, Chrome, and Safari UA fixtures exercise the installed scroll handler;
-  a physical Samsung Internet device was unavailable. UA tests are not device
-  validation.
+- Browser-specific UA fixtures were removed with the workaround. A physical
+  Samsung Internet device is unavailable on this Mac; desktop browser checks
+  do not establish that the reported device-specific issue is resolved.
+
+## Native navigation follow-up
+
+After removing the workaround, a clean install, lint, type checks, 11 retained
+tests, production build, SEO checks, and content checks passed. All 335 pages,
+283 posts, 29 math pages, and 285 sitemap URLs remain present. The local-link
+check now covers 11,428 references because every page has a back-to-top anchor.
+Chrome restored an expanded 2023 blog list at exactly 1,836px after leaving and
+returning, and restored the article at 1,492px on forward navigation. The router
+owns these positions; no application code writes history or scroll coordinates.
+The OS tag list returned to 746px, the back-to-top anchor reached 0px, and the
+RAID heading landed 100px below the top using the existing CSS scroll padding.
+No browser warnings or errors were recorded during these checks.
+The shared UI entry script shrank from 10,399 to 7,277 bytes (gzip: 3,781 to
+2,839 bytes). These are file-size measurements, not a browser-speed benchmark.
 
 ## Remaining upstream issue
 

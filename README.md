@@ -14,8 +14,8 @@ Personal blog built with Astro, Tailwind CSS v4, MDX, KaTeX, Giscus, and Pagefin
 - `npm run preview`
 
 `build` also checks generated SEO metadata, sitemap coverage, robots, local links
-and anchors, math styles, and the search index. See `patches/README.md` before
-upgrading Astro; the Samsung Internet scroll workaround is applied at install.
+and anchors, math styles, and the search index. Navigation and scroll restoration
+use Astro’s unmodified `ClientRouter`; dependencies are not patched at install.
 
 ## Structure
 
