@@ -26,7 +26,7 @@
   --color-accent: #146450;
   --color-accent-subtle: #e9f2ed;
   --color-accent-active: #d5e7dd;
-  --color-visited: #75517d;
+  --color-visited: #52695d;
   --color-link-decoration: #7b8d81;
   --color-focus: #146450;
   --color-overlay: rgb(13 25 19 / 0.55);
@@ -64,7 +64,7 @@
   --color-accent: #82d6b0;
   --color-accent-subtle: #213d30;
   --color-accent-active: #2b4b3b;
-  --color-visited: #d2abe0;
+  --color-visited: #a6b8ab;
   --color-link-decoration: #718b7b;
   --color-focus: #82d6b0;
   --color-overlay: rgb(0 0 0 / 0.7);
@@ -280,9 +280,6 @@ body:has(#theme-picker:popover-open) .theme-control {
   text-decoration-color: var(--color-link-decoration);
   text-underline-offset: 4px;
   transition: color 120ms ease;
-}
-.text-link:visited {
-  color: var(--color-visited);
 }
 .text-link:hover,
 .text-link:focus-visible {
@@ -699,7 +696,8 @@ article[data-pagefind-body] a {
   text-underline-offset: 4px;
   text-decoration-color: var(--color-link-decoration);
 }
-article[data-pagefind-body] a:visited {
+article[data-pagefind-body]
+  a:visited:where(:not([href^="#"], [data-pagefind-ignore] a)) {
   color: var(--color-visited);
 }
 article[data-pagefind-body] a:hover {

@@ -12,8 +12,12 @@ text, borders, accents, visited links, and focus indicators have separate roles.
 
 - Current navigation: server-rendered `aria-current`, tinted background, and
   underline. The header is replaced during Astro navigation so this stays current.
-- Article links: browser-native `:visited` color, hover underline, and a card
-  background/left border on hover or focus. No application visit history.
+- Article links and search results: browser-native `:visited` uses muted green
+  (`#52695d` light, `#a6b8ab` dark), with the saturated accent reserved for hover
+  and focus. Body reference links use the same visited color. Navigation, table
+  of contents, and in-page anchors keep their normal color after a visit.
+  Cards also have a background/left border on hover or focus. No application
+  visit history.
 - Keyboard focus: a 3px outline, including a full-card outline for article links.
 - Expanded years: background plus a minus sign; collapsed years have a plus sign.
 - Hash targets: heading/section outline, with CSS scroll padding below the header.
@@ -32,6 +36,8 @@ normal, secondary, accent, and visited text on page, standard, muted, and hover
 surfaces, code tokens,
 and control/focus boundaries. Text pairs meet 4.5:1; control boundaries meet 3:1.
 The search placeholder uses the secondary text color at full opacity.
+Visited links contrast with the page background at 5.49:1 in light mode and
+8.33:1 in dark mode, and remain above 4.5:1 on hover/pressed card backgrounds.
 
 ## Layout
 
@@ -49,7 +55,7 @@ Against `ec74dcb218e54e65bac3f764fcf1b3e96144ba10`:
   and 283 indexed articles remain intact.
 - Lint, Astro type checks, 11 content tests, production build, SEO checks, and
   12,106 local-reference checks pass.
-- Home CSS: 122,047 to 112,074 bytes; gzip: 26,669 to 25,118 bytes.
+- Home CSS: 122,047 to 112,077 bytes; gzip: 26,669 to 25,147 bytes.
   Shared UI JavaScript: 7,277 to 6,782 bytes; gzip: 2,830 to 2,672 bytes.
   These are same-machine file-size comparisons, not Core Web Vitals measurements.
 - Chrome visual checks cover light/dark themes, 320px/390px layouts, search,
