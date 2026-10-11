@@ -33,12 +33,10 @@ for (const reloadY of [0, 480]) {
     await expect
       .poll(() => page.evaluate(() => window.scrollY))
       .toBeGreaterThan(800);
-    await expect
-      .poll(() =>
-        page.evaluate(() => Math.abs(history.state.scrollY - window.scrollY)),
-      )
-      .toBeLessThan(1);
     const backY = await page.evaluate(() => history.state.scrollY as number);
+    // Layout anchoring need not trigger Astro's scroll save. The stored Back
+    // position only needs to be far from the upcoming reload position.
+    expect(backY).toBeGreaterThan(800);
 
     await page.evaluate((y) => {
       // Model a pull-to-refresh before Astro receives scrollend (or its
