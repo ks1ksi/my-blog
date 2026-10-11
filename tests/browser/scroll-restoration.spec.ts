@@ -1,25 +1,34 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-const ARTICLE = "/blog/ostep-33-event-based-concurrency/";
+async function waitForArchive(page: Page) {
+  await page.locator('[data-year-state-bound="true"]').first().waitFor();
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    );
+  });
+}
 
 for (const reloadY of [0, 480]) {
   test(`reload preserves current scroll ${reloadY} instead of the last Back position`, async ({
     page,
   }) => {
-    await page.route("https://giscus.app/**", (route) => route.abort());
-    await page.goto(ARTICLE);
-    await page.waitForFunction(() => Boolean(history.state));
+    // Use the archive to isolate scroll saving from article code-block
+    // enhancement, which changes layout after the router restores scroll.
+    await page.goto("/blog/");
+    await waitForArchive(page);
     await page.evaluate(() => window.scrollTo(0, 1200));
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1200);
 
     // DOM click avoids scrolling the header into view before navigation.
     await page
-      .locator('a[href="/blog/"]')
-      .first()
+      .locator(".site-brand")
       .evaluate((link) => (link as HTMLAnchorElement).click());
-    await expect(page).toHaveURL(/\/blog\/$/);
+    await expect(page).toHaveURL((url) => url.pathname === "/");
     await page.goBack();
-    await expect(page).toHaveURL(new RegExp(`${ARTICLE}$`));
+    await expect(page).toHaveURL(/\/blog\/$/);
+    await waitForArchive(page);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1200);
 
     await page.evaluate((y) => {
@@ -35,14 +44,15 @@ for (const reloadY of [0, 480]) {
     expect(await page.evaluate(() => window.scrollY)).toBe(reloadY);
     expect(await page.evaluate(() => history.state.scrollY)).toBe(1200);
     await page.reload();
-    await page.waitForFunction(() => document.querySelector(".copy-code"));
+    await waitForArchive(page);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(reloadY);
 
     // The saved entry must also remain correct for subsequent Forward/Back.
     await page.goForward();
-    await expect(page).toHaveURL(/\/blog\/$/);
+    await expect(page).toHaveURL((url) => url.pathname === "/");
     await page.goBack();
-    await expect(page).toHaveURL(new RegExp(`${ARTICLE}$`));
+    await expect(page).toHaveURL(/\/blog\/$/);
+    await waitForArchive(page);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(reloadY);
   });
 }
