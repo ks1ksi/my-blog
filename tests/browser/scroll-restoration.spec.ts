@@ -16,7 +16,7 @@ for (const reloadY of [0, 480]) {
     await page
       .locator('a[href="/blog/"]')
       .first()
-      .evaluate((link) => link.click());
+      .evaluate((link) => (link as HTMLAnchorElement).click());
     await expect(page).toHaveURL(/\/blog\/$/);
     await page.goBack();
     await expect(page).toHaveURL(new RegExp(`${ARTICLE}$`));
