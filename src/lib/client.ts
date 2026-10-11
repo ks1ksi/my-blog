@@ -1,6 +1,7 @@
 import { navigate } from "astro:transitions/client";
 import { initBlogIndexState, restoreBlogIndexState } from "./blog-index-state";
 import { enhanceCodeBlocks, copyCode } from "./client/code-copy";
+import { saveScrollPosition } from "./client/scroll";
 import {
   restoreTableOfContentsState,
   storeTableOfContentsState,
@@ -125,6 +126,7 @@ export function registerGlobalUi() {
   if (window.__ks1ksiBlogUi.registered) return;
   window.__ks1ksiBlogUi.registered = true;
 
+  window.addEventListener("pagehide", saveScrollPosition);
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("toggle", storeTableOfContentsState, true);
   document.addEventListener("keydown", handleDocumentKeydown);
