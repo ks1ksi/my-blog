@@ -14,8 +14,10 @@ for (const reloadY of [0, 480]) {
   test(`reload preserves current scroll ${reloadY} instead of the last Back position`, async ({
     page,
   }) => {
-    // Use the archive to isolate scroll saving from article code-block
-    // enhancement, which changes layout after the router restores scroll.
+    await page.addInitScript(() => {
+      sessionStorage.setItem("test:startup-y", String(history.state?.scrollY));
+    });
+    // Use the archive, waiting for its fonts and disclosure layout.
     await page.goto("/blog/");
     await waitForArchive(page);
     await page.evaluate(() => window.scrollTo(0, 1200));
@@ -29,7 +31,17 @@ for (const reloadY of [0, 480]) {
     await page.goBack();
     await expect(page).toHaveURL(/\/blog\/$/);
     await waitForArchive(page);
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1200);
+    // A DOM swap can adjust the viewport through scroll anchoring. Capture
+    // the actual Back position instead of assuming it remains exactly 1200.
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(800);
+    await expect
+      .poll(() =>
+        page.evaluate(() => Math.abs(history.state.scrollY - window.scrollY)),
+      )
+      .toBeLessThan(1);
+    const backY = await page.evaluate(() => history.state.scrollY as number);
 
     await page.evaluate((y) => {
       // Model a pull-to-refresh before Astro receives scrollend (or its
@@ -42,17 +54,36 @@ for (const reloadY of [0, 480]) {
       window.scrollTo(0, y);
     }, reloadY);
     expect(await page.evaluate(() => window.scrollY)).toBe(reloadY);
-    expect(await page.evaluate(() => history.state.scrollY)).toBe(1200);
+    expect(await page.evaluate(() => history.state.scrollY)).toBe(backY);
     await page.reload();
     await waitForArchive(page);
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(reloadY);
+    // Verify the exact coordinate available to router startup, independently
+    // of subsequent layout anchoring. Top refresh must stay exactly at top.
+    expect(
+      await page.evaluate(() => sessionStorage.getItem("test:startup-y")),
+    ).toBe(String(reloadY));
+    await expect
+      .poll(() => page.evaluate((y) => Math.abs(window.scrollY - y), reloadY))
+      .toBeLessThan(reloadY === 0 ? 1 : 64);
+    const reloadedY = await page.evaluate(() => window.scrollY);
 
-    // The saved entry must also remain correct for subsequent Forward/Back.
+    // Check the entry passed to subsequent Back navigation before layout
+    // anchoring can adjust the viewport again during the DOM swap.
+    await page.evaluate(() => {
+      window.addEventListener("popstate", (event) => {
+        sessionStorage.setItem("test:traversal-y", String(event.state.scrollY));
+      });
+    });
     await page.goForward();
     await expect(page).toHaveURL((url) => url.pathname === "/");
     await page.goBack();
     await expect(page).toHaveURL(/\/blog\/$/);
     await waitForArchive(page);
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(reloadY);
+    expect(
+      await page.evaluate(() => sessionStorage.getItem("test:traversal-y")),
+    ).toBe(String(reloadedY));
+    await expect
+      .poll(() => page.evaluate((y) => Math.abs(window.scrollY - y), reloadedY))
+      .toBeLessThan(reloadedY === 0 ? 1 : 64);
   });
 }
