@@ -1,0 +1,56 @@
+<!-- Run before ClientRouter's module reads history.state on a hard reload. -->
+<script is:inline>
+  (() => {
+    if (window.__ks1ksiReloadScrollRegistered) return;
+    window.__ks1ksiReloadScrollRegistered = true;
+    const key = "blog:reload-scroll";
+
+    try {
+      const value = sessionStorage.getItem(key);
+      sessionStorage.removeItem(key);
+      const navigation = performance.getEntriesByType("navigation")[0];
+      if (navigation?.type === "reload" && value && history.state) {
+        const saved = JSON.parse(value);
+        if (
+          saved.href === location.href &&
+          saved.index === history.state.index &&
+          Number.isFinite(saved.scrollX) &&
+          Number.isFinite(saved.scrollY)
+        ) {
+          history.replaceState(
+            {
+              ...history.state,
+              scrollX: Math.max(0, saved.scrollX),
+              scrollY: Math.max(0, saved.scrollY),
+            },
+            "",
+          );
+        }
+      }
+    } catch {
+      // Keep the router's normal behavior when session storage is unavailable.
+    }
+
+    window.addEventListener("pagehide", () => {
+      const state = history.state;
+      if (!state || !Number.isFinite(state.index)) return;
+      const saved = {
+        href: location.href,
+        index: state.index,
+        scrollX: Math.max(0, window.scrollX),
+        scrollY: Math.max(0, window.scrollY),
+      };
+      try {
+        // Chromium can snapshot history.state for reload before pagehide.
+        // Carry the final position separately to the next document instead.
+        sessionStorage.setItem(key, JSON.stringify(saved));
+      } catch {
+        // Back/Forward and navigation must still work without storage access.
+      }
+      history.replaceState(
+        { ...state, scrollX: saved.scrollX, scrollY: saved.scrollY },
+        "",
+      );
+    });
+  })();
+</script>

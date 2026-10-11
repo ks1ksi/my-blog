@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
+import ScrollRestoration from "./ScrollRestoration.astro";
 import { SITE } from "@consts";
 import katexStyles from "katex/dist/katex.min.css?url";
 import { getImage } from "astro:assets";
@@ -114,6 +115,7 @@ const toIsoString = (date: string | Date) =>
   />
 ))}
 
+<ScrollRestoration />
 <ClientRouter />
 
 <script is:inline>
