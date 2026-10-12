@@ -1,0 +1,42 @@
+name: Article rendering and Lighthouse diagnostic
+on:
+  push:
+    branches: [diagnostic/article-entry]
+permissions:
+  contents: read
+jobs:
+  rendering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/browser/article-diagnostic.spec.ts
+        env:
+          PLAYWRIGHT_BASE_URL: https://ks1ksi.io
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: article-rendering
+          path: playwright-report/
+          retention-days: 7
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+      - run: node scripts/lighthouse-diagnostic.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-measurements
+          path: lighthouse-reports/
+          retention-days: 7
