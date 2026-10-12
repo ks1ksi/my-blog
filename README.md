@@ -30,8 +30,8 @@ for coverage and limitations.
 
 Navigation and scroll restoration
 use Astro’s unmodified `ClientRouter`; dependencies are not patched at install.
-Pages are swapped without View Transition snapshots; only the main content
-fades (see [header stability](docs/header-stability-2026-10-13.md)).
+Pages are swapped in one step without View Transition snapshots
+(see [header stability](docs/header-stability-2026-10-13.md)).
 
 Production builds generate a content-hashed variable-font subset for each page
 using the same Pretendard outlines, weights, and metrics. The original unicode
