@@ -7,7 +7,7 @@ could scroll into view before navigation; they did not cover that condition.
 Use `<ClientRouter />` with Astro's default animation and fallback, and remove
 `transition:animate="none"` from the root. This restores the standard crossfade
 instead of adding another transition implementation. The fade is intentional;
-zero opacity throughout the transition is no longer a valid test requirement.
+full opacity throughout the transition is no longer a valid test requirement.
 
 Keep the independently reproduced fixes for stale reload scroll positions and
 page-specific font decoding across head swaps. Removing those would reintroduce
