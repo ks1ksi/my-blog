@@ -13,11 +13,22 @@ secondary text, borders, accents, visited links, and focus indicators have
 separate roles.
 
 Shape: separate content with whitespace rather than rules and outlined boxes.
-Grouped controls (year jumps, topics, tags) are borderless pills on the muted
-surface; panels (table of contents, code, post navigation, search results)
-are borderless rounded surfaces (`--radius` 0.75rem). Hairlines remain only
-under the sticky header, above the footer, and in tables. Internal links have
-no ↗ marker; it is reserved for external links.
+Groups of links (year jumps, home topics, tags) are plain text links, and tags
+are always written `#tag`: in post cards, under article titles and on the tag
+index. Only panels get a surface: table of contents, code, post navigation and
+search results are borderless rounded surfaces. Hairlines remain only under the
+sticky header, above the footer and in tables. Internal links have no ↗ marker;
+it is reserved for external links.
+
+Scale tokens in `tokens.css` (use these instead of literal values):
+
+- Type: `--text-xs` 13 / `sm` 14 / `md` 15 / `base` 16 / `lg` 18 / `xl` 20 /
+  `2xl` 24 px, `--text-display` for page and article titles, `--text-hero` for
+  the home name. Article body text keeps its 17px reading size.
+- Weight: `--weight-regular` 400, `--weight-medium` 500, `--weight-bold` 650.
+- Tracking: `--tracking-tight` for headings, `--tracking-display` for large titles.
+- Radius: `--radius-sm` 6px controls, `--radius` 12px panels, `--radius-lg` 16px
+  dialogs.
 
 - Current navigation: server-rendered `aria-current`, strong text color
   and underline. The header is replaced during Astro navigation so this stays current.

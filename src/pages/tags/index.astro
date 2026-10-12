@@ -26,7 +26,7 @@ const jsonLd = createBreadcrumbJsonLd([
       {tags.map(({ tag, count }) => (
         <li>
           <a href={`/tags/${tag}/`}>
-            <span>{tag}</span>
+            <span>#{tag}</span>
             <span class="tag-count">{count}편</span>
           </a>
         </li>

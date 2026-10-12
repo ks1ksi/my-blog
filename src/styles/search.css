@@ -6,7 +6,7 @@
   padding: var(--space-6);
   overflow: auto;
   border: 1px solid var(--color-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   color: var(--color-text);
   background: var(--color-bg);
   box-shadow: 0 24px 80px rgb(0 0 0 / 0.2);
@@ -22,8 +22,8 @@
   margin-bottom: var(--space-4);
 }
 .search-heading h2 {
-  font-size: 1.25rem;
-  font-weight: 650;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
 }
 #search-close,
 #search-retry,
@@ -31,10 +31,10 @@
   min-height: 44px;
   min-width: 44px;
   padding-inline: 0.75rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--color-surface-muted);
   color: var(--color-text);
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
 }
 #search-close:hover,
 #search-retry:hover,
@@ -47,7 +47,7 @@
 }
 .search-help {
   margin-top: var(--space-4);
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
   color: var(--color-muted);
 }
 #search .pagefind-ui__form {
@@ -62,11 +62,11 @@
   min-height: 48px;
   padding: 0.75rem 1rem;
   border: 1px solid var(--color-border-strong);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   color: var(--color-text-strong);
   background: var(--color-surface);
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
 }
 #search .pagefind-ui__search-input:focus {
   outline: 3px solid var(--color-focus);
@@ -98,7 +98,7 @@
 }
 #search .pagefind-ui__result-link {
   color: var(--color-text-strong);
-  font-weight: 650;
+  font-weight: var(--weight-bold);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -115,18 +115,18 @@
 #search .pagefind-ui__result-excerpt {
   margin-top: 0.75rem;
   color: var(--color-text);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
   line-height: 1.7;
 }
 #search .pagefind-ui__message {
   padding: 0 0 0.75rem;
   color: var(--color-muted);
-  font-weight: 400;
+  font-weight: var(--weight-regular);
 }
 #search mark {
   color: var(--color-accent);
   background: var(--color-accent-subtle);
-  font-weight: 650;
+  font-weight: var(--weight-bold);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
