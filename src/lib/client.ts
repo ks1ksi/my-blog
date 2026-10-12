@@ -20,6 +20,7 @@ import {
 import {
   handleSystemThemeChange,
   initializeTheme,
+  prepareTheme,
   selectTheme,
 } from "./client/theme";
 
@@ -145,6 +146,9 @@ export function registerGlobalUi() {
   });
   document.addEventListener("astro:before-swap", (event) => {
     closeSearch({ restoreFocus: false });
+    // The router replaces root attributes before restoring scroll. Keep the
+    // incoming document in the chosen theme throughout that synchronous swap.
+    prepareTheme(event.newDocument);
     // Restore disclosure layout before the router restores its scroll position.
     restoreBlogIndexState(event.newDocument);
     restoreTableOfContentsState(event.newDocument);

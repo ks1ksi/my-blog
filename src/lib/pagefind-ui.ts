@@ -1,5 +1,6 @@
 import { PagefindUI } from "@pagefind/default-ui";
 import pagefindUiStyles from "@pagefind/default-ui/css/ui.css?url";
+import searchFontStyles from "../styles/search-fonts.css?url";
 import { ensureStylesheet } from "./client/stylesheet";
 import { loadPagefindEngine, resetPagefindEngine } from "./pagefind-engine";
 
@@ -57,6 +58,7 @@ export async function ensurePagefindUi() {
 
   await Promise.all([
     ensureStylesheet(PAGEFIND_STYLESHEET_ID, pagefindUiStyles),
+    ensureStylesheet("search-font-styles", searchFontStyles),
     loadPagefindEngine(),
   ]);
   // Do not mount into another page when an earlier open/preload was interrupted.

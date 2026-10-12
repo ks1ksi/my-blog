@@ -1,0 +1,2 @@
+/* Page subsets cover static content. Search can introduce any published glyph. */
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";

@@ -27,14 +27,14 @@ function syncGiscusTheme() {
   );
 }
 
-function applyTheme(dark: boolean) {
-  document.documentElement.classList.toggle("dark", dark);
-  syncGiscusTheme();
+function applyTheme(dark: boolean, target: Document = document) {
+  target.documentElement.classList.toggle("dark", dark);
+  if (target === document) syncGiscusTheme();
 }
 
-function updateThemeControl() {
+function updateThemeControl(target: Document = document) {
   const theme = getStoredTheme();
-  for (const button of document.querySelectorAll<HTMLButtonElement>(
+  for (const button of target.querySelectorAll<HTMLButtonElement>(
     "[data-theme-value]",
   )) {
     button.setAttribute(
@@ -45,8 +45,12 @@ function updateThemeControl() {
 }
 
 export function initializeTheme() {
-  applyTheme(shouldUseDarkTheme());
-  updateThemeControl();
+  prepareTheme(document);
+}
+
+export function prepareTheme(target: Document) {
+  applyTheme(shouldUseDarkTheme(), target);
+  updateThemeControl(target);
 }
 
 export function selectTheme(button: HTMLButtonElement) {

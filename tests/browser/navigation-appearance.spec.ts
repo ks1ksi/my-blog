@@ -12,6 +12,7 @@ declare global {
   interface Window {
     __articleEntryFrames?: EntryFrame[];
     __articleEntryComplete?: boolean;
+    __themeDuringSwap?: string;
   }
 }
 
@@ -24,7 +25,10 @@ for (const colorScheme of ["light", "dark"] as const) {
     test(`scrolled article entry preserves layout and theme (${colorScheme}, ${fallback ? "fallback" : "native"})`, async ({
       page,
     }) => {
-      await page.emulateMedia({ colorScheme });
+      // A stored choice must also win when the device uses the opposite theme.
+      await page.emulateMedia({
+        colorScheme: colorScheme === "dark" ? "light" : "dark",
+      });
       await page.addInitScript(
         ({ theme, forceFallback }) => {
           localStorage.setItem("theme", theme);
@@ -66,6 +70,20 @@ for (const colorScheme of ["light", "dark"] as const) {
         window.__articleEntryFrames = frames;
         window.__articleEntryComplete = false;
         document.addEventListener(
+          "astro:before-swap",
+          (event) => {
+            const swap = event.swap;
+            event.swap = () => {
+              swap();
+              // Observe before the router restores scroll and fires after-swap.
+              window.__themeDuringSwap = getComputedStyle(
+                document.querySelector(".site-header")!,
+              ).backgroundColor;
+            };
+          },
+          { once: true },
+        );
+        document.addEventListener(
           "astro:after-swap",
           () => {
             const family = document.querySelector<HTMLStyleElement>(
@@ -105,6 +123,9 @@ for (const colorScheme of ["light", "dark"] as const) {
         .toBe(true);
       const frames = await page.evaluate(() => window.__articleEntryFrames!);
       const first = frames[0];
+      expect(await page.evaluate(() => window.__themeDuringSwap)).toBe(
+        background,
+      );
       expect(frames).toHaveLength(31);
       for (const frame of frames) {
         expect(frame.fontReady, JSON.stringify(frames)).toBe(true);

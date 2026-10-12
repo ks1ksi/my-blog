@@ -19,18 +19,20 @@ async function openSearch(page: Page, query?: string) {
 }
 
 async function assertSearchStyles(page: Page) {
-  await expect
-    .poll(() =>
-      page
-        .locator("#pagefind-ui-styles")
-        .evaluate(
-          (node) =>
-            node instanceof HTMLLinkElement &&
-            node.isConnected &&
-            Boolean(node.sheet),
-        ),
-    )
-    .toBe(true);
+  for (const id of ["pagefind-ui-styles", "search-font-styles"]) {
+    await expect
+      .poll(() =>
+        page
+          .locator(`#${id}`)
+          .evaluate(
+            (node) =>
+              node instanceof HTMLLinkElement &&
+              node.isConnected &&
+              Boolean(node.sheet),
+          ),
+      )
+      .toBe(true);
+  }
   await expect(page.locator("#pagefind-ui-overrides")).toHaveCount(1);
 }
 
@@ -147,6 +149,33 @@ test("search survives result navigation and back/forward without losing its CSS"
   await expect(page).toHaveURL((url) => url.pathname === target);
   await openSearch(page, "OSTEP");
   await assertSearchStyles(page);
+});
+
+test("loads fallback glyphs only when search introduces text outside the page subset", async ({
+  page,
+}) => {
+  await page.goto("/");
+  expect(
+    await page.evaluate(() =>
+      [...document.fonts].some((face) =>
+        face.family.includes("Pretendard Variable"),
+      ),
+    ),
+  ).toBe(false);
+  await openSearch(page, "플로이드");
+  await assertSearchStyles(page);
+  await page.evaluate(() => document.fonts.ready);
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        [...document.fonts].some(
+          (face) =>
+            face.family.includes("Pretendard Variable") &&
+            face.status === "loaded",
+        ),
+      ),
+    )
+    .toBe(true);
 });
 
 test("failed search stylesheet exposes a retry and recovers", async ({

@@ -31,3 +31,7 @@ src/content/.obsidian/workspace.json
 # browser test artifacts
 playwright-report/
 test-results/
+
+# Generated rendering and performance audit evidence
+render-audit/
+lighthouse-reports/

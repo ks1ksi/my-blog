@@ -23,9 +23,11 @@ vi.mock("./pagefind-engine", () => ({
 }));
 
 function finishStyles() {
-  const link = document.querySelector<HTMLLinkElement>("#pagefind-ui-styles")!;
-  Object.defineProperty(link, "sheet", { value: {}, configurable: true });
-  link.dispatchEvent(new Event("load"));
+  for (const id of ["pagefind-ui-styles", "search-font-styles"]) {
+    const link = document.getElementById(id)!;
+    Object.defineProperty(link, "sheet", { value: {}, configurable: true });
+    link.dispatchEvent(new Event("load"));
+  }
 }
 
 beforeEach(() => {
