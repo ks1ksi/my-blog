@@ -10,13 +10,13 @@ console.log('BUILD_IDENTITY', JSON.stringify(identity));
 if (expected && identity.commit !== expected) throw new Error('Unexpected build');
 const browser = await chromium.launch();
 const summaries=[];
-for (const native of [true,false]) for (const colorScheme of ['light','dark']) {
- const name=`${native?'native':'fallback'}-${colorScheme}`;
+for (const route of ['/', '/blog/']) for (const native of [true,false]) for (const colorScheme of ['light','dark']) {
+ const name=`${route==='/'?'home':'archive'}-${native?'native':'fallback'}-${colorScheme}`;
  const context=await browser.newContext({...devices['Pixel 7'],deviceScaleFactor:1,colorScheme,reducedMotion:'no-preference'});
  if(!native) await context.addInitScript(()=>{document.startViewTransition=undefined;});
  const page=await context.newPage();
- await page.goto(`${origin}/blog/`);
- await page.locator('[data-year-state-bound="true"]').first().waitFor();
+ await page.goto(`${origin}${route}`);
+ if(route==='/blog/') await page.locator('[data-year-state-bound="true"]').first().waitFor();
  await page.evaluate(async()=>{await document.fonts.ready;scrollTo(0,1200);});
  await page.waitForFunction(()=>scrollY===1200);
  const header=await page.locator('.site-header').boundingBox();
@@ -40,8 +40,8 @@ for (const native of [true,false]) for (const colorScheme of ['light','dark']) {
      if(performance.now()-begin<3500)requestAnimationFrame(sample);
    };requestAnimationFrame(sample);
  });
- await cdp.send('Page.startScreencast',{format:'png',maxWidth:393,maxHeight:851,everyNthFrame:1});
- await article.click();
+ await cdp.send('Page.startScreencast',{format:'png',maxWidth:412,maxHeight:839,everyNthFrame:1});
+ await article.tap();
  await page.waitForURL(target);
  await page.waitForTimeout(1300);
  await cdp.send('Page.stopScreencast');
@@ -60,10 +60,10 @@ for (const native of [true,false]) for (const colorScheme of ['light','dark']) {
   maxMeanDiff=Math.max(maxMeanDiff,meanDiff);minInk=Math.min(minInk,ink);
   details.push({index:i,time:frame.metadata.timestamp,meanDiff,ink});
   await writeFile(`${out}/${name}-${String(i).padStart(3,'0')}.png`,frame.data);
-  const strip=await sharp(frame.data).extract({left:0,top:0,width:393,height:Math.round(header.height)}).png().toBuffer();
+  const strip=await sharp(frame.data).extract({left:0,top:0,width:412,height:Math.round(header.height)}).png().toBuffer();
   tiles.push({input:strip,left:0,top:i*(Math.round(header.height)+4)});
  }
- await sharp({create:{width:393,height:Math.max(1,frames.length)*(Math.round(header.height)+4),channels:3,background:'#888'}}).composite(tiles).png().toFile(`${out}/${name}-filmstrip.png`);
+ await sharp({create:{width:412,height:Math.max(1,frames.length)*(Math.round(header.height)+4),channels:3,background:'#888'}}).composite(tiles).png().toFile(`${out}/${name}-filmstrip.png`);
  await writeFile(`${out}/${name}-before.png`,before);
  await writeFile(`${out}/${name}-after.png`,after);
  await writeFile(`${out}/${name}.json`,JSON.stringify({identity,header,details,samples:await page.evaluate(()=>window.__renderSamples)},null,2));
