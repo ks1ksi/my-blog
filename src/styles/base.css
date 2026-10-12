@@ -36,7 +36,7 @@
   :where(a, button, select, input, summary, dialog):focus-visible {
     outline: 3px solid var(--color-focus);
     outline-offset: 4px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
   }
   ::selection {
     color: var(--color-bg);

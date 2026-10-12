@@ -87,21 +87,20 @@ const jsonLd = [
         <div>
           <FormattedDate date={post.data.date} />
         </div>
-        <span aria-hidden="true">&bull;</span>
+        <span aria-hidden="true">·</span>
         {post.body && <div>{readingTime(post.body)}</div>}
+        {post.data.tags && post.data.tags.length > 0 && (
+          <span aria-hidden="true">·</span>
+        )}
+        {post.data.tags?.map((tag) => (
+          <a href={`/tags/${tag}/`} class="post-tag">
+            #{tag}
+          </a>
+        ))}
       </div>
       <h1 data-pagefind-body data-pagefind-meta="title" class="article-title">
         {post.data.title}
       </h1>
-      {post.data.tags && post.data.tags.length > 0 ? (
-        <div class="flex flex-wrap gap-2 pt-1">
-          {post.data.tags.map((tag) => (
-            <a href={`/tags/${tag}/`} class="tag-link">
-              {tag}
-            </a>
-          ))}
-        </div>
-      ) : null}
     </div>
     {headings.length > 0 && <TableOfContents headings={headings} />}
     <article data-pagefind-body>
