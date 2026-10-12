@@ -1,0 +1,25 @@
+name: Performance order diagnostic
+on:
+  push:
+    branches: [diagnostic/performance-order]
+permissions:
+  contents: read
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+      - name: Measure article first on a fresh runner
+        run: node scripts/lighthouse-order.mjs
+        env:
+          AUDIT_COMMIT: ced124f3d5bf42e0fdbd1c685f0d9f3a677742d9
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-order
+          path: lighthouse-reports/
+          retention-days: 14
