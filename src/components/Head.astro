@@ -117,15 +117,16 @@ const toIsoString = (date: string | Date) =>
 
 <ScrollRestoration />
 <script is:inline>
-  // Swap pages in one step. Native View Transitions replace the page with
-  // snapshots and made the sticky header flash on phones. Hide the API before
-  // the router module reads it so every navigation takes the plain swap path.
+  // Native View Transitions replace the page with snapshots and made the
+  // sticky header flash on phones. Hide the API before the router module reads
+  // it so navigation uses Astro's fallback: real elements, no snapshots. Only
+  // <main> is animated; the header and footer are never touched.
   Object.defineProperty(document, "startViewTransition", {
     value: undefined,
     configurable: true,
   });
 </script>
-<ClientRouter fallback="swap" />
+<ClientRouter fallback="animate" />
 
 <script is:inline>
   let storedTheme = null;
