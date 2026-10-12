@@ -144,5 +144,11 @@ export function unicodeRange(characters) {
 }
 
 export function subsetMarkup(href, characters) {
-  return `<link rel="preload" as="font" type="font/woff2" href="${href}" crossorigin><style data-page-font>@font-face{font-family:"${SUBSET_FAMILY}";font-style:normal;font-weight:45 920;font-display:swap;src:url("${href}") format("woff2");unicode-range:${unicodeRange(characters)}}:root{--font-sans:"${SUBSET_FAMILY}","Pretendard Variable","Pretendard",ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji"}</style>`;
+  // A distinct CSS family lets navigation decode the next subset without
+  // changing the font (and scroll geometry) of the page still on screen.
+  const family = `${SUBSET_FAMILY} ${href
+    .split("/")
+    .pop()
+    .replace(/\.woff2$/, "")}`;
+  return `<link rel="preload" as="font" type="font/woff2" href="${href}" crossorigin><style data-page-font="${family}">@font-face{font-family:"${family}";font-style:normal;font-weight:45 920;font-display:swap;src:url("${href}") format("woff2");unicode-range:${unicodeRange(characters)}}</style><style data-page-font-stack>:root{--font-sans:"${family}","Pretendard Variable","Pretendard",ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji"}</style>`;
 }

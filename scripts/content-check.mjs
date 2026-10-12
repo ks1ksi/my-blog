@@ -63,13 +63,23 @@ for (const page of pages.values()) {
   );
   const fontCss =
     fontStyles[0]?.childNodes?.map((node) => node.value ?? "").join("") ?? "";
+  const fontStacks = page.nodes.filter(
+    (node) => node.tagName === "style" && "data-page-font-stack" in attrs(node),
+  );
+  const stackCss =
+    fontStacks[0]?.childNodes?.map((node) => node.value ?? "").join("") ?? "";
+  const family = fontStyles[0] && attrs(fontStyles[0])["data-page-font"];
   if (
     fontStyles.length !== 1 ||
+    fontStacks.length !== 1 ||
+    !family ||
+    !fontCss.includes(`font-family:"${family}"`) ||
+    !stackCss.includes(`--font-sans:"${family}"`) ||
     fontPreloads.length !== 1 ||
     !("crossorigin" in (fontPreloads[0] ?? {})) ||
     !fontCss.includes(fontPreloads[0]?.href) ||
     !fontCss.includes("font-display:swap") ||
-    !fontCss.includes('"Pretendard Variable"')
+    !stackCss.includes('"Pretendard Variable"')
   ) {
     fail(page, "missing or inconsistent page font and dynamic-text fallback");
   }

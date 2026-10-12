@@ -2,6 +2,10 @@ import { navigate } from "astro:transitions/client";
 import { initBlogIndexState, restoreBlogIndexState } from "./blog-index-state";
 import { enhanceCodeBlocks, copyCode } from "./client/code-copy";
 import {
+  prepareNavigationFont,
+  commitNavigationFont,
+} from "./client/navigation-font";
+import {
   restoreTableOfContentsState,
   storeTableOfContentsState,
 } from "./client/disclosures";
@@ -131,11 +135,24 @@ export function registerGlobalUi() {
   document.addEventListener("pointerover", handleSearchPreloadIntent);
   document.addEventListener("focusin", handleSearchPreloadIntent);
   document.addEventListener("astro:after-swap", initializeTheme);
+  document.addEventListener("astro:before-preparation", (event) => {
+    const load = event.loader;
+    event.loader = async () => {
+      await load();
+      if (!event.defaultPrevented && !event.signal.aborted)
+        await prepareNavigationFont(event.newDocument, event.signal);
+    };
+  });
   document.addEventListener("astro:before-swap", (event) => {
     closeSearch({ restoreFocus: false });
     // Restore disclosure layout before the router restores its scroll position.
     restoreBlogIndexState(event.newDocument);
     restoreTableOfContentsState(event.newDocument);
+    const swap = event.swap;
+    event.swap = () => {
+      commitNavigationFont(event.newDocument);
+      swap();
+    };
   });
   document.addEventListener("astro:page-load", initializePage);
   document.addEventListener("close", handleSearchClose, true);

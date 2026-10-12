@@ -63,7 +63,9 @@ describe("page font character coverage", () => {
     expect(markup).toContain("crossorigin");
     expect(markup).toContain("font-weight:45 920");
     expect(markup).toContain("font-display:swap");
-    expect(markup).toContain('"Seungil Sans","Pretendard Variable"');
+    expect(markup).toContain('"Seungil Sans example","Pretendard Variable"');
+    expect(markup).toContain('data-page-font="Seungil Sans example"');
+    expect(markup).toContain("</style><style data-page-font-stack>:root");
     expect(markup).toContain("unicode-range:U+ac00,U+b098,U+b2e4");
   });
 });
