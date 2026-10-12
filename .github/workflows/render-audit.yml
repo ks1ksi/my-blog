@@ -1,0 +1,42 @@
+name: Render and performance evidence
+on:
+  push:
+    branches: [diagnostic/render-audit]
+permissions:
+  contents: read
+jobs:
+  frames:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/header-render-diagnostic.mjs
+        env:
+          AUDIT_COMMIT: 749df2404627d2439d404e789e3bb9cdf23bae37
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: render-audit
+          path: render-audit/
+          retention-days: 7
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+      - run: node scripts/lighthouse-diagnostic.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-baseline
+          path: lighthouse-reports/
+          retention-days: 7
