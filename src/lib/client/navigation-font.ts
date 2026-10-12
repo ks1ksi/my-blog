@@ -1,6 +1,12 @@
-// Astro preloads stylesheets, but page-specific font faces also need decoding
-// before it captures the new view and restores a scrolled history entry.
-const prepared = new WeakMap<Document, () => void>();
+// CSS-connected faces can become unloaded again during Astro's head swap in
+// Chromium. Decode a JS-owned face and retain that exact object through swap.
+type PreparedFont = {
+  face: FontFace;
+  source: HTMLStyleElement;
+  detach: () => void;
+};
+const prepared = new WeakMap<Document, PreparedFont>();
+let activeFace: FontFace | undefined;
 
 export async function prepareNavigationFont(
   next: Document,
@@ -8,29 +14,40 @@ export async function prepareNavigationFont(
 ) {
   const source = next.querySelector<HTMLStyleElement>("style[data-page-font]");
   const family = source?.dataset.pageFont;
-  if (!source || !family || signal.aborted || !document.fonts) return;
-  const existing = [...document.querySelectorAll("style[data-page-font]")].find(
-    (style) => style.textContent === source.textContent,
-  );
-
-  // This style contains only @font-face. The separate font stack is applied
-  // by the normal head swap, so the outgoing page stays completely unchanged.
-  const style = existing ?? (source.cloneNode(true) as HTMLStyleElement);
-  if (!existing) document.head.append(style);
+  const href = next
+    .querySelector('link[rel="preload"][as="font"]')
+    ?.getAttribute("href");
+  const range = source?.textContent?.match(/unicode-range:([^}]+)/)?.[1];
+  if (
+    !source ||
+    !family ||
+    !href ||
+    !range ||
+    signal.aborted ||
+    !document.fonts
+  )
+    return;
+  const face = new FontFace(family, `url(${JSON.stringify(href)})`, {
+    style: "normal",
+    weight: "45 920",
+    display: "swap",
+    unicodeRange: range,
+  });
+  // Keep the outgoing page's font and geometry untouched while loading.
   let cancelWait: (ready: boolean) => void = () => {};
   const cancelled = new Promise<boolean>((resolve) => (cancelWait = resolve));
+  const detach = () => signal.removeEventListener("abort", discard);
   const discard = () => {
-    if (!existing) style.remove();
     prepared.delete(next);
-    signal.removeEventListener("abort", discard);
+    detach();
     cancelWait(false);
   };
   signal.addEventListener("abort", discard, { once: true });
-  // A failed font must not leave navigation waiting or the screen hidden.
+  // Font failure must never trap navigation or leave a hidden screen.
   const timeout = window.setTimeout(() => cancelWait(false), 2000);
   const loaded = await Promise.race([
-    document.fonts.load(`16px ${JSON.stringify(family)}`, "A").then(
-      (faces) => faces.length > 0,
+    face.load().then(
+      () => true,
       () => false,
     ),
     cancelled,
@@ -40,12 +57,19 @@ export async function prepareNavigationFont(
     discard();
     return;
   }
-  prepared.set(next, () => signal.removeEventListener("abort", discard));
+  prepared.set(next, { face, source, detach });
 }
 
 export function commitNavigationFont(next: Document) {
-  // Astro keeps identical head styles, retaining the already decoded face.
-  // Stop abort cleanup once that style belongs to the newly displayed page.
-  prepared.get(next)?.();
-  prepared.delete(next);
+  const font = prepared.get(next);
+  if (font) {
+    font.detach();
+    prepared.delete(next);
+    document.fonts.add(font.face);
+    // Do not register a second, unloaded CSS face over the decoded JS face.
+    // The separate stack style still selects this page's unique family.
+    font.source.textContent = "";
+  }
+  if (activeFace) document.fonts.delete(activeFace);
+  activeFace = font?.face;
 }

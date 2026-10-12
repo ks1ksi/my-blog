@@ -1,79 +1,105 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { commitNavigationFont, prepareNavigationFont } from "./navigation-font";
 
 const load = vi.fn();
+const add = vi.fn();
+const remove = vi.fn();
+let prepareNavigationFont: typeof import("./navigation-font").prepareNavigationFont;
+let commitNavigationFont: typeof import("./navigation-font").commitNavigationFont;
 function nextPage() {
   return new DOMParser().parseFromString(
-    '<style data-page-font="Next">@font-face{font-family:"Next";src:url("/next.woff2")}</style><style data-page-font-stack>:root{--font-sans:"Next"}</style>',
+    '<link rel="preload" as="font" href="/next.woff2"><style data-page-font="Next">@font-face{font-family:"Next";src:url("/next.woff2");unicode-range:U+0-7f}</style><style data-page-font-stack>:root{--font-sans:"Next"}</style>',
     "text/html",
   );
 }
-beforeEach(() => {
+beforeEach(async () => {
+  vi.resetModules();
+  ({ prepareNavigationFont, commitNavigationFont } =
+    await import("./navigation-font"));
   document.head.innerHTML =
     '<style data-page-font-stack>:root{--font-sans:"Current"}</style>';
   Object.defineProperty(document, "fonts", {
     configurable: true,
-    value: { load },
+    value: { add, delete: remove },
   });
+  vi.stubGlobal(
+    "FontFace",
+    class {
+      load = load;
+    },
+  );
   load.mockReset();
+  add.mockClear();
+  remove.mockClear();
 });
-afterEach(() => vi.useRealTimers());
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
 
-it("prepares only the face and retains it after a committed swap", async () => {
-  load.mockResolvedValue([{}]);
+it("keeps the outgoing page unchanged and commits only the decoded face", async () => {
+  load.mockResolvedValue(undefined);
   const next = nextPage();
   const controller = new AbortController();
   await prepareNavigationFont(next, controller.signal);
-  expect(
-    document.querySelector("[data-page-font-stack]")?.textContent,
-  ).toContain('"Current"');
-  expect(document.querySelectorAll("style")).toHaveLength(2);
+  expect(document.head.querySelectorAll("style")).toHaveLength(1);
+  expect(add).not.toHaveBeenCalled();
+  expect(next.querySelector("[data-page-font]")?.textContent).toContain(
+    "@font-face",
+  );
   commitNavigationFont(next);
+  expect(add).toHaveBeenCalledTimes(1);
+  expect(next.querySelector("[data-page-font]")?.textContent).toBe("");
   controller.abort();
-  expect(document.querySelector("[data-page-font]")).not.toBeNull();
+  expect(remove).not.toHaveBeenCalled();
 });
-
-it("removes a decoded face if its navigation is superseded before swapping", async () => {
-  load.mockResolvedValue([{}]);
+it("drops a decoded face when navigation is superseded before swapping", async () => {
+  load.mockResolvedValue(undefined);
+  const next = nextPage();
   const controller = new AbortController();
-  await prepareNavigationFont(nextPage(), controller.signal);
+  await prepareNavigationFont(next, controller.signal);
   controller.abort();
-  expect(document.querySelector("[data-page-font]")).toBeNull();
+  commitNavigationFont(next);
+  expect(add).not.toHaveBeenCalled();
+  expect(next.querySelector("[data-page-font]")?.textContent).toContain(
+    "@font-face",
+  );
 });
-
-it("cancels a pending load without waiting for the font server", async () => {
+it("cancels pending font preparation without waiting for the server", async () => {
   load.mockReturnValue(new Promise(() => {}));
   const controller = new AbortController();
   const pending = prepareNavigationFont(nextPage(), controller.signal);
   controller.abort();
   await pending;
-  expect(document.querySelector("[data-page-font]")).toBeNull();
+  expect(add).not.toHaveBeenCalled();
 });
-
-it("awaits an existing face without deleting the current page's style on abort", async () => {
-  const next = nextPage();
-  document.head.append(next.querySelector("[data-page-font]")!.cloneNode(true));
-  load.mockReturnValue(new Promise(() => {}));
-  const controller = new AbortController();
-  const pending = prepareNavigationFont(next, controller.signal);
-  expect(load).toHaveBeenCalled();
-  controller.abort();
-  await pending;
-  expect(document.querySelectorAll("[data-page-font]")).toHaveLength(1);
+it("releases the previous JS face when the next page commits", async () => {
+  load.mockResolvedValue(undefined);
+  for (let i = 0; i < 2; i++) {
+    const next = nextPage();
+    await prepareNavigationFont(next, new AbortController().signal);
+    commitNavigationFont(next);
+  }
+  expect(add).toHaveBeenCalledTimes(2);
+  expect(remove).toHaveBeenCalledExactlyOnceWith(add.mock.calls[0][0]);
 });
-
-it("falls back to normal navigation when loading fails or stalls", async () => {
+it("retains normal CSS loading when preparation fails or times out", async () => {
   load.mockRejectedValueOnce(new Error("offline"));
-  await prepareNavigationFont(nextPage(), new AbortController().signal);
-  expect(document.querySelector("[data-page-font]")).toBeNull();
+  const failed = nextPage();
+  await prepareNavigationFont(failed, new AbortController().signal);
+  commitNavigationFont(failed);
+  expect(failed.querySelector("[data-page-font]")?.textContent).toContain(
+    "@font-face",
+  );
   vi.useFakeTimers();
   load.mockReturnValue(new Promise(() => {}));
-  const pending = prepareNavigationFont(
-    nextPage(),
-    new AbortController().signal,
-  );
+  const stalled = nextPage();
+  const pending = prepareNavigationFont(stalled, new AbortController().signal);
   await vi.advanceTimersByTimeAsync(2000);
   await pending;
-  expect(document.querySelector("[data-page-font]")).toBeNull();
+  commitNavigationFont(stalled);
+  expect(add).not.toHaveBeenCalled();
+  expect(stalled.querySelector("[data-page-font]")?.textContent).toContain(
+    "@font-face",
+  );
 });
