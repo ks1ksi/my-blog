@@ -7,20 +7,28 @@ slogans or invented descriptions of the author's work.
 
 ## Color and interaction
 
-The light theme uses warm off-white surfaces and deep green accents; the dark
-theme uses dark green surfaces and lighter green accents. Body text, secondary
-text, borders, accents, visited links, and focus indicators have separate roles.
+Neutral zinc grays on white (light) and near-black `#0f0f10` (dark), with one
+blue accent (`#1d4ed8` / `#60a5fa`) for links, hover and focus only. Body text,
+secondary text, borders, accents, visited links, and focus indicators have
+separate roles.
 
-- Current navigation: server-rendered `aria-current`, tinted background, and
-  underline. The header is replaced during Astro navigation so this stays current.
-- Article links and search results: browser-native `:visited` uses muted green
-  (`#52695d` light, `#a6b8ab` dark), with the saturated accent reserved for hover
+Shape: separate content with whitespace rather than rules and outlined boxes.
+Grouped controls (year jumps, topics, tags) are borderless pills on the muted
+surface; panels (table of contents, code, post navigation, search results)
+are borderless rounded surfaces (`--radius` 0.75rem). Hairlines remain only
+under the sticky header, above the footer, and in tables. Internal links have
+no ↗ marker; it is reserved for external links.
+
+- Current navigation: server-rendered `aria-current`, strong text color
+  and underline. The header is replaced during Astro navigation so this stays current.
+- Article links and search results: browser-native `:visited` uses muted gray
+  (`#52525b` light, `#a1a1aa` dark), with the saturated accent reserved for hover
   and focus. Body reference links use the same visited color. Navigation, table
   of contents, and in-page anchors keep their normal color after a visit.
-  Cards also have a background/left border on hover or focus. No application
+  Card titles take the accent and an underline on hover or focus. No application
   visit history.
 - Keyboard focus: a 3px outline, including a full-card outline for article links.
-- Expanded years: background plus a minus sign; collapsed years have a plus sign.
+- Expanded years: a minus sign; collapsed years have a plus sign.
 - Hash targets: heading/section outline, with CSS scroll padding below the header.
 - Theme selection: a sun/moon icon opens a native HTML `popover="auto"` with
   Light / Dark / System choices, labeled 라이트 모드 / 다크 모드 / 시스템 설정.
