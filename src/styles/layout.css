@@ -385,7 +385,7 @@ body:has(#theme-picker:popover-open) .theme-control {
 }
 .tag-index {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
   gap: 0 var(--space-8);
 }
 .tag-index a {
