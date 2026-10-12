@@ -83,9 +83,15 @@ for (const forceFallback of [false, true]) {
       });
       document.addEventListener("astro:page-load", () => {
         if (!active) return;
-        probe.completed++;
-        sample();
-        active = false;
+        // Native transition animations can start after the DOM swap and
+        // page-load event. Keep sampling through the next rendered frames.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            sample();
+            active = false;
+            probe.completed++;
+          });
+        });
       });
     });
 
