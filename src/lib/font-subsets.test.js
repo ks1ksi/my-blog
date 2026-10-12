@@ -84,7 +84,9 @@ describe("font subsetting preserves type design and attribution", () => {
     const after = tables(renamed.font);
     for (const [tag, bytes] of before) {
       if (tag === "name" || tag === "head") continue;
-      expect(after.get(tag), tag).toEqual(bytes);
+      // Compare every byte natively: generic deep equality walks millions of
+      // Buffer entries and can exceed the test budget on hosting builders.
+      expect(after.get(tag)?.equals(bytes), `${tag} table bytes`).toBe(true);
     }
     expect(names(renamed.font).get(1)).toContain("Seungil Sans");
     for (const [id, values] of names(renamed.font)) {
