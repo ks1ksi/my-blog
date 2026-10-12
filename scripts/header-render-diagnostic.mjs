@@ -17,8 +17,9 @@ for (const route of ['/', '/blog/']) for (const native of [true,false]) for (con
  const page=await context.newPage();
  await page.goto(`${origin}${route}`);
  if(route==='/blog/') await page.locator('[data-year-state-bound="true"]').first().waitFor();
- await page.evaluate(async()=>{await document.fonts.ready;scrollTo(0,1200);});
- await page.waitForFunction(()=>scrollY===1200);
+ const y=route==='/'?400:1200;
+ await page.evaluate(async y=>{await document.fonts.ready;scrollTo(0,y);},y);
+ await page.waitForFunction(y=>scrollY===y,y);
  const header=await page.locator('.site-header').boundingBox();
  const index=await page.locator('main h3 a').evaluateAll(links=>links.findIndex(link=>{const r=link.getBoundingClientRect();return r.top>110 && r.bottom<innerHeight-20;}));
  if(index<0)throw new Error('No visible link');
@@ -30,6 +31,15 @@ for (const route of ['/', '/blog/']) for (const native of [true,false]) for (con
  cdp.on('Page.screencastFrame',event=>{frames.push({data:Buffer.from(event.data,'base64'),metadata:event.metadata});void cdp.send('Page.screencastFrameAck',{sessionId:event.sessionId});});
  await page.evaluate(()=>{
    window.__renderSamples=[];
+   window.__swapState=null;
+   document.addEventListener('astro:before-swap',event=>{
+     const swap=event.swap;
+     event.swap=()=>{
+       const before=getComputedStyle(document.querySelector('.site-header')).backgroundColor;
+       swap();
+       window.__swapState={before,immediate:getComputedStyle(document.querySelector('.site-header')).backgroundColor,dark:document.documentElement.classList.contains('dark')};
+     };
+   },{once:true});
    const begin=performance.now();
    const sample=()=>{
      const h=document.querySelector('.site-header');
@@ -66,8 +76,8 @@ for (const route of ['/', '/blog/']) for (const native of [true,false]) for (con
  await sharp({create:{width:412,height:Math.max(1,frames.length)*(Math.round(header.height)+4),channels:3,background:'#888'}}).composite(tiles).png().toFile(`${out}/${name}-filmstrip.png`);
  await writeFile(`${out}/${name}-before.png`,before);
  await writeFile(`${out}/${name}-after.png`,after);
- await writeFile(`${out}/${name}.json`,JSON.stringify({identity,header,details,samples:await page.evaluate(()=>window.__renderSamples)},null,2));
- const summary={name,frames:frames.length,maxMeanDiff,minInk,header};summaries.push(summary);console.log('RENDER_AUDIT',JSON.stringify(summary));
+ await writeFile(`${out}/${name}.json`,JSON.stringify({identity,header,details,swap:await page.evaluate(()=>window.__swapState),samples:await page.evaluate(()=>window.__renderSamples)},null,2));
+ const summary={name,frames:frames.length,maxMeanDiff,minInk,header,swap:await page.evaluate(()=>window.__swapState)};summaries.push(summary);console.log('RENDER_AUDIT',JSON.stringify(summary));
  await context.close();
 }
 await browser.close();
