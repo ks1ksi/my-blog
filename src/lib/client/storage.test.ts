@@ -47,7 +47,9 @@ describe("optional UI preference persistence", () => {
       `${process.cwd()}/src/components/Head.astro`,
       "utf8",
     );
-    const script = head.match(/<script is:inline>([\s\S]*?)<\/script>/)![1];
+    const script = [...head.matchAll(/<script is:inline>([\s\S]*?)<\/script>/g)]
+      .map((match) => match[1])
+      .find((source) => source.includes("storedTheme"))!;
     expect(() =>
       runInNewContext(script, {
         localStorage: {

@@ -1,6 +1,7 @@
 import { parse } from "parse5";
 
 export const SUBSET_FAMILY = "Seungil Sans";
+export const UI_FAMILY = `${SUBSET_FAMILY} UI`;
 const FONT_NAME_IDS = new Set([1, 3, 4, 6, 16, 21, 25]);
 
 // Rebuild only the SFNT name table. Glyphs, metrics, hinting and variation
@@ -127,6 +128,26 @@ export function pageCharacters(html) {
     .join("");
 }
 
+export function headerCharacters(html) {
+  // Text of the shared site header, including its theme menu. It is the same
+  // on every page, so one subset serves the header everywhere.
+  const text = [];
+  function visit(node, inHeader = false) {
+    if (["script", "style", "svg"].includes(node.tagName)) return;
+    const classes =
+      node.attrs?.find((attr) => attr.name === "class")?.value.split(/\s+/) ??
+      [];
+    inHeader ||= node.tagName === "header" && classes.includes("site-header");
+    if (inHeader && node.nodeName === "#text") text.push(node.value);
+    for (const child of node.childNodes ?? []) visit(child, inHeader);
+  }
+  visit(parse(html));
+  return [...new Set(text.join(""))]
+    .filter((char) => char.codePointAt(0) > 32)
+    .sort((a, b) => a.codePointAt(0) - b.codePointAt(0))
+    .join("");
+}
+
 export function unicodeRange(characters) {
   const codes = [
     ...new Set([...characters].map((char) => char.codePointAt(0))),
@@ -151,4 +172,10 @@ export function subsetMarkup(href, characters) {
     .pop()
     .replace(/\.woff2$/, "")}`;
   return `<link rel="preload" as="font" type="font/woff2" href="${href}" crossorigin><style data-page-font="${family}">@font-face{font-family:"${family}";font-style:normal;font-weight:45 920;font-display:swap;src:url("${href}") format("woff2");unicode-range:${unicodeRange(characters)}}</style><style data-page-font-stack>:root{--font-sans:"${family}","Pretendard Variable","Pretendard",ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji"}</style>`;
+}
+
+export function uiFontMarkup(href, characters) {
+  // Byte-identical on every page: client navigation keeps this element and
+  // its decoded face, so the header never switches to the next page's subset.
+  return `<link rel="preload" as="font" type="font/woff2" href="${href}" crossorigin><style data-ui-font="${UI_FAMILY}">@font-face{font-family:"${UI_FAMILY}";font-style:normal;font-weight:45 920;font-display:swap;src:url("${href}") format("woff2");unicode-range:${unicodeRange(characters)}}</style>`;
 }

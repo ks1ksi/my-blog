@@ -3,9 +3,11 @@ import { readFileSync } from "node:fs";
 import fontverter from "fontverter";
 import subsetFont from "subset-font";
 import {
+  headerCharacters,
   pageCharacters,
   renameFont,
   subsetMarkup,
+  uiFontMarkup,
   unicodeRange,
 } from "../../scripts/font-subset-utils.mjs";
 
@@ -67,6 +69,28 @@ describe("page font character coverage", () => {
     expect(markup).toContain('data-page-font="Seungil Sans example"');
     expect(markup).toContain("</style><style data-page-font-stack>:root");
     expect(markup).toContain("unicode-range:U+ac00,U+b098,U+b2e4");
+  });
+});
+
+describe("shared header font", () => {
+  it("covers only the site header, including its theme menu", () => {
+    const chars = headerCharacters(
+      '<html><body><header class="site-header"><a>k. Seungil Kim</a><nav><a>글</a><a>태그</a><svg><title>숨</title></svg></nav><div popover><span>다크 모드</span></div></header><main>본문</main></body></html>',
+    );
+    for (const char of "k.SeungilKim글태그다크모드")
+      expect(chars).toContain(char);
+    for (const char of "숨본문 ") expect(chars).not.toContain(char);
+  });
+
+  it("is identical on every page so navigation keeps the decoded face", () => {
+    const markup = uiFontMarkup("/_astro/ui.woff2", "글태그");
+    expect(markup).toBe(uiFontMarkup("/_astro/ui.woff2", "글태그"));
+    expect(markup).toContain('data-ui-font="Seungil Sans UI"');
+    expect(markup).toContain('font-family:"Seungil Sans UI"');
+    expect(markup).toContain("font-weight:45 920");
+    expect(markup).toContain("font-display:swap");
+    expect(markup).toContain("crossorigin");
+    expect(markup).toContain("unicode-range:U+adf8,U+ae00,U+d0dc}");
   });
 });
 

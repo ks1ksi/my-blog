@@ -61,6 +61,11 @@ for (const page of pages.values()) {
     (node) =>
       node.tag === "link" && node.rel === "preload" && node.as === "font",
   );
+  const uiFontStyles = page.nodes.filter(
+    (node) => node.tagName === "style" && "data-ui-font" in attrs(node),
+  );
+  const uiFontCss =
+    uiFontStyles[0]?.childNodes?.map((node) => node.value ?? "").join("") ?? "";
   const fontCss =
     fontStyles[0]?.childNodes?.map((node) => node.value ?? "").join("") ?? "";
   const fontStacks = page.nodes.filter(
@@ -75,9 +80,12 @@ for (const page of pages.values()) {
     !family ||
     !fontCss.includes(`font-family:"${family}"`) ||
     !stackCss.includes(`--font-sans:"${family}"`) ||
-    fontPreloads.length !== 1 ||
-    !("crossorigin" in (fontPreloads[0] ?? {})) ||
+    fontPreloads.length !== 2 ||
+    !fontPreloads.every((link) => "crossorigin" in link) ||
     !fontCss.includes(fontPreloads[0]?.href) ||
+    uiFontStyles.length !== 1 ||
+    !uiFontCss.includes(fontPreloads[1]?.href) ||
+    !uiFontCss.includes("font-display:swap") ||
     !fontCss.includes("font-display:swap") ||
     !stackCss.includes('"Pretendard Variable"')
   ) {
