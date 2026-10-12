@@ -30,11 +30,14 @@ for coverage and limitations.
 
 Navigation and scroll restoration
 use Astro’s unmodified `ClientRouter`; dependencies are not patched at install.
+Pages are swapped in one step without View Transition snapshots
+(see [header stability](docs/header-stability-2026-10-13.md)).
 
 Production builds generate a content-hashed variable-font subset for each page
 using the same Pretendard outlines, weights, and metrics. The original unicode
 subsets remain available for dynamic search results and input. The generated
-faces have distinct font names and retain the original font license. Subsetting
+faces have distinct font names and retain the original font license. The site
+header uses one shared subset on every page, so navigation never changes its font. Subsetting
 runs entirely in Node/WASM, with build-only caches under `node_modules/.astro`;
 no Python or browser-time font processing is required.
 

@@ -116,7 +116,16 @@ const toIsoString = (date: string | Date) =>
 ))}
 
 <ScrollRestoration />
-<ClientRouter />
+<script is:inline>
+  // Swap pages in one step. Native View Transitions replace the page with
+  // snapshots and made the sticky header flash on phones. Hide the API before
+  // the router module reads it so every navigation takes the plain swap path.
+  Object.defineProperty(document, "startViewTransition", {
+    value: undefined,
+    configurable: true,
+  });
+</script>
+<ClientRouter fallback="swap" />
 
 <script is:inline>
   let storedTheme = null;

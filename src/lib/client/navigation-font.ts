@@ -14,9 +14,7 @@ export async function prepareNavigationFont(
 ) {
   const source = next.querySelector<HTMLStyleElement>("style[data-page-font]");
   const family = source?.dataset.pageFont;
-  const href = next
-    .querySelector('link[rel="preload"][as="font"]')
-    ?.getAttribute("href");
+  const href = source?.textContent?.match(/url\("([^"]+)"\)/)?.[1];
   const range = source?.textContent?.match(/unicode-range:([^}]+)/)?.[1];
   if (
     !source ||
