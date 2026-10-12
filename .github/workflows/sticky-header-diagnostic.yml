@@ -1,0 +1,27 @@
+name: Sticky header diagnostic
+on:
+  push:
+    branches: [diagnostic/sticky-header]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/browser/sticky-header.spec.ts --project=mobile-chromium --project=mobile-webkit --retries=0
+        env:
+          PLAYWRIGHT_BASE_URL: https://ks1ksi.io
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: sticky-header-diagnostic
+          path: playwright-report/
+          retention-days: 7
