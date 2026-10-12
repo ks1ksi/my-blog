@@ -29,36 +29,14 @@
     gap: var(--space-8);
     padding-block: var(--space-2) var(--space-8);
   }
-  .topic-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 var(--space-6);
-  }
-  .topic-nav > p {
-    width: 100%;
-    margin-bottom: 0;
-  }
-  .topic-nav a {
-    gap: var(--space-3);
-  }
   .home-stack {
     gap: var(--space-12);
-  }
-  .post-card {
-    padding-left: var(--space-3);
   }
   .post-card-title {
     font-size: 1.125rem;
   }
-  .tag-index {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .tag-index a {
-    padding: var(--space-3);
     font-size: 0.875rem;
-  }
-  .tag-count > span {
-    display: none;
   }
   article[data-pagefind-body] {
     font-size: 1rem;
@@ -87,9 +65,6 @@
   }
   .header-actions {
     gap: 0.25rem;
-  }
-  .tag-index {
-    grid-template-columns: 1fr;
   }
   .footer-inner {
     align-items: flex-start;

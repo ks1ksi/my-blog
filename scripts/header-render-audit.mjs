@@ -162,7 +162,7 @@ for (const route of ["/", "/blog/"])
           .toBuffer();
         let sum = 0,
           ink = 0;
-        const bg = colorScheme === "light" ? [247, 246, 242] : [19, 28, 25];
+        const bg = colorScheme === "light" ? [255, 255, 255] : [15, 15, 16];
         for (let j = 0; j < pixel.length; j++) {
           sum += Math.abs(pixel[j] - baseline[j]);
           if (Math.abs(pixel[j] - bg[j % 3]) > 40) ink++;

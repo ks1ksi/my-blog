@@ -527,11 +527,11 @@ test("dark article, theme picker, and populated search pass automated accessibil
   for (const text of await page
     .locator("article li > p, .post-navigation a > span:not(.eyebrow)")
     .all()) {
-    await expect(text).toHaveCSS("color", "rgb(215, 226, 219)");
+    await expect(text).toHaveCSS("color", "rgb(212, 212, 216)");
   }
   await expect(page.locator(".footer-inner > p")).toHaveCSS(
     "color",
-    "rgb(170, 189, 176)",
+    "rgb(161, 161, 170)",
   );
   await audit(page, testInfo, "dark-article");
   await page.locator("#theme-toggle").click();
