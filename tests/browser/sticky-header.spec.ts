@@ -6,6 +6,7 @@ type HeaderFrame = {
   opacity: string;
   background: string;
   uiFontReady: boolean;
+  mainOpacity: number;
 };
 declare global {
   interface Window {
@@ -18,7 +19,7 @@ declare global {
 test.use({ reducedMotion: "no-preference" });
 
 for (const colorScheme of ["light", "dark"] as const) {
-  test(`sticky header is unchanged by scrolled article navigation (${colorScheme})`, async ({
+  test(`sticky header is unchanged while article content fades in (${colorScheme})`, async ({
     page,
   }) => {
     await page.emulateMedia({ colorScheme });
@@ -77,6 +78,9 @@ for (const colorScheme of ["light", "dark"] as const) {
               y: rect.y,
               height: rect.height,
               opacity: style.opacity,
+              mainOpacity: Number(
+                getComputedStyle(document.querySelector("main")!).opacity,
+              ),
               background: style.backgroundColor,
               uiFontReady: document.fonts.check(
                 '650 16px "Seungil Sans UI"',
@@ -100,6 +104,18 @@ for (const colorScheme of ["light", "dark"] as const) {
     expect(await page.evaluate(() => window.__viewTransitions)).toBe(0);
     const frames = await page.evaluate(() => window.__headerFrames!);
     expect(frames).toHaveLength(20);
+    // Only the page content fades in; the header above stays fully opaque.
+    expect(
+      Math.min(...frames.map((frame) => frame.mainOpacity)),
+      JSON.stringify(frames),
+    ).toBeLessThan(0.5);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => getComputedStyle(document.querySelector("main")!).opacity,
+        ),
+      )
+      .toBe("1");
     for (const frame of frames) {
       expect(frame.opacity, JSON.stringify(frames)).toBe("1");
       expect(frame.background).toBe(background);

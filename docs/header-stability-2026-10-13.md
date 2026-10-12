@@ -55,3 +55,17 @@ where no flash ever reproduced.
 This removes the mechanisms above; it has not been observed on the user's
 physical phone. The page body still uses the per-page subset and can show a
 fallback font briefly on a very slow connection, as before.
+
+## Follow-up: content fade
+
+The user confirmed the fix on a Galaxy phone (Chrome) and asked for a
+transition again. It uses Astro's fallback animation instead of native View
+Transitions: `<ClientRouter fallback="animate" />` with
+`transition:animate="fade"` on `<main>` only. The old content fades out on the
+real DOM (180 ms), the document is swapped, and the new content fades in. No
+snapshots are taken; the header and footer have no animation and are never
+hidden. Reduced motion disables the fade.
+
+`sticky-header.spec.ts` now also checks that `<main>` fades in while the header
+stays at full opacity. Screencasts at normal speed and the header render audit
+still show no header pixel changes.
