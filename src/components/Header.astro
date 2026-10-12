@@ -11,7 +11,11 @@ const current = (path: string) =>
       : undefined;
 ---
 
-<header class="site-header">
+<header
+  class="site-header"
+  transition:name="site-header"
+  transition:animate="none"
+>
   <Container size="page">
     <div class="header-inner">
       <a href="/" class="site-brand" aria-label={SITE.TITLE}>
