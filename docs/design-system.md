@@ -71,6 +71,17 @@ and metadata through type size and spacing. Page content has a 64rem maximum
 container, articles 52rem, with 1rem mobile gutters. Header controls are at least
 44px high; smaller inline tags retain spacing from neighboring controls.
 
+## Brand mark
+
+The header shows the handle `ks1ksi` beside a mark: a lowercase "k" whose stem
+carries the flag of a "1", drawn as round-capped strokes on a rounded square.
+`src/lib/brand.ts` holds the path, and every rendering derives from it. The header
+draws it inline in the theme's strong text color. `/favicon.svg` follows the
+browser theme. `/favicon.ico` and `/apple-touch-icon.png` use the dark square.
+`/og.png` and the per-post `/og/blog/*.png` cards use the inverted square on the
+dark background. All of these are generated at build time, so changing the
+path updates every one of them.
+
 ## Verification on 2026-10-03
 
 Against `ec74dcb218e54e65bac3f764fcf1b3e96144ba10`:
