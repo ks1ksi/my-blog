@@ -1,6 +1,6 @@
 ---
 title: OSTEP 06 Direct Execution
-description: "OSTEP Direct Execution 정리. 제한적 직접 실행, 사용자/커널 모드, trap, timer interrupt와 context switch를 설명한다."
+description: "제한적 직접 실행, 사용자·커널 모드와 trap, 타이머 인터럽트로 되찾는 제어권과 문맥 교환"
 date: 2023-07-02
 tags:
   - "cs"

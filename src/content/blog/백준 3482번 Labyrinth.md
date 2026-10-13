@@ -1,6 +1,6 @@
 ---
 title: "백준 3482번 Labyrinth"
-description: "백준 3482번 Labyrinth 풀이. 미궁을 트리처럼 보고 두 번의 BFS로 가장 멀리 떨어진 두 칸 사이의 거리를 구한다."
+description: "칸 사이 경로가 하나뿐인 미궁을 트리로 보고 두 번의 BFS로 가장 먼 두 칸 사이 거리 구하기"
 date: 2021-10-07
 tags:
   - "graph"

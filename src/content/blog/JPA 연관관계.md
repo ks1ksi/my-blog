@@ -1,6 +1,6 @@
 ---
 title: JPA 연관관계
-description: "JPA 연관관계 정리. N:1, 1:1, N:M 매핑, 지연 로딩, mappedBy, cascade, 트랜잭션과 편의 메서드를 요약한다."
+description: "N:1, 1:1, N:M 양방향 매핑과 연관관계의 주인, 지연 로딩, mappedBy, cascade 정리"
 date: 2023-07-02
 draft: true
 tags:

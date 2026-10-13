@@ -1,6 +1,6 @@
 ---
 title: Bulk Insert
-description: "Bulk Insert 성능 개선 기록. JPA TABLE 키 생성 전략과 배치 삽입 병목을 JDBC 기반 insert로 줄인 과정을 정리한다."
+description: "TABLE 키 전략을 IDENTITY로 바꾸고 JDBC 배치 삽입으로 전환해 7시간 걸리던 적재를 1시간으로 줄인 과정"
 date: 2023-07-02
 tags:
   - "cs"

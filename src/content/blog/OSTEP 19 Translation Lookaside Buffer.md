@@ -1,6 +1,6 @@
 ---
 title: OSTEP 19 Translation Lookaside Buffer
-description: "OSTEP TLB 정리. 주소 변환 캐시인 TLB의 동작, hit와 miss, context switch에서의 처리와 성능 영향을 요약한다."
+description: "주소 변환 캐시 TLB의 hit와 miss, 누가 미스를 처리하는지, 문맥 교환과 교체 정책 문제"
 date: 2023-08-01
 tags:
   - "cs"

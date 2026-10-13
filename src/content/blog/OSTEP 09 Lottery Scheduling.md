@@ -1,6 +1,6 @@
 ---
 title: OSTEP 09 Lottery Scheduling
-description: "OSTEP Lottery Scheduling 정리. 티켓 기반 비례 배분, 티켓 양도와 팽창, stride scheduling과의 차이를 설명한다."
+description: "티켓 비율만큼 CPU를 나눠 주는 비례 배분 스케줄러, 티켓 화폐·양도·팽창과 stride scheduling"
 date: 2023-07-04
 tags:
   - "cs"

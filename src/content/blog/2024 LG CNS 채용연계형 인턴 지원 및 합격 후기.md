@@ -1,6 +1,6 @@
 ---
 title: 2024 LG CNS 채용연계형 인턴 지원 및 합격 후기
-description: "2024 LG CNS 채용연계형 인턴 지원 및 합격 후기. CAM 직무 지원서, 코딩테스트 세 문제, 기술 중심 면접 경험을 정리했다."
+description: "Cloud Application Modernization 직무 자소서, 세 문제 코딩테스트와 기술 면접까지 합격 과정"
 date: 2023-12-20
 tags:
   - "job"

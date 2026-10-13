@@ -1,6 +1,6 @@
 ---
 title: "[Vue] Provide / Inject vs Props"
-description: "Vue Provide/Inject와 Props 비교. 단방향 props 전달과 깊은 컴포넌트 트리에 값을 주입하는 provide/inject의 장단점을 정리한다."
+description: "props를 여러 단계 거쳐 내려보내는 대신 provide/inject로 깊은 자식 컴포넌트에 값을 바로 전달하는 방법"
 date: 2021-09-06
 tags:
   - "js"

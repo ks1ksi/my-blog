@@ -1,6 +1,6 @@
 ---
 title: OSTEP 33 Event-based Concurrency
-description: "OSTEP Event-based Concurrency 정리. thread 대신 event loop와 non-blocking I/O로 동시성을 처리하는 방식과 한계를 요약한다."
+description: "쓰레드 대신 이벤트 루프와 select로 동시성을 다루는 방식, 블로킹 시스템 콜과 비동기 I/O 문제"
 date: 2023-09-25
 tags:
   - "os"

@@ -1,6 +1,6 @@
 ---
 title: OSTEP 21 Swapping Mechanisms
-description: "OSTEP Swapping Mechanisms 정리. 메모리가 부족할 때 페이지를 디스크로 내보내고 다시 가져오는 swap 공간과 page fault 처리를 설명한다."
+description: "메모리가 부족할 때 페이지를 디스크로 내보내는 스왑 공간, present bit와 페이지 폴트 처리"
 date: 2023-08-08
 tags:
   - "cs"

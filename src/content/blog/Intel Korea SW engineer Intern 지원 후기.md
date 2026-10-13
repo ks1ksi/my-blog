@@ -1,6 +1,6 @@
 ---
 title: Intel Korea SW engineer Intern 지원 후기
-description: "Intel Korea SW engineer Intern 지원 후기. 영문 이력서, 과제, 기술 면접과 최종 면접, 탈락 후 얻은 면접 경험을 정리했다."
+description: "인텔 코리아 Automotive Group 1년 인턴, 영문 이력서와 과제, 기술·최종 면접 후 탈락까지"
 date: 2023-12-21
 draft: true
 tags:

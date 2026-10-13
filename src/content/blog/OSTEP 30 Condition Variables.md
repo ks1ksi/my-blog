@@ -1,6 +1,6 @@
 ---
 title: OSTEP 30 Condition Variables
-description: "OSTEP Condition Variables 정리. 조건이 만족될 때까지 스레드를 재우고 깨우는 wait, signal, producer-consumer 패턴을 설명한다."
+description: "조건이 맞을 때까지 쓰레드를 재우는 wait과 signal, 생산자·소비자 문제에서 if 대신 while을 쓰는 이유"
 date: 2023-09-18
 tags:
   - "os"

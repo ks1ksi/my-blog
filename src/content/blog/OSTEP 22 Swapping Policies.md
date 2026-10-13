@@ -1,6 +1,6 @@
 ---
 title: OSTEP 22 Swapping Policies
-description: "OSTEP Swapping Policies 정리. FIFO, Random, LRU 계열 페이지 교체 정책과 locality를 활용한 캐시 교체 전략을 요약한다."
+description: "최적 교체부터 FIFO, Random, LRU와 그 근사까지 워크로드별로 비교한 페이지 교체 정책"
 date: 2023-08-08
 tags:
   - "cs"

@@ -1,6 +1,6 @@
 ---
 title: OSTEP 36 IO Devices
-description: "OSTEP IO Devices 정리. 장치 인터페이스, polling과 interrupt, DMA, 운영체제가 I/O 장치를 다루는 기본 구조를 설명한다."
+description: "메모리·I/O 버스 구조와 폴링, 인터럽트, DMA, 장치 드라이버로 운영체제가 장치를 다루는 방식"
 date: 2023-10-09
 tags:
   - "cs"

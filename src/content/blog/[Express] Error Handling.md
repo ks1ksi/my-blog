@@ -1,6 +1,6 @@
 ---
 title: "[Express] Error Handling"
-description: "Express 에러 핸들링 정리. 반복적인 try-catch 대신 에러 핸들링 미들웨어와 async wrapper로 비동기 오류를 처리하는 방법을 설명한다."
+description: "라우터마다 try-catch를 두는 대신 에러 핸들링 미들웨어와 async wrapper로 모으는 방법"
 date: 2021-08-16
 tags:
   - "nodejs"

@@ -1,6 +1,6 @@
 ---
 title: OSTEP 20 Advanced Page Tables
-description: "OSTEP Advanced Page Tables 정리. 선형 페이지 테이블의 공간 비용을 줄이기 위한 multi-level page table 등 개선 방식을 설명한다."
+description: "더 큰 페이지, 페이징과 세그먼트 혼합, 멀티 레벨·역 페이지 테이블로 테이블 크기 줄이기"
 date: 2023-08-08
 tags:
   - "cs"

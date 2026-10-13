@@ -1,6 +1,6 @@
 ---
 title: OSTEP 13 Address Spaces
-description: "OSTEP Address Spaces 정리. 멀티프로그래밍과 시분할을 배경으로 주소 공간 추상화, 투명성, 효율성, 보호 목표를 설명한다."
+description: "멀티프로그래밍과 시분할에서 나온 주소 공간 추상화, 투명성·효율성·보호라는 세 가지 목표"
 date: 2023-07-04
 tags:
   - "cs"
