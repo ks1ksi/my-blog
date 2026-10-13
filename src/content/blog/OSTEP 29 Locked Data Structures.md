@@ -1,6 +1,6 @@
 ---
 title: OSTEP 29 Locked Data Structures
-description: "OSTEP Locked Data Structures 정리. counter, linked list, queue, hash table에 lock을 적용할 때의 정확성과 성능 trade-off를 설명한다."
+description: "카운터, 연결 리스트, 큐, 해시 테이블에 락을 더할 때의 정확성과 확장성 trade-off"
 date: 2023-09-11
 tags:
   - "cs"

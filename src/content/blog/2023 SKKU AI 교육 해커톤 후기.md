@@ -1,6 +1,6 @@
 ---
 title: 2023 SKKU AI 교육 해커톤 후기
-description: "2023 SKKU AI 교육 해커톤 후기. 팀 구성, 프로젝트 진행, 결과와 해커톤에서 느낀 점을 짧게 정리한 글."
+description: "Whisper로 강의를 받아 적고 GPT-4로 실시간 퀴즈를 만드는 서비스를 하루 만에 만든 해커톤"
 date: 2023-09-24
 tags:
   - "dev"

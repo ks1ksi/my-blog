@@ -1,6 +1,6 @@
 ---
 title: SAP Labs Korea Vocational Training Program Intern 지원 및 합격 후기
-description: "SAP Labs Korea Vocational Training Program Intern 합격 후기. SAC Planning 팀 지원, 영어 phone screening, JS 코딩테스트, HR/PT 면접과 오퍼 과정을 정리했다."
+description: "SAC Planning 팀 지원, 영어 phone screening과 JS 코딩테스트, HR·PT 면접을 거쳐 오퍼까지"
 date: 2024-05-31
 tags:
   - "job"

@@ -1,6 +1,6 @@
 ---
 title: "백준 4343번 Arctic Network"
-description: "백준 4343번 Arctic Network 풀이. 위성 채널 수만큼 네트워크를 분리하도록 MST에서 필요한 마지막 간선 비용을 계산한다."
+description: "위성 채널 수만큼 연결을 건너뛰고 MST에서 마지막으로 고른 간선 비용을 답으로 내기"
 date: 2022-02-01
 tags:
   - "graph"

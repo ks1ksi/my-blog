@@ -1,6 +1,6 @@
 ---
 title: OSTEP 교재
-description: "OSTEP 운영체제 교재와 한국어 번역, KAIST 강의 자료 링크를 모아둔 참고 자료 글."
+description: "OSTEP 원서와 한국어 번역, KAIST 강의 자료 링크 모음"
 date: 2023-07-02
 tags:
   - "os"

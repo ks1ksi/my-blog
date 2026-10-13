@@ -1,6 +1,6 @@
 ---
 title: Real MySQL 8.0 8장 인덱스
-description: "Real MySQL 8.0 인덱스 장 정리. 디스크 I/O, B-Tree 인덱스, 클러스터링 인덱스, 다중 칼럼 인덱스와 인덱스 스캔 방식을 요약한다."
+description: "랜덤·순차 I/O에서 출발해 B-Tree와 클러스터링 인덱스까지, 인덱스를 둘지 판단하는 기준"
 date: 2024-04-06
 tags:
   - "cs"

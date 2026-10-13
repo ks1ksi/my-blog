@@ -1,6 +1,6 @@
 ---
 title: "백준 1260번 DFS와 BFS"
-description: "백준 1260번 DFS와 BFS 풀이. 재귀 기반 DFS와 deque 기반 BFS를 구현하고, 방문 순서를 조건에 맞게 처리하는 방법을 정리한다."
+description: "재귀로 짠 DFS와 deque로 짠 BFS, 작은 번호부터 방문하는 순서 처리"
 date: 2021-05-21
 tags:
   - "graph"

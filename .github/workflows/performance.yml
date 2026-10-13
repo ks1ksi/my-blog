@@ -11,14 +11,14 @@ concurrency:
 jobs:
   measure:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
       - name: Wait for this exact clean production deployment
-        run: node scripts/production-check.mjs --commit "$GITHUB_SHA" --wait-seconds 900
+        run: node scripts/production-check.mjs --commit "$GITHUB_SHA" --wait-seconds 1800
       - name: Three mobile runs and one desktop run per page
         run: node scripts/lighthouse-audit.mjs
         env:

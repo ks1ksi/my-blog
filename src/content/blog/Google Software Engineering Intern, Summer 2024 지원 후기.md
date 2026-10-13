@@ -1,6 +1,6 @@
 ---
 title: Google Software Engineering Intern, Summer 2024 지원 후기
-description: "Google Software Engineering Intern 지원 후기. 지원 자격과 직무 설명, Resume·Transcript·Cover Letter 제출 후 인터뷰 일정 안내까지의 과정을 정리했다."
+description: "구글코리아 SWE 인턴 지원 자격과 직무 설명, 이력서·성적표·커버레터 제출 후 인터뷰 안내까지"
 date: 2024-05-31
 draft: true
 tags:

@@ -1,6 +1,6 @@
 ---
 title: OSTEP 07 CPU Scheduling
-description: "OSTEP CPU Scheduling 정리. FIFO, SJF, STCF, Round Robin을 반환 시간과 응답 시간 관점에서 비교한다."
+description: "FIFO, SJF, STCF, Round Robin을 반환 시간과 응답 시간이라는 두 기준으로 비교"
 date: 2023-07-03
 tags:
   - "cs"

@@ -1,6 +1,6 @@
 ---
 title: OSTEP 15 Address Translation
-description: "OSTEP Address Translation 정리. 가상 주소를 물리 주소로 바꾸는 base/bounds 방식과 제한적 직접 실행의 메모리 보호를 요약한다."
+description: "base/bounds 레지스터로 가상 주소를 물리 주소로 바꾸는 동적 재배치와 하드웨어·운영체제의 역할"
 date: 2023-07-17
 tags:
   - "cs"

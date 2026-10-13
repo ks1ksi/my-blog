@@ -1,6 +1,6 @@
 ---
 title: OSTEP 31 Semaphores
-description: "OSTEP Semaphores 정리. 세마포어의 wait/post 연산으로 lock, condition variable, 생산자-소비자 문제를 표현하는 방법을 요약한다."
+description: "락과 컨디션 변수를 모두 대신하는 세마포어, 생산자·소비자와 Reader-Writer 락, 식사하는 철학자"
 date: 2023-09-18
 tags:
   - "os"

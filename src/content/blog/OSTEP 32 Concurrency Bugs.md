@@ -1,6 +1,6 @@
 ---
 title: OSTEP 32 Concurrency Bugs
-description: "OSTEP Concurrency Bugs 정리. deadlock과 non-deadlock bug의 유형, 발생 조건, 예방과 회피 방법을 설명한다."
+description: "원자성·순서 위반 같은 비교착 상태 오류와 교착 상태의 발생 조건, 예방과 회피 방법"
 date: 2023-09-25
 tags:
   - "os"
