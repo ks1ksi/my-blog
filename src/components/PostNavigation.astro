@@ -2,16 +2,16 @@
 const { prevPost, nextPost } = Astro.props;
 ---
 
-<nav class="post-navigation" aria-label="다른 글">
+<nav class="post-navigation" aria-label="이전 글과 다음 글">
   {prevPost?.id && (
-    <a href={`/blog/${prevPost.id}/`}>
-      <span class="eyebrow">← 더 최근 글</span>
+    <a href={`/blog/${prevPost.id}/`} class="post-navigation-previous">
+      <span class="eyebrow">← 이전 글</span>
       <span>{prevPost.data.title}</span>
     </a>
   )}
   {nextPost?.id && (
-    <a href={`/blog/${nextPost.id}/`}>
-      <span class="eyebrow">이전 글 →</span>
+    <a href={`/blog/${nextPost.id}/`} class="post-navigation-next">
+      <span class="eyebrow">다음 글 →</span>
       <span>{nextPost.data.title}</span>
     </a>
   )}

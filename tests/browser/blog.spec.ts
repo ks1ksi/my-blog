@@ -316,7 +316,9 @@ test("home stays minimal and original article navigation remains available", asy
   expect(recentLinks).toEqual(archiveLinks);
   await page.locator(".archive-years .post-link").first().click();
   await expect(page.locator("h1")).toBeVisible();
-  await expect(page.locator('nav[aria-label="다른 글"]')).toBeVisible();
+  await expect(
+    page.locator('nav[aria-label="이전 글과 다음 글"]'),
+  ).toBeVisible();
   await expect(page.locator(".series-context")).toHaveCount(0);
   const removed = await page.goto("/series/ostep/");
   expect(removed?.status()).toBe(404);

@@ -21,6 +21,10 @@ const jsonLd = [
     { name: "Blog", url: getCanonicalUrl(Astro.url.pathname) },
   ]),
 ];
+const postCount = postsByYear.reduce(
+  (total, group) => total + group.posts.length,
+  0,
+);
 ---
 
 <Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION} jsonLd={jsonLd}>
@@ -28,10 +32,7 @@ const jsonLd = [
     <div data-pagefind-ignore>
       <div class="page-heading">
         <h1>모든 글</h1>
-        <p>
-          {postsByYear.reduce((total, group) => total + group.posts.length, 0)}
-          편
-        </p>
+        <p>글 {postCount}개</p>
       </div>
       <nav class="archive-nav" aria-label="연도별로 이동">
         {postsByYear.map(({ year }) => (
@@ -49,7 +50,7 @@ const jsonLd = [
           >
             <summary>
               <h2>{year}</h2>
-              <span class="year-count">{posts.length}편</span>
+              <span class="year-count">{posts.length}개</span>
             </summary>
             <ul class="post-list">
               {posts.map((post) => (

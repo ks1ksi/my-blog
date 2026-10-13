@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { BlogPost } from "./content";
-import { getRelatedPosts } from "./discovery";
+import { getNeighbors, getRelatedPosts, getSeries } from "./discovery";
 
 function post(
   id: string,
@@ -56,5 +56,62 @@ describe("related reading", () => {
       ["newest", "a"],
     );
     expect(posts.map((entry) => entry.id)).toEqual(["z", "a", "newest"]);
+  });
+});
+
+describe("series reading", () => {
+  const chapter = (n: number, date: string) => ({
+    ...post(`ostep-${n}`, ["cs", "os"], date),
+    data: {
+      title: `OSTEP ${n} Chapter`,
+      date: new Date(date),
+      tags: ["cs", "os"],
+      draft: false,
+    },
+  });
+  // Written out of order: chapter numbers, not dates, decide neighbours.
+  const posts = [
+    chapter(40, "2024-05-01"),
+    chapter(17, "2024-04-01"),
+    chapter(15, "2024-03-01"),
+    chapter(16, "2024-02-01"),
+    chapter(9, "2024-01-01"),
+    post("unrelated", ["life"], "2024-02-15"),
+  ];
+  const current = posts[3];
+
+  it("links the previous and next chapter", () => {
+    const { previous, next } = getNeighbors(current, posts);
+    expect(previous?.id).toBe("ostep-15");
+    expect(next?.id).toBe("ostep-17");
+  });
+
+  it("recommends nearby chapters before topic matches", () => {
+    expect(
+      getRelatedPosts(current, posts, 3, ["ostep-15", "ostep-17"]).map(
+        (entry) => entry.id,
+      ),
+    ).toEqual(["ostep-9", "ostep-40"]);
+  });
+
+  it("falls back to dates for posts outside a series", () => {
+    const byDate = [...posts].sort(
+      (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+    );
+    const { previous, next } = getNeighbors(posts[5], byDate);
+    expect(previous?.id).toBe("ostep-16");
+    expect(next?.id).toBe("ostep-15");
+  });
+
+  it("does not treat problem numbers as chapters", () => {
+    const problems = [
+      "백준 1162번 도로포장",
+      "백준 2261번 두 점",
+      "백준 1번 A",
+    ].map((title, index) => ({
+      ...post(`p${index}`),
+      data: { title, date: new Date(), tags: [], draft: false },
+    }));
+    expect(getSeries(problems[0], problems)).toEqual([]);
   });
 });

@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { formatDate } from "@lib/utils";
+import { cardSummary, formatDate } from "@lib/utils";
 type Props = { entry: CollectionEntry<"blog">; heading?: "h2" | "h3" };
 const { entry, heading: Heading = "h2" } = Astro.props;
 const tags = entry.data.tags ?? [];
@@ -24,6 +24,8 @@ const tags = entry.data.tags ?? [];
     ))}
   </div>
   {entry.data.description && (
-    <p class="post-card-description">{entry.data.description}</p>
+    <p class="post-card-description">
+      {cardSummary(entry.data.description, entry.data.title)}
+    </p>
   )}
 </article>
