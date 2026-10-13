@@ -8,6 +8,9 @@ export function enhanceCodeBlocks() {
     const wrapper = document.createElement("div");
     wrapper.className = "copy-code-wrapper";
     codeBlock.dataset.copyReady = "true";
+    const language = codeBlock.dataset.language;
+    if (language && language !== "plaintext")
+      wrapper.dataset.language = language;
     codeBlock.parentNode?.insertBefore(wrapper, codeBlock);
     wrapper.appendChild(codeBlock);
 
