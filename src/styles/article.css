@@ -25,13 +25,34 @@
   background: var(--color-surface-muted);
 }
 .table-of-contents > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   padding-block: var(--space-4);
   min-height: 52px;
   color: var(--color-text-strong);
   font-weight: var(--weight-bold);
+  list-style: none;
+  cursor: pointer;
+}
+.table-of-contents > summary::-webkit-details-marker {
+  display: none;
+}
+/* A thin chevron in the stroke weight of the header icons. */
+.table-of-contents > summary::before {
+  content: "";
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-inline: 0.125rem 0.25rem;
+  border-right: 1.5px solid var(--color-muted);
+  border-bottom: 1.5px solid var(--color-muted);
+  transform: rotate(-45deg);
+  transition: transform 150ms ease;
+}
+.table-of-contents[open] > summary::before {
+  transform: rotate(45deg);
 }
 .table-of-contents > summary > span {
-  margin-left: 0.5rem;
   font-size: var(--text-xs);
   font-weight: var(--weight-regular);
   color: var(--color-muted);
@@ -100,6 +121,16 @@ article[data-pagefind-body] a:hover {
   color: var(--color-accent);
   text-decoration-thickness: 2px;
   text-decoration-color: currentColor;
+}
+/* Photos and screenshots share the rounded corners of code blocks; the inset
+   hairline keeps white screenshots from bleeding into the page. */
+article[data-pagefind-body] img {
+  border-radius: var(--radius);
+  outline: 1px solid rgb(0 0 0 / 0.08);
+  outline-offset: -1px;
+}
+.dark article[data-pagefind-body] img {
+  outline-color: rgb(255 255 255 / 0.08);
 }
 article code:not(pre code) {
   @apply rounded-md px-1.5 py-0.5 font-mono text-[0.875em];
@@ -224,6 +255,14 @@ article table,
 .footer-links a {
   display: inline-flex;
   align-items: center;
+  gap: 0.375rem;
   min-height: 44px;
   min-width: 24px;
+  color: var(--color-muted);
+}
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: var(--color-text-strong);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }

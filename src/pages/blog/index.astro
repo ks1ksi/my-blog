@@ -34,11 +34,6 @@ const postCount = postsByYear.reduce(
         <h1>모든 글</h1>
         <p>글 {postCount}개</p>
       </div>
-      <nav class="archive-nav" aria-label="연도별로 이동">
-        {postsByYear.map(({ year }) => (
-          <a href={`#year-${year}`}>{year}</a>
-        ))}
-      </nav>
       <div class="archive-years">
         {postsByYear.map(({ year, posts }, yearIndex) => (
           <details

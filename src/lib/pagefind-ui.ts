@@ -32,6 +32,42 @@ function ensurePagefindOverrides() {
   document.head.appendChild(stylesheetOverrides);
 }
 
+/**
+ * Drop the post title from the start of a search excerpt. Pagefind indexes the
+ * title as part of the page, so an early match would otherwise repeat the
+ * result heading right under it.
+ */
+export function stripLeadingTitle(excerpt: string, title: string) {
+  const normalize = (text: string) => text.replace(/\s+/g, " ").trim();
+  const target = normalize(title);
+  if (!target) return excerpt;
+
+  let plain = "";
+  let index = 0;
+  while (index < excerpt.length) {
+    if (excerpt[index] === "<") {
+      const end = excerpt.indexOf(">", index);
+      if (end < 0) return excerpt;
+      index = end + 1;
+      continue;
+    }
+
+    plain += excerpt[index];
+    index += 1;
+    const seen = normalize(plain);
+    if (seen === target) {
+      const rest = excerpt
+        .slice(index)
+        .replace(/^(<\/mark>)+/, "")
+        .replace(/^[\s.:·-]+/, "");
+      return rest || excerpt;
+    }
+    if (!target.startsWith(seen)) return excerpt;
+  }
+
+  return excerpt;
+}
+
 export async function ensurePagefindUi() {
   const root = document.querySelector<HTMLElement>(SEARCH_ROOT_SELECTOR);
   if (!root) return null;
@@ -77,6 +113,13 @@ export async function ensurePagefindUi() {
       showImages: false,
       excerptLength: 15,
       resetStyles: false,
+      processResult: (result: {
+        excerpt: string;
+        meta: Record<string, string>;
+      }) => ({
+        ...result,
+        excerpt: stripLeadingTitle(result.excerpt, result.meta.title ?? ""),
+      }),
       translations: {
         placeholder: "검색어를 입력하세요",
         clear_search: "지우기",

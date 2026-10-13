@@ -174,9 +174,7 @@ body:has(#theme-picker:popover-open) .theme-control {
 }
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
-  gap: var(--space-12);
-  align-items: end;
+  gap: var(--space-8);
   padding-block: var(--space-6) var(--space-4);
 }
 .hero h1 {
@@ -201,16 +199,14 @@ body:has(#theme-picker:popover-open) .theme-control {
   flex-basis: 100%;
 }
 /* Text links throughout: groups of links are separated by space, not boxes. */
-.topic-nav a,
-.archive-nav a {
+.topic-nav a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   color: var(--color-text);
   font-size: var(--text-sm);
 }
-.topic-nav a:hover,
-.archive-nav a:hover {
+.topic-nav a:hover {
   color: var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -340,11 +336,16 @@ body:has(#theme-picker:popover-open) .theme-control {
   color: var(--color-muted);
   line-height: 1.7;
 }
-.archive-nav {
+.not-found-links {
   display: flex;
-  gap: 0 var(--space-6);
   flex-wrap: wrap;
-  margin-bottom: var(--space-6);
+  gap: 0 var(--space-6);
+  font-size: var(--text-sm);
+}
+.not-found-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .archive-years {
   display: grid;
