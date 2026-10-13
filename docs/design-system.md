@@ -8,7 +8,7 @@ slogans or invented descriptions of the author's work.
 ## Color and interaction
 
 Neutral zinc grays on white (light) and near-black `#0f0f10` (dark), with one
-blue accent (`#1d4ed8` / `#60a5fa`) for links, hover and focus only. Body text,
+ink-navy accent (`#284b7a` / `#9dbbe3`) for links, hover and focus only. Body text,
 secondary text, borders, accents, visited links, and focus indicators have
 separate roles.
 
@@ -19,6 +19,10 @@ index. Only panels get a surface: table of contents, code, post navigation and
 search results are borderless rounded surfaces. Hairlines remain only under the
 sticky header, above the footer and in tables. Internal links have no ↗ marker;
 it is reserved for external links.
+
+Post lists separate cards with a hairline. Code blocks use GitHub-like token
+colors (`--astro-code-*`) on the muted surface, with the language label and a
+quiet icon copy control in a top row.
 
 Scale tokens in `tokens.css` (use these instead of literal values):
 
