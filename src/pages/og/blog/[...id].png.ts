@@ -99,12 +99,15 @@ function renderOgImage(post: BlogPost) {
         {
           style: {
             display: "flex",
+            gap: 20,
             color: "#9dbbe3",
             fontSize: 26,
             fontWeight: 700,
           },
         },
-        tags.length > 0 ? tags.join("  ") : "blog",
+        ...(tags.length > 0 ? tags : ["blog"]).map((tag) =>
+          h("div", { style: { display: "flex" } }, tag),
+        ),
       ),
     ),
   );
