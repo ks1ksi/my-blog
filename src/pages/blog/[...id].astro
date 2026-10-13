@@ -9,7 +9,7 @@ import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import Giscus from "@components/Giscus.astro";
 import RelatedPosts from "@components/RelatedPosts.astro";
-import { getRelatedPosts } from "@lib/discovery";
+import { getNeighbors, getRelatedPosts } from "@lib/discovery";
 import { type BlogPost, getPublishedPosts } from "@lib/content";
 import {
   createBlogPostingJsonLd,
@@ -22,16 +22,17 @@ import {
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
-  return posts.map((post, index) => {
-    const navigationIds = [posts[index - 1]?.id, posts[index + 1]?.id].filter(
-      (id): id is string => Boolean(id),
+  return posts.map((post) => {
+    const { previous, next } = getNeighbors(post, posts);
+    const navigationIds = [previous?.id, next?.id].filter((id): id is string =>
+      Boolean(id),
     );
     return {
       params: { id: post.id },
       props: {
         post,
-        prevPost: posts[index - 1],
-        nextPost: posts[index + 1],
+        prevPost: previous,
+        nextPost: next,
         relatedPosts: getRelatedPosts(post, posts, 3, navigationIds),
       },
     };

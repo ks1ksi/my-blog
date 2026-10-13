@@ -44,6 +44,10 @@
   .post-navigation {
     grid-template-columns: 1fr;
   }
+  .post-navigation-next {
+    grid-column: auto;
+    text-align: left;
+  }
 }
 @media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
   #search-dialog {
