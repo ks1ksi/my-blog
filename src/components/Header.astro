@@ -1,6 +1,7 @@
 ---
 import Container from "@components/Container.astro";
 import { SITE } from "@consts";
+import { BRAND_HANDLE, MARK_PATH, MARK_STROKE_WIDTH } from "@lib/brand";
 import ThemeToggle from "@components/ThemeToggle.astro";
 const pathname = Astro.url.pathname;
 const current = (path: string) =>
@@ -14,11 +15,22 @@ const current = (path: string) =>
 <header class="site-header">
   <Container size="page">
     <div class="header-inner">
-      <a href="/" class="site-brand" aria-label={SITE.TITLE}>
-        <span class="brand-mark" aria-hidden="true">
-          k.
-        </span>
-        <span>Seungil Kim</span>
+      <a
+        href="/"
+        class="site-brand"
+        aria-label={`${BRAND_HANDLE}, ${SITE.TITLE} 홈`}
+      >
+        <svg
+          class="brand-mark"
+          viewBox="0 0 100 100"
+          width="28"
+          height="28"
+          aria-hidden="true"
+        >
+          <rect width="100" height="100" rx="22" />
+          <path d={MARK_PATH} stroke-width={MARK_STROKE_WIDTH} />
+        </svg>
+        <span>{BRAND_HANDLE}</span>
       </a>
       <div class="header-actions">
         <nav aria-label="주요 메뉴" class="primary-nav">

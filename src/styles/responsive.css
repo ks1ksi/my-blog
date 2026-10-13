@@ -19,7 +19,6 @@
   .brand-mark {
     width: 24px;
     height: 24px;
-    font-size: 18px;
   }
   .primary-nav :is(a, button) {
     padding-inline: 0.25rem;

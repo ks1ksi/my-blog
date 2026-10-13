@@ -80,7 +80,7 @@ for (const colorScheme of ["light", "dark"] as const) {
               background: style.backgroundColor,
               uiFontReady: document.fonts.check(
                 '650 16px "Seungil Sans UI"',
-                "Seungil Kim 글 태그",
+                "ks1ksi 글 태그",
               ),
             });
             if (--remaining) requestAnimationFrame(sample);
