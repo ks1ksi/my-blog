@@ -132,3 +132,33 @@ describe("Pagefind UI across native navigation", () => {
     expect(await ensurePagefindUi()).not.toBeNull();
   });
 });
+
+describe("stripLeadingTitle", () => {
+  it("drops the title that opens an excerpt", async () => {
+    const { stripLeadingTitle } = await import("./pagefind-ui");
+    expect(
+      stripLeadingTitle(
+        "백준 1753번 최단경로 최단경로 (<mark>다익스트라</mark>). 백준",
+        "백준 1753번 최단경로",
+      ),
+    ).toBe("최단경로 (<mark>다익스트라</mark>). 백준");
+  });
+
+  it("follows the title through highlighted words", async () => {
+    const { stripLeadingTitle } = await import("./pagefind-ui");
+    expect(
+      stripLeadingTitle(
+        "그래프 <mark>최단경로</mark> 정리. 알고리즘 정리",
+        "그래프 최단경로 정리",
+      ),
+    ).toBe("알고리즘 정리");
+  });
+
+  it("keeps excerpts that start elsewhere or contain only the title", async () => {
+    const { stripLeadingTitle } = await import("./pagefind-ui");
+    expect(stripLeadingTitle("본문 중간의 <mark>문장</mark>", "제목")).toBe(
+      "본문 중간의 <mark>문장</mark>",
+    );
+    expect(stripLeadingTitle("제목", "제목")).toBe("제목");
+  });
+});

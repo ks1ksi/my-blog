@@ -13,14 +13,18 @@ secondary text, borders, accents, visited links, and focus indicators have
 separate roles.
 
 Shape: separate content with whitespace rather than rules and outlined boxes.
-Groups of links (year jumps, home topics, tags) are plain text links, and tags
+Groups of links (home topics, tags, footer) are plain text links, and tags
 are always written `#tag`: in post cards, under article titles and on the tag
-index. Only panels get a surface: table of contents, code, post navigation and
-search results are borderless rounded surfaces. Hairlines remain only under the
-sticky header, above the footer and in tables. Internal links have no ↗ marker;
-it is reserved for external links.
+index. Only panels get a surface: table of contents, code and post navigation
+are borderless rounded surfaces. Article images take the same radius with a
+faint inset hairline. Hairlines remain under the sticky header, above the
+footer, between list rows and in tables. Internal links have no ↗ marker; it is
+reserved for external links. Disclosures use a thin chevron, not the browser's
+triangle.
 
-Post lists separate cards with a hairline. Code blocks use GitHub-like token
+Post lists and search results separate rows with a hairline. Search highlights
+the matched words with a tinted background only, and its excerpts skip the post
+title and KaTeX's hidden MathML copy. Code blocks use GitHub-like token
 colors (`--astro-code-*`) on the muted surface, with the language label and a
 quiet icon copy control in a top row.
 
@@ -43,6 +47,8 @@ Scale tokens in `tokens.css` (use these instead of literal values):
   Card titles take the accent and an underline on hover or focus. No application
   visit history.
 - Keyboard focus: a 3px outline, including a full-card outline for article links.
+  The search field instead turns its border to the accent with a 1px ring, so
+  the open dialog does not show a doubled frame.
 - Expanded years: a minus sign; collapsed years have a plus sign.
 - Hash targets: heading/section outline, with CSS scroll padding below the header.
 - Theme selection: a sun/moon icon opens a native HTML `popover="auto"` with

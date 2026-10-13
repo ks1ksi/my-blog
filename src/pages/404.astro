@@ -1,17 +1,31 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import Link from "@components/Link.astro";
 import { SITE } from "@consts";
 ---
 
-<Layout title="404" description={SITE.DESCRIPTION} noindex>
-  <Container>
-    <div class="mt-16 grid place-items-center gap-3">
-      <h1 class="page-title">404: Page not found</h1>
-      <span>
-        <BackToPrevious href="/">Back home</BackToPrevious>
-      </span>
+<Layout
+  title="페이지를 찾을 수 없습니다"
+  description={SITE.DESCRIPTION}
+  noindex
+>
+  <Container size="page">
+    <div class="page-heading">
+      <p class="eyebrow">404</p>
+      <h1>페이지를 찾을 수 없습니다</h1>
+      <p>주소가 바뀌었거나 지워진 페이지입니다.</p>
     </div>
+    <ul class="not-found-links">
+      <li>
+        <Link href="/">홈</Link>
+      </li>
+      <li>
+        <Link href="/blog/">모든 글</Link>
+      </li>
+      <li>
+        <Link href="/tags/">태그</Link>
+      </li>
+    </ul>
   </Container>
 </Layout>

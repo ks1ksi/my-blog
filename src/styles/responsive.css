@@ -24,8 +24,7 @@
     padding-inline: 0.25rem;
   }
   .hero {
-    grid-template-columns: 1fr;
-    gap: var(--space-8);
+    gap: var(--space-6);
     padding-block: var(--space-2) var(--space-8);
   }
   .home-stack {

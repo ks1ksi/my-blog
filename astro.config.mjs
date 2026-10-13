@@ -101,7 +101,10 @@ export default defineConfig({
       },
     }),
     mdx(),
-    pagefind(),
+    pagefind({
+      // KaTeX keeps a MathML copy and its TeX source next to the visible math.
+      indexConfig: { excludeSelectors: [".katex-mathml"] },
+    }),
   ],
   compressHTML: true,
   cacheDir: "./node_modules/.astro",

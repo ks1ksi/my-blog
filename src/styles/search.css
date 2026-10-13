@@ -69,8 +69,9 @@
   font-weight: var(--weight-regular);
 }
 #search .pagefind-ui__search-input:focus {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 1px var(--color-focus);
 }
 #search .pagefind-ui__search-input::placeholder {
   color: var(--color-muted);
@@ -79,42 +80,48 @@
 #search .pagefind-ui__drawer {
   margin-top: var(--space-6);
 }
+/* Results read like the post lists: rows split by a hairline, no boxes. */
 #search .pagefind-ui__results {
   display: grid;
-  gap: var(--space-3);
+  gap: 0;
   padding: 0;
 }
 #search .pagefind-ui__result {
   margin: 0;
-  padding: var(--space-4);
+  padding: var(--space-4) 0;
   border: 0;
-  border-radius: var(--radius);
-  background: var(--color-surface-muted);
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  background: none;
   cursor: pointer;
 }
-#search .pagefind-ui__result:hover,
-#search .pagefind-ui__result:focus-within {
-  background: var(--color-accent-subtle);
+#search .pagefind-ui__result:first-child {
+  padding-top: var(--space-2);
 }
 #search .pagefind-ui__result-link {
   color: var(--color-text-strong);
+  font-size: var(--text-lg);
   font-weight: var(--weight-bold);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  letter-spacing: var(--tracking-tight);
+  text-decoration: none;
 }
 #search .pagefind-ui__result-link:visited {
   color: var(--color-visited);
 }
-#search .pagefind-ui__result-link:hover {
+#search .pagefind-ui__result:hover .pagefind-ui__result-link,
+#search .pagefind-ui__result-link:focus-visible {
   color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 #search .pagefind-ui__result-title {
   margin: 0;
   padding: 0;
 }
 #search .pagefind-ui__result-excerpt {
-  margin-top: 0.75rem;
+  margin-top: var(--space-2);
   color: var(--color-text);
+  font-size: var(--text-md);
   font-weight: var(--weight-regular);
   line-height: 1.7;
 }
@@ -124,11 +131,11 @@
   font-weight: var(--weight-regular);
 }
 #search mark {
-  color: var(--color-accent);
-  background: var(--color-accent-subtle);
-  font-weight: var(--weight-bold);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  padding-inline: 0.125em;
+  border-radius: 3px;
+  color: var(--color-text-strong);
+  background: var(--color-accent-active);
+  font-weight: var(--weight-medium);
 }
 
 #search-reload {
