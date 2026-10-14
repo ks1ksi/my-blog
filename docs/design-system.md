@@ -20,7 +20,10 @@ are borderless rounded surfaces. Article images take the same radius with a
 faint inset hairline. Hairlines remain under the sticky header, above the
 footer, between list rows and in tables. Internal links have no ↗ marker; it is
 reserved for external links. Disclosures (table of contents, comments) use a thin chevron, not the
-browser's triangle. Inline code is a medium-weight chip without the typography
+browser's triangle. In dark mode article images are dimmed to 86% brightness, and raised layers
+(search dialog, theme menu) use the surface color one step above the page.
+Comments load a site-coloured Giscus theme from `/giscus/{light,dark}.css`.
+Inline code is a medium-weight chip without the typography
 plugin's backticks. Below 640px code blocks run edge to edge at 13px so more of
 each line fits.
 

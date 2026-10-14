@@ -8,7 +8,8 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   color: var(--color-text);
-  background: var(--color-bg);
+  /* A raised layer: in dark mode the surface is a step lighter than the page. */
+  background: var(--color-surface);
   box-shadow: 0 24px 80px rgb(0 0 0 / 0.2);
 }
 #search-dialog::backdrop {

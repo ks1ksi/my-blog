@@ -1,3 +1,4 @@
+import { giscusThemeUrl } from "../giscus-theme";
 import { readPreference, writePreference } from "./storage";
 
 type ThemePreference = "light" | "dark" | "system";
@@ -18,9 +19,9 @@ function shouldUseDarkTheme(theme = getStoredTheme()) {
 
 function syncGiscusTheme() {
   const frame = document.querySelector<HTMLIFrameElement>(".giscus-frame");
-  const theme = document.documentElement.classList.contains("dark")
-    ? "dark"
-    : "light";
+  const theme = giscusThemeUrl(
+    document.documentElement.classList.contains("dark"),
+  );
   frame?.contentWindow?.postMessage(
     { giscus: { setConfig: { theme } } },
     "https://giscus.app",
