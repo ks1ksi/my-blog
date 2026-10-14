@@ -25,21 +25,24 @@
   background: var(--color-surface-muted);
 }
 .table-of-contents > summary {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
   padding-block: var(--space-4);
   min-height: 52px;
   color: var(--color-text-strong);
   font-weight: var(--weight-bold);
+}
+/* Disclosures open with a thin chevron in the stroke weight of the header
+   icons instead of the browser's filled triangle. */
+:is(.table-of-contents, .comments) > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   list-style: none;
   cursor: pointer;
 }
-.table-of-contents > summary::-webkit-details-marker {
+:is(.table-of-contents, .comments) > summary::-webkit-details-marker {
   display: none;
 }
-/* A thin chevron in the stroke weight of the header icons. */
-.table-of-contents > summary::before {
+:is(.table-of-contents, .comments) > summary::before {
   content: "";
   width: 0.4375rem;
   height: 0.4375rem;
@@ -49,7 +52,7 @@
   transform: rotate(-45deg);
   transition: transform 150ms ease;
 }
-.table-of-contents[open] > summary::before {
+:is(.table-of-contents, .comments)[open] > summary::before {
   transform: rotate(45deg);
 }
 .table-of-contents > summary > span {
@@ -132,15 +135,19 @@ article[data-pagefind-body] img {
 .dark article[data-pagefind-body] img {
   outline-color: rgb(255 255 255 / 0.08);
 }
-article code:not(pre code) {
+/* Scoped to the article attribute so these outrank the typography plugin's
+   `.prose` rules, which add backticks around inline code and quotation marks
+   around blockquotes. */
+article[data-pagefind-body] code:not(pre code) {
   @apply rounded-md px-1.5 py-0.5 font-mono text-[0.875em];
   background: var(--color-surface-muted);
   color: var(--color-text-strong);
+  font-weight: var(--weight-medium);
 }
-article code:not(pre code)::before,
-article code:not(pre code)::after,
-article blockquote p:first-of-type::before,
-article blockquote p:last-of-type::after {
+article[data-pagefind-body] code:not(pre code)::before,
+article[data-pagefind-body] code:not(pre code)::after,
+article[data-pagefind-body] blockquote p:first-of-type::before,
+article[data-pagefind-body] blockquote p:last-of-type::after {
   content: none;
 }
 article[data-pagefind-body] pre {

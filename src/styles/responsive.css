@@ -25,13 +25,17 @@
   }
   .hero {
     gap: var(--space-6);
-    padding-block: var(--space-2) var(--space-8);
+    padding-block: var(--space-2) 0;
   }
   .home-stack {
     gap: var(--space-12);
   }
   .post-card-title {
     font-size: var(--text-lg);
+  }
+  /* Two columns still fit on a 360px phone. */
+  .tag-index {
+    column-gap: var(--space-4);
   }
   .tag-index a {
     font-size: var(--text-sm);
@@ -45,6 +49,22 @@
   .post-navigation-next {
     grid-column: auto;
     text-align: left;
+  }
+}
+/* Below the 640px gutter step, code runs to the screen edges and a size
+   smaller so more of each line fits before scrolling. */
+@media (max-width: 639px) {
+  article[data-pagefind-body] pre {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    border-radius: 0;
+    font-size: 0.8125rem;
+  }
+  .copy-code-wrapper[data-language]::before {
+    left: 0;
+  }
+  .copy-code {
+    right: -0.5rem;
   }
 }
 @media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
