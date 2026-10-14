@@ -227,6 +227,7 @@ body:has(#theme-picker:popover-open) .theme-control {
 .section-heading > a {
   display: inline-flex;
   align-items: center;
+  gap: 0.3em;
   min-height: 44px;
   font-size: var(--text-sm);
 }
