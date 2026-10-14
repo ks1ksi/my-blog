@@ -32,7 +32,9 @@ describe("deferred comments recovery", () => {
     open(element);
     open(element);
     expect(element.querySelectorAll("script")).toHaveLength(1);
-    expect(element.querySelector("script")?.dataset.theme).toBe("dark");
+    expect(element.querySelector("script")?.dataset.theme).toBe(
+      `${location.origin}/giscus/dark.css`,
+    );
     expect(element.getAttribute("aria-busy")).toBe("true");
   });
 

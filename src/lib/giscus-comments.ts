@@ -1,3 +1,5 @@
+import { giscusThemeUrl } from "./giscus-theme";
+
 const LOAD_TIMEOUT_MS = 15_000;
 
 type LoadState = "idle" | "loading" | "loaded" | "error";
@@ -104,9 +106,9 @@ export class GiscusComments extends HTMLElement {
     for (const { name, value } of source.attributes) {
       script.setAttribute(name, value);
     }
-    script.dataset.theme = document.documentElement.classList.contains("dark")
-      ? "dark"
-      : "light";
+    script.dataset.theme = giscusThemeUrl(
+      document.documentElement.classList.contains("dark"),
+    );
     script.addEventListener("load", watchFrame, { once: true });
     script.addEventListener("error", () => finish(true), { once: true });
     this.script = script;

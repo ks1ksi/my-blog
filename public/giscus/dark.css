@@ -1,0 +1,41 @@
+/* Giscus theme: GitHub's dark theme recoloured with the site's dark tokens
+   (src/styles/tokens.css), so the comment box matches the page. */
+@import url("https://giscus.app/themes/dark.css");
+
+main {
+  --color-canvas-default: #0f0f10;
+  --color-canvas-overlay: #18181b;
+  --color-canvas-inset: #0f0f10;
+  --color-canvas-subtle: #18181b;
+  --color-border-default: #27272a;
+  --color-border-muted: #1c1c1f;
+  --color-neutral-muted: #71717a66;
+  --color-fg-default: #d4d4d8;
+  --color-fg-muted: #a1a1aa;
+  --color-fg-subtle: #85858e;
+  --color-accent-fg: #9dbbe3;
+  --color-accent-emphasis: #9dbbe3;
+  --color-accent-muted: #9dbbe366;
+  --color-accent-subtle: #9dbbe31a;
+  --color-btn-text: #d4d4d8;
+  --color-btn-bg: #18181b;
+  --color-btn-border: #27272a;
+  --color-btn-hover-bg: #27272a;
+  --color-btn-hover-border: #3f3f46;
+  --color-btn-active-bg: #1c1c1f;
+  --color-btn-active-border: #52525b;
+  --color-btn-selected-bg: #1c1c1f;
+  --color-btn-primary-text: #0f0f10;
+  --color-btn-primary-bg: #9dbbe3;
+  --color-btn-primary-border: transparent;
+  --color-btn-primary-hover-bg: #b4cbea;
+  --color-btn-primary-hover-border: transparent;
+  --color-btn-primary-selected-bg: #9dbbe3;
+  --color-btn-primary-disabled-text: #0f0f1099;
+  --color-btn-primary-disabled-bg: #9dbbe366;
+  --color-btn-primary-disabled-border: transparent;
+  --color-segmented-control-button-bg: #0f0f10;
+  --color-segmented-control-button-selected-border: #3f3f46;
+  --color-scale-gray-7: #27272a;
+  --color-scale-blue-8: #1f2b3b;
+}

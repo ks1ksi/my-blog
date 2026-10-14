@@ -18,6 +18,10 @@
 /og.png
   Cache-Control: public, max-age=3600
 
+/giscus/*
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+
 /og/blog/*
   Cache-Control: public, max-age=3600
 

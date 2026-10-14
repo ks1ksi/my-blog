@@ -134,6 +134,9 @@ article[data-pagefind-body] img {
 }
 .dark article[data-pagefind-body] img {
   outline-color: rgb(255 255 255 / 0.08);
+  /* Most figures are screenshots and diagrams on white; dim them so they
+     do not glare against the dark page. */
+  filter: brightness(0.86);
 }
 /* Scoped to the article attribute so these outrank the typography plugin's
    `.prose` rules, which add backticks around inline code and quotation marks
