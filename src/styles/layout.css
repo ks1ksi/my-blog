@@ -225,6 +225,9 @@ body:has(#theme-picker:popover-open) .theme-control {
   letter-spacing: var(--tracking-tight);
 }
 .section-heading > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: var(--text-sm);
 }
 .post-list {

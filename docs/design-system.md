@@ -19,8 +19,10 @@ index. Only panels get a surface: table of contents, code and post navigation
 are borderless rounded surfaces. Article images take the same radius with a
 faint inset hairline. Hairlines remain under the sticky header, above the
 footer, between list rows and in tables. Internal links have no ↗ marker; it is
-reserved for external links. Disclosures use a thin chevron, not the browser's
-triangle.
+reserved for external links. Disclosures (table of contents, comments) use a thin chevron, not the
+browser's triangle. Inline code is a medium-weight chip without the typography
+plugin's backticks. Below 640px code blocks run edge to edge at 13px so more of
+each line fits.
 
 Post lists and search results separate rows with a hairline. Search highlights
 the matched words with a tinted background only, and its excerpts skip the post
