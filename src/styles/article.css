@@ -145,7 +145,7 @@ article[data-pagefind-body] code:not(pre code) {
   @apply rounded-md px-1.5 py-0.5 font-mono text-[0.875em];
   background: var(--color-surface-muted);
   color: var(--color-text-strong);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-regular);
 }
 article[data-pagefind-body] code:not(pre code)::before,
 article[data-pagefind-body] code:not(pre code)::after,
@@ -153,11 +153,42 @@ article[data-pagefind-body] blockquote p:first-of-type::before,
 article[data-pagefind-body] blockquote p:last-of-type::after {
   content: none;
 }
+/* One weight of JetBrains Mono (Latin only). Browsers fetch it only on pages
+   that show code; Hangul in comments falls back to the system face. */
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2")
+    format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+/* Code blocks: a hairline frame and a header row, split from the code by a
+   rule, that holds the language label and copy control. The rule is a fixed
+   background, so it stays put while long lines scroll sideways. */
+article[data-pagefind-body] pre,
+.copy-code-wrapper {
+  --code-header: 2.5rem;
+  --code-inline: 1.25rem;
+}
 article[data-pagefind-body] pre {
-  /* A slim top row holds the language label and copy control. The prose
-     selector would otherwise win and let the label overlap the first line. */
-  padding-top: 2.75rem;
+  margin-block: 1.5em;
+  padding: calc(var(--code-header) + 0.875rem) var(--code-inline) 0.875rem;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  background: linear-gradient(var(--color-border), var(--color-border)) 0
+    var(--code-header) / 100% 1px no-repeat;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  tab-size: 4;
+}
+/* Show code exactly as typed: no ++, ->, != ligatures. */
+article[data-pagefind-body] :is(pre, code) {
+  font-variant-ligatures: none;
 }
 .comments {
   padding-top: var(--space-4);
@@ -187,22 +218,23 @@ article table,
   content: attr(data-language);
   position: absolute;
   z-index: 1;
-  top: 0.875rem;
-  left: 1rem;
+  top: 1px;
+  left: var(--code-inline);
   color: var(--color-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
-  line-height: 1.6;
+  font-weight: var(--weight-medium);
+  line-height: var(--code-header);
   pointer-events: none;
 }
 .copy-code {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: calc(1px + (var(--code-header) - 30px) / 2);
+  right: calc(var(--code-inline) - 0.625rem);
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  min-height: 32px;
+  min-height: 30px;
   padding-inline: 0.625rem;
   border-radius: var(--radius-sm);
   color: var(--color-muted);
@@ -219,7 +251,7 @@ article table,
 }
 .copy-code:hover {
   color: var(--color-text-strong);
-  background: var(--color-surface);
+  background: var(--color-border);
 }
 .copy-code:active {
   background: var(--color-border);

@@ -51,20 +51,15 @@
     text-align: left;
   }
 }
-/* Below the 640px gutter step, code runs to the screen edges and a size
-   smaller so more of each line fits before scrolling. */
+/* Below the 640px gutter step, code is a size smaller with narrower insets
+   so more of each line fits before scrolling. */
 @media (max-width: 639px) {
+  article[data-pagefind-body] pre,
+  .copy-code-wrapper {
+    --code-inline: 0.875rem;
+  }
   article[data-pagefind-body] pre {
-    margin-inline: -1rem;
-    padding-inline: 1rem;
-    border-radius: 0;
     font-size: 0.8125rem;
-  }
-  .copy-code-wrapper[data-language]::before {
-    left: 0;
-  }
-  .copy-code {
-    right: -0.5rem;
   }
 }
 @media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
