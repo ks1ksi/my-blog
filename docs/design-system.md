@@ -23,15 +23,16 @@ reserved for external links. Disclosures (table of contents, comments) use a thi
 browser's triangle. In dark mode article images are dimmed to 86% brightness, and raised layers
 (search dialog, theme menu) use the surface color one step above the page.
 Comments load a site-coloured Giscus theme from `/giscus/{light,dark}.css`.
-Inline code is a medium-weight chip without the typography
-plugin's backticks. Below 640px code blocks run edge to edge at 13px so more of
-each line fits.
+Inline code is a chip without the typography plugin's backticks. Code uses
+JetBrains Mono (Latin, one weight, fetched only on pages with code) without
+ligatures, so `++` and `->` read as typed.
 
 Post lists and search results separate rows with a hairline. Search highlights
 the matched words with a tinted background only, and its excerpts skip the post
 title and KaTeX's hidden MathML copy. Code blocks use GitHub-like token
-colors (`--astro-code-*`) on the muted surface, with the language label and a
-quiet icon copy control in a top row.
+colors (`--astro-code-*`) on the muted surface inside a hairline frame. A
+header row, split from the code by a rule, holds the language label and a quiet
+icon copy control. Lines are 1.6 high, 14px (13px below 640px).
 
 Scale tokens in `tokens.css` (use these instead of literal values):
 
